@@ -16,19 +16,19 @@ Die Option „-std“ formt die Bildpunkte in ein quadratischen Format um, das i
 Beispiele:
 ----------
 
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC0 -std -skal 640x480
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC1 -std -skal 720x512
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC2 -std -odar 4/3 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC3 -std -odar 16/9 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC4 -std -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC5 -std -skal 720x512 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC6 -skal 640x480
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC7 -skal 720x512
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC8 -odar 4/3 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC9 -odar 16/9 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC10 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC11 -skal 720x512 -crop 202,200,0,2
-  /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC12 -progress -quad -skal 214x120 -anr 1,7
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC0 -std -skal 640x480
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC1 -std -skal 720x512
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC2 -std -odar 4/3 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC3 -std -odar 16/9 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC4 -std -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC5 -std -skal 720x512 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC6 -skal 640x480
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC7 -skal 720x512
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC8 -odar 4/3 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC9 -odar 16/9 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC10 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC11 -skal 720x512 -crop 202,200,0,2
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC12 -progress -quad -skal 214x120 -anr 1,7
 
 Noch gibt es möglicherweise ein paar Rechenfehler, bei der Bildformatsberechnung. Deshalb kann es sein, dass in einigen Fällen die Kreise beim Ergebnis nicht immer rund geblieben sind, dann muss man etwas genauere Angaben bei der Eingabe machen (z.B.: „-idar“, „-ipar“, „-odar“, „-opar“). Das wird aber in späteren Versionen ausgebessert.
 
@@ -190,4 +190,3 @@ Noch gibt es möglicherweise ein paar Rechenfehler, bei der Bildformatsberechnun
 
                 fuer einen MiniPlayer 'entryx EM880RB' (Xvid):
                 /home/bin/film_bearbeiten.sh -rein film02.mpg -profil em880
-</code>
