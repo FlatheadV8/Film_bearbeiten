@@ -14,6 +14,8 @@ Wenn man aber die Option „-odar“ verwendet, darf nichts verzerrt werden! In 
 Die Option „-std“ formt die Bildpunkte in ein quadratischen Format um, das ist der Blu-Ray-Standard. Verzerrungen darf es im Bild dadurch aber nicht geben.
 
 Beispiele:
+----------
+
   /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC0 -std -skal 640x480
   /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC1 -std -skal 720x512
   /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC2 -std -odar 4/3 -crop 202,200,0,2
@@ -42,8 +44,8 @@ Noch gibt es möglicherweise ein paar Rechenfehler, bei der Bildformatsberechnun
   v2014062100 | 2 Parameter
 
 
-                        HILFE:
-                        /home/bin/film_bearbeiten.sh -hilfe
+                HILFE:
+                /home/bin/film_bearbeiten.sh -hilfe
 
                 ASPECT:
                 -odar 16/9
