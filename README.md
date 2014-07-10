@@ -1,9 +1,14 @@
 Film_bearbeiten
 ===============
 
-Mit diesem Skript kann man einen Film bearbeiten, wie zum Beispiel Werbung raus schneiden, das Bildformat ändern, schwarze Ränder entfernen, BluRay ähnlichen AVC-Code erzeugen und andere nützliche Dinge tun.
+Mit diesem Skript kann man einen Film bearbeiten, wie zum Beispiel Werbung raus schneiden, das Bildformat ändern, schwarze Ränder entfernen, BluRay ähnlichen AVC-Code erzeugen und andere nützliche Dinge.
 
 Die Dateien müssen alle zusammen in dem gleichen Verzeichnis (z.B. in ~/bin oder /home/bin) liegen.
+
+Dieses Skript ist komplett in "Bash" (und den gängisten Kommandozeilenwerkzeugen) geschrieben worden.
+Es wird von mir hauptsächlich auf FreeBSD eingesetzt aber gelegentlich auch auf Ubuntu-Linux.
+Ich bin bestrebt den Kode so zu gestalten, dass er auf allen BSD's und allen Linux'en laufen sollte.
+Wenn man die entsprechenden Programme installiert, sollte es ggf. auch auf einem Mac laufen.
 
 
 beispielhafte Parameterkombinationen
