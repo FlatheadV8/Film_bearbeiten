@@ -1,0 +1,176 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2014012400"
+
+
+echo "
+==========================================================================
+${VERSION} | ${ABARBEITUNGSNUMMER} Breit und Hoch
+
+
+#------------------------------------------------------------------------------#
+# Breite und Hoehe ermitteln bzw. festlegen
+" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+
+
+echo "# - 17 Start: Breit und Hoch
+==========================================================================
+INVIDEOBREIT='${INVIDEOBREIT}'
+INVIDEO_HOCH='${INVIDEO_HOCH}'
+
+ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+
+CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+
+AUTOVIDEOBREIT='${AUTOVIDEOBREIT}'
+AUTOVIDEO_HOCH='${AUTOVIDEO_HOCH}'
+
+SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+
+#------------------------------------------------------------------------------#
+#if [ -n "${SOLLVIDEOPixel}" ] ; then
+#        VIDEOPixelUMWANDLUNG ${SOLLVIDEOPixel}
+#        if [ -z "${SOLLVIDEOPixBr}" ] ; then
+#                SOLLVIDEOPixBr="${VIDEOPixelBruch}"
+#        fi
+#        SOLLVIDEOPixel="${VIDEOPixelFlies}"
+#fi
+#
+#echo "# - 44: Breit und Hoch
+#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
+#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+#
+#if [ -z "${SOLLVIDEOPixel}" ] ; then
+#        SOLLVIDEOPixel="${ISTVIDEOPixel}"
+#fi
+#
+#echo "# - 52: Breit und Hoch
+#ISTVIDEOPixel='${ISTVIDEOPixel}'
+#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
+#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+#
+#### wenn es ein Bruch ist, dann muss er verschoben und ausgerechnet werden
+#case "${SOLLVIDEOPixel}" in
+#        [0-9]*[:/][0-9]*)
+#                SOLLVIDEOPixBR="${SOLLVIDEOPixel}"
+#                SOLLVIDEOPixel="$(BRUCH_IN_FLIESSKOMMAZAHL ${SOLLVIDEOPixel})"
+#                ;;
+#esac
+#
+#echo "# - 65: Breit und Hoch
+#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
+#SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
+#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+#
+#if [ -z "${SOLLVIDEOPixBr}" ] ; then
+#        SOLLVIDEOPixBr="$(FLIESSKOMMA_ZU_BRUCH ${SOLLVIDEOPixel})"
+#fi
+#
+#echo "# - 74: Breit und Hoch
+#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
+#SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
+#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+#
+#------------------------------------------------------------------------------#
+### Bild-Breite und Bild-Hoehe
+
+if [ -z "${SOLLVIDEOBREIT}" ] ; then
+        if [ -n "${AUTOVIDEOBREIT}" ] ; then
+                SOLLVIDEOBREIT="${AUTOVIDEOBREIT}"
+                echo "# - 85: Breit und Hoch
+                AUTOVIDEOBREIT => SOLLVIDEOBREIT
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        elif [ -n "${CROPVIDEOBREIT}" ] ; then
+                SOLLVIDEOBREIT="${CROPVIDEOBREIT}"
+                echo "# - 90: Breit und Hoch
+                CROPVIDEOBREIT => SOLLVIDEOBREIT
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        elif [ -n "${ISTVIDEOBREIT}" ] ; then
+                SOLLVIDEOBREIT="${ISTVIDEOBREIT}"
+                echo "# - 95: Breit und Hoch
+                ISTVIDEOBREIT => SOLLVIDEOBREIT
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        elif [ -n "${INVIDEO_HOCH}" ] ; then
+                SOLLVIDEOBREIT="${INVIDEO_HOCH}"
+                echo "# - 100: Breit und Hoch
+                INVIDEO_HOCH => SOLLVIDEOBREIT
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        fi
+fi
+
+if [ -z "${SOLLVIDEO_HOCH}" ] ; then
+        if [ -n "${AUTOVIDEO_HOCH}" ] ; then
+                SOLLVIDEO_HOCH="${AUTOVIDEO_HOCH}"
+                echo "# - 109: Breit und Hoch
+                AUTOVIDEO_HOCH => AUTOVIDEO_HOCH
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        elif [ -n "${CROPVIDEO_HOCH}" ] ; then
+                SOLLVIDEO_HOCH="${CROPVIDEO_HOCH}"
+                echo "# - 114: Breit und Hoch
+                CROPVIDEO_HOCH => AUTOVIDEO_HOCH
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        elif [ -n "${ISTVIDEO_HOCH}" ] ; then
+                SOLLVIDEO_HOCH="${ISTVIDEO_HOCH}"
+                echo "# - 119: Breit und Hoch
+                ISTVIDEO_HOCH => AUTOVIDEO_HOCH
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        elif [ -n "${INVIDEO_HOCH}" ] ; then
+                SOLLVIDEO_HOCH="${INVIDEO_HOCH}"
+                echo "# - 124: Breit und Hoch
+                INVIDEO_HOCH => AUTOVIDEO_HOCH
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        fi
+fi
+
+#------------------------------------------------------------------------------#
+### skalieren
+
+# Bildbreite
+if [ "${ISTVIDEOBREIT}" != "${SOLLVIDEOBREIT}" ] ; then
+        echo "# - 135: Breit und Hoch
+        Die Bildbreite soll geaendert werden.
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        SKALIEREN="Ja"
+fi
+
+# Bildhoehe
+if [ "${ISTVIDEO_HOCH}" != "${SOLLVIDEO_HOCH}" ] ; then
+        echo "# - 143: Breit und Hoch
+        Die Bildhoehe soll geaendert werden.
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        SKALIEREN="Ja"
+fi
+
+# Bildformat skalieren
+if [ "${SKALIEREN}" == "Ja" ] ; then
+        echo "# - 151: Breit und Hoch
+        Das Bildformat skalieren.
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        SKALIERFORMAT=",scale=${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH}"
+fi
+
+#------------------------------------------------------------------------------#
+### wenn erforderlich, dann das Seitenverhaeltnis des Bildes setzen
+
+echo "# - 160 Ende: Breit und Hoch
+INVIDEOBREIT='${INVIDEOBREIT}'
+INVIDEO_HOCH='${INVIDEO_HOCH}'
+
+ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+
+CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+
+AUTOVIDEOBREIT='${AUTOVIDEOBREIT}'
+AUTOVIDEO_HOCH='${AUTOVIDEO_HOCH}'
+
+SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+==========================================================================
+" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
