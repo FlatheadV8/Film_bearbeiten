@@ -1,7 +1,7 @@
 Film_bearbeiten
 ===============
 
-Mit diesem Skript kann man einen Film bearbeiten, wie zum Beispiel Werbung raus schneiden, das Bildformat ändern, schwarze Ränder entfernen, BluRay ähnlichen AVC-Code erzeugen und andere nützliche Dinge.
+Mit diesem Skript kann man einen Film bearbeiten, wie zum Beispiel Werbung raus schneiden, das Bildformat ändern, schwarze Ränder entfernen, BluRay ähnlichen AVC-Code erzeugen und andere nützliche Dinge tun.
 
 Die Dateien müssen alle zusammen in dem gleichen Verzeichnis (z.B. in ~/bin oder /home/bin) liegen.
 
