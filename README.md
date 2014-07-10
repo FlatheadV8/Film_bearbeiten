@@ -1,5 +1,5 @@
-Film_bearbeiten
-===============
+Film bearbeiten / attending motion pictures
+===========================================
 
 Mit diesem Skript kann man einen Film bearbeiten, wie zum Beispiel Werbung raus schneiden, das Bildformat ändern, schwarze Ränder entfernen, BluRay ähnlichen AVC-Code erzeugen und andere nützliche Dinge.
 
