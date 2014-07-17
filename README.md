@@ -37,16 +37,16 @@ Beispiele:
 
 Noch gibt es möglicherweise ein paar Rechenfehler, bei der Bildformatsberechnung. Deshalb kann es sein, dass in einigen Fällen die Kreise beim Ergebnis nicht immer rund geblieben sind, dann muss man etwas genauere Angaben bei der Eingabe machen (z.B.: „-idar“, „-ipar“, „-odar“, „-opar“). Das wird aber in späteren Versionen ausgebessert.
 
-  ================================================================================
+    ================================================================================
 
-  /home/bin/film_bearbeiten.sh -hilfe
+    /home/bin/film_bearbeiten.sh -hilfe
 
-  --------------------------------------------------------------------------
-  v2014062100 | 1 Funktionen
+    --------------------------------------------------------------------------
+    v2014062100 | 1 Funktionen
 
 
-  --------------------------------------------------------------------------
-  v2014062100 | 2 Parameter
+    --------------------------------------------------------------------------
+    v2014062100 | 2 Parameter
 
 
                 HILFE:
