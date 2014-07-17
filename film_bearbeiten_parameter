@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014062100"
+VERSION="v2014071600"
 
 
 echo "
@@ -44,8 +44,7 @@ ZUFALLSNR="$(head -c 10000 /dev/urandom | tr -cd '[:alnum:]' 2>/dev/null | cut -
 
 ZUFALLLAENGE="$(echo "${ZUFALLSNR}" | wc -L | awk '{print $1}')"
 if [ -z "${ZUFALLSNR}" -o "${ZUFALLLAENGE}" -lt "24" ] ; then
-        ZUFALLSNR="$(openssl genrsa 2>/dev/null | egrep -v 'BEGIN RSA PRIVATE KEY-----|END RSA PRIVATE KEY-----|=' | tr -d '\n' | rev | tr -
-cd '[:alnum:]' | cut -b-24 | awk '{print tolower($0)}')"
+        ZUFALLSNR="$(openssl genrsa 2>/dev/null | egrep -v 'BEGIN RSA PRIVATE KEY-----|END RSA PRIVATE KEY-----|=' | tr -d '\n' | rev | tr -cd '[:alnum:]' | cut -b-24 | awk '{print tolower($0)}')"
 fi
 
 ZUFALLLAENGE="$(echo "${ZUFALLSNR}" | wc -L | awk '{print $1}')"
