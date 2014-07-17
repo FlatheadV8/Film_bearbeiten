@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014070900"
+VERSION="v2014071600"
 
 
 echo "
@@ -65,6 +65,7 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} transkodieren
 # pcm_f64le              : bestes Wave-Format (Intel)
 #
 # x264:  YUV4MPEG (*.y4m)
+
 #------------------------------------------------------------------------------#
 ### Tonspur transkodieren
 #faac -I 5,6 -C 6 -q 160 -w -o tonspur.m4a tonspur.wav
@@ -88,45 +89,45 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} transkodieren
 # 4. Ausgabe-Film : ${NEUERFILMNAME}.mkv                               => ${2}.mkv
 
 
-if [ -r "${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER}" ] ; then
+if [ -r "${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv" ] ; then
         #----------------------------------------------------------------------#
         echo "# - 094: Film transkodieren
-        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 101: Film transkodieren
-        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 108: Film transkodieren
-        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 115: Film transkodieren
-        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 122: Film transkodieren
-        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER} ${NEUERFILMNAME}
+        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 else
         #----------------------------------------------------------------------#
         echo "# - 129: Film transkodieren
-        '${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER}' konnte nicht gefunden werden.
+        '${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv' konnte nicht gefunden werden.
         ABBRUCH!
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
@@ -140,9 +141,9 @@ date +'%F %T' | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
 #exit
 rm -fv *${ZUFALLSNR}*
-rm -fv ${FILMSTUECK}_videospur.${CONTAINER}
-rm -fv ${NEUERFILMNAME}_verlustfreies_zwischenformat.${CONTAINER}
-rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${CONTAINER}
+rm -fv ${FILMSTUECK}_videospur.mkv
+rm -fv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
+rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv
 rm -fv ${NEUERFILMNAME}_audiospur_*
 rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv
 rm -fv ${NEUERFILMNAME}_zwischenformat_originalton.mkv
