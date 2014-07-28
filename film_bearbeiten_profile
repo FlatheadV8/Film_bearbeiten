@@ -37,7 +37,6 @@ fi
 case "${PPROFIL}" in
         avc)
                 VPROG="x264 mkvmerge"
-                APROG="faac"
                 AUDIOCODEC="aac"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
@@ -45,7 +44,6 @@ case "${PPROFIL}" in
                 ;;
         x264)
                 VPROG="x264 mkvmerge"
-                APROG="faac"
                 AUDIOCODEC="aac"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
@@ -53,7 +51,6 @@ case "${PPROFIL}" in
                 ;;
         xmp3)
                 VPROG="x264 mkvmerge"
-                APROG="lame"
                 AUDIOCODEC="mp3"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
@@ -61,7 +58,6 @@ case "${PPROFIL}" in
                 ;;
         xogg)
                 VPROG="x264 mkvmerge"
-                APROG="oggenc"
                 AUDIOCODEC="ogg"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
@@ -126,7 +122,6 @@ case "${PPROFIL}" in
                 # MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
                 # optimal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b 200k -r 15 -c:a libfaac -ar 24k -ab 64k -ac 1 -y raus.3gp
                 # maximal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b 200k -r 25 -c:a libfaac -ar 24k -ab 64k -ac 2 -y raus.3gp
-                APROG="faac"
                 AUDIOCODEC="aac"
                 CONTAINER="3gp"
                 PBILDBREITE="176"
@@ -393,6 +388,30 @@ esac
 
 if [ -n "${SOLLAUDIOCODEC}" ] ; then
         AUDIOCODEC="${SOLLAUDIOCODEC}"
+fi
+
+if [ "${AUDIOCODEC}" = "wav" ] ; then
+        APROG="ffmpeg"
+fi
+
+if [ "${AUDIOCODEC}" = "ac3" ] ; then
+        APROG="ffmpeg"
+fi
+
+if [ "${AUDIOCODEC}" = "mp2" ] ; then
+        APROG="ffmpeg"
+fi
+
+if [ "${AUDIOCODEC}" = "mp3" ] ; then
+        APROG="lame"
+fi
+
+if [ "${AUDIOCODEC}" = "ogg" ] ; then
+        APROG="oggenc"
+fi
+
+if [ "${AUDIOCODEC}" = "aac" ] ; then
+        APROG="faac"
 fi
 
 #------------------------------------------------------------------------------#
