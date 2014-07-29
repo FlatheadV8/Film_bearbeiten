@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014071700"
+VERSION="v2014072900"
 
 
 echo "
@@ -209,10 +209,10 @@ TON_EXTRAHIEREN()
 
                 echo "# - 210: TON_EXTRAHIEREN
                 # AudioSpur aus der Datei im Zwischenformat extrahieren
-                ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}.wav
+                ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mv -v ${2}_audiospur_${i}_.wav ${2}_audiospur_${i}.wav
+                ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
 
                 if [ ! -s ${2}_audiospur_${i}.wav ] ; then
                         echo "# - 218: TON_EXTRAHIEREN
@@ -228,11 +228,18 @@ TON_EXTRAHIEREN()
                 #------------------------------------------------------#
                 ### Laufzeit der Ton-Spuren ermitteln
 
+                AUDIOLAENGE=""
                 AUDIOLAENGE="$(mediainfo --BOM ${2}_audiospur_${i}.wav | sed -ne '/^Audio/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
+                if [ -z "${AUDIOLAENGE}" ] ; then
+                        echo "# - 234: TON_EXTRAHIEREN
+                        AUDIOLAENGE='${AUDIOLAENGE}' von '${2}_audiospur_${i}.wav' konnte nicht emittelt werden
+                        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+                        exit 1
+                if
                 MEDIAINFO_DURATION ${AUDIOLAENGE} > ${2}_audiospur_${i}.txt
                 AL="$(cat ${2}_audiospur_${i}.txt)"
 
-                echo "# - 235: TON_EXTRAHIEREN
+                echo "# - 242: TON_EXTRAHIEREN
                 audiospur_${i}: AL=${AL}
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
@@ -241,7 +248,7 @@ TON_EXTRAHIEREN()
 
         TONFEHLER="$(ls ${2}_audiospur_*)"
         if [ -z "${TONFEHLER}" ] ; then
-                echo "# - 244: TON_EXTRAHIEREN
+                echo "# - 251: TON_EXTRAHIEREN
                 Die AudioSpur '${2}_audiospur_*.wav' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -373,15 +380,15 @@ FILM_TRANS_AVC()
         # 3. Audio-Ausgabe: ${FILMSTUECK}_audiospur.wav      => ${2}_audiospur.wav
         # 4. Ausgabe-Film : ${FILMSTUECK}.mkv                => ${2}.mkv
 
-        echo "# - 376: FILM_TRANS_AVC
+        echo "# - 383: FILM_TRANS_AVC
         # VideoSpur extrahieren und transkodieren
-        ffmpeg -y -i ${1} -v 0 -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur.${CONTAINER}
+        ffmpeg -y -i ${1} -v 0 -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${CONTAINER} && mkvmerge -o ${2}_videospur.${CONTAINER} ${2}_videospur_.${CONTAINER} && rm -f ${2}_videospur_.${CONTAINER}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        ffmpeg -y -i ${1} -v 0 -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur.${CONTAINER}
+        ffmpeg -y -i ${1} -v 0 -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${CONTAINER} && mkvmerge -o ${2}_videospur.${CONTAINER} ${2}_videospur_.${CONTAINER} && rm -f ${2}_videospur_.${CONTAINER}
 
         if [ ! -r ${2}_videospur.${CONTAINER} ] ; then
-                echo "# - 384: FILM_TRANS_AVC
+                echo "# - 391: FILM_TRANS_AVC
                 # VideoSpur extrahieren und transkodieren
                 Die VideoSpur '${2}_videospur.${CONTAINER}' konnte nicht gefunden werden.
                 Abbruch!
@@ -401,7 +408,7 @@ FILM_LAUFZEIT()
         # wenn die Audio- und Video-Spuren sich in der Laenge um mehr als ${LDIFF} unterscheiden
 
         if [ ! -s ${2}_videospur.${CONTAINER} ] ; then
-                echo "# - 404: FILM_LAUFZEIT
+                echo "# - 412: FILM_LAUFZEIT
                 Die VideoSpur '${2}_videospur.${CONTAINER}' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -409,10 +416,17 @@ FILM_LAUFZEIT()
                 exit 1
         fi
 
+        VIDEOLAENGE=""
         VIDEOLAENGE="$(mediainfo --BOM ${2}_videospur.${CONTAINER} | sed -ne '/^Video/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
+        if [ -z "${VIDEOLAENGE}" ] ; then
+                echo "# - 423: FILM_LAUFZEIT
+                VIDEOLAENGE='${VIDEOLAENGE}' von '${2}_videospur.${CONTAINER}' konnte nicht emittelt werden
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+                exit 1
+        if
         VL="$(MEDIAINFO_DURATION ${VIDEOLAENGE})"
 
-        echo "# - 415: FILM_LAUFZEIT
+        echo "# - 430: FILM_LAUFZEIT
         MEDIAINFO_DURATION ${VIDEOLAENGE}
         VL="${VL}"
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -421,12 +435,12 @@ FILM_LAUFZEIT()
         do
                 AL="$(cat ${2}_audiospur_${i}.txt)"
 
-                echo "# - 424: FILM_LAUFZEIT
+                echo "# - 439: FILM_LAUFZEIT
                 Spurlaengen: Video='${VL}' Audio_${i}='${AL}'
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
                 if [ -z "${AL}" ] ; then
-                        echo "# - 429: FILM_LAUFZEIT
+                        echo "# - 444: FILM_LAUFZEIT
                         Tonspur '${i}' konnte nicht gefunden werden...
                         ABBRUCH" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         exit 1
@@ -440,7 +454,7 @@ FILM_LAUFZEIT()
                         DIFFP="$(echo "${VL} ${AL}" | awk '{print (($2*100)/$1)-100}' | sed 's/-//')"
                         AUSGLEICHEN="$(echo "${DIFFP} ${LDIFF}" | awk '{AUSGLEICHEN="NEIN"; if ($1 > $2) AUSGLEICHEN="JA"; print AUSGLEICHEN}')"
 
-                        echo "# - 443: FILM_TRANS_AVC
+                        echo "# - 458: FILM_TRANS_AVC
                         ### automatische Laengenanpassung aktiviert
                         DIFFP='${DIFFP}'
                         AUSGLEICHEN='${AUSGLEICHEN}' durch soundstretch
@@ -448,7 +462,7 @@ FILM_LAUFZEIT()
 
                         ### wenn Audio- und Videospur unterschiedlich lang sind, wird das korrigiert
                         if [ "${AUSGLEICHEN}" = "JA" -a "${VL}" != "0" -a "${AL}" != "0" ] ; then
-                                echo "# - 451: FILM_TRANS_AVC
+                                echo "# - 466: FILM_TRANS_AVC
                                 # wenn Audio- und Videospur unterschiedlich lang sind, wird die Audiospur angepasst
                                 mv ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_original.wav
                                 soundstretch ${2}_audiospur_${i}_original.wav ${2}_audiospur_${i}.wav -tempo=${DIFFP}
