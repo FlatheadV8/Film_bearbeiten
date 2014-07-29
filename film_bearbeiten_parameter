@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014071600"
+VERSION="v2014072900"
 
 
 echo "
@@ -316,7 +316,7 @@ while [ "${#}" -ne "0" ] ; do
                 mit schwarzen Balken zu einem Standardformat von 4/3 oder 16/9 erweitern (nur für AVC/x264):
                 -autoformat
 
-                Bilder pro Sekunde im Zielvideo:
+                Bilder pro Sekunde im Zielvideo/Ausgabe:
                 -ofps 20
 
                 HILFE:
@@ -336,6 +336,14 @@ while [ "${#}" -ne "0" ] ; do
 
                 die Ausgabe soll quadratische Bildpunkte haben
                 -quad
+
+                das Seitenformat der Bildpunkte der Quelle (PAR/SAR) - VIDEOPixel:
+                -ipar 1         (die Quelldatei enthaelt quadratische Bildpunkte)
+                -ipar ntsc      (720x480 wird so dargestellt wie 640x480)
+                -ipar pal       (720x576 wird so dargestellt wie 768x576)
+                -ipar dvb       (720x576 wird so dargestellt wie 1024x576)
+                -ipar 16/15     (als Bruch angeben)
+                -ipar 1.0666666 (als Fliesskommazahl angeben)
 
                 das Seitenformat der Bildpunkte der Ausgabe (PAR/SAR) - VIDEOPixel:
                 -opar 1         (die Ausgabe wird quadratische Bildpunkte haben)
@@ -380,7 +388,7 @@ while [ "${#}" -ne "0" ] ; do
 
                 Parametersammlungen:
                 -std   -> '-autoformat'
-                -stdtv -> '-autoformat -progress -opar pal'
+                -stdtv -> '-autoformat -progress -ipar pal'
 
                 z.B.:
                 Es muss mindestens dieser Parameter gesetzt werden:
