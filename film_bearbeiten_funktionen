@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014072900"
+VERSION="v2014080800"
 
 
 echo "
@@ -235,7 +235,7 @@ TON_EXTRAHIEREN()
                         AUDIOLAENGE='${AUDIOLAENGE}' von '${2}_audiospur_${i}.wav' konnte nicht emittelt werden
                         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         exit 1
-                if
+                fi
                 MEDIAINFO_DURATION ${AUDIOLAENGE} > ${2}_audiospur_${i}.txt
                 AL="$(cat ${2}_audiospur_${i}.txt)"
 
