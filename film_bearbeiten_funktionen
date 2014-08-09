@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014080800"
+VERSION="v2014080900"
 
 
 echo "
@@ -423,12 +423,12 @@ FILM_LAUFZEIT()
                 VIDEOLAENGE='${VIDEOLAENGE}' von '${2}_videospur.${CONTAINER}' konnte nicht emittelt werden
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                 exit 1
-        if
+        fi
         VL="$(MEDIAINFO_DURATION ${VIDEOLAENGE})"
 
         echo "# - 430: FILM_LAUFZEIT
         MEDIAINFO_DURATION ${VIDEOLAENGE}
-        VL="${VL}"
+        VL='${VL}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
         for i in $(echo "${SOLLAUDIOSPURNR}" | sed 's/[,]/ /g')
