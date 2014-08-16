@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #set -x
-VERSION="v2014081100"
+VERSION="v2014081600"
 
 #------------------------------------------------------------------------------#
 ### Arbeitsweise
@@ -42,8 +42,6 @@ DELAYTRANSTON="0"                       # im Standard kein versetztes einsetzen 
 MKVSYNC="JA"                            # im Standard Synchronisation durch den MKV-Container, zu deaktivieren mit: "-syncmkv"
 PPROFIL="avc"                           # im Standard wird ein AVC-Film erzeugt, zu ändern mit z.B.: "-profil asp"
 RAUSCHW="0"                             # im Standard wird keine Rauschunterdrückung aktiviert, zu aktivieren mit z.B.: "-entrauschen 100"
-#AUDIOCODEC="aac"                       # ist noch nicht reif, verursacht gelegentlich noch Störungen
-AUDIOCODEC="ac3"                        # Standard-Audioformat für die Ausgabe
 CONTAINER="mkv"                         # Standard-Kontainerformat für die Ausgabe
 ANPASSUNG="JA"                          # wichtig fuer die Simple-Profile
 
