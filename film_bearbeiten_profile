@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014072800"
+VERSION="v2014081600"
 
 
 echo "
@@ -37,14 +37,14 @@ fi
 case "${PPROFIL}" in
         avc)
                 VPROG="x264 mkvmerge"
-                AUDIOCODEC="aac"
+                #AUDIOCODEC="aac"       # diese Voreinstellung wird in der Datei film_bearbeiten.sh vorgenommen
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
                 ;;
         x264)
                 VPROG="x264 mkvmerge"
-                AUDIOCODEC="aac"
+                #AUDIOCODEC="aac"       # diese Voreinstellung wird in der Datei film_bearbeiten.sh vorgenommen
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
