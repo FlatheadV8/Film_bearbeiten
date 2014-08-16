@@ -37,14 +37,16 @@ fi
 case "${PPROFIL}" in
         avc)
                 VPROG="x264 mkvmerge"
-                #AUDIOCODEC="aac"       # diese Voreinstellung wird in der Datei film_bearbeiten.sh vorgenommen
+                #AUDIOCODEC="aac"       # ist noch nicht reif, verursacht gelegentlich noch Störungen
+                AUDIOCODEC="ac3"        # derzeitiges Standard-Audioformat für die Ausgabe
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
                 ;;
         x264)
                 VPROG="x264 mkvmerge"
-                #AUDIOCODEC="aac"       # diese Voreinstellung wird in der Datei film_bearbeiten.sh vorgenommen
+                #AUDIOCODEC="aac"       # ist noch nicht reif, verursacht gelegentlich noch Störungen
+                AUDIOCODEC="ac3"        # derzeitiges Standard-Audioformat für die Ausgabe
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
