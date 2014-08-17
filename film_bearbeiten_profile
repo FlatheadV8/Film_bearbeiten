@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014081600"
+VERSION="v2014081700"
 
 
 echo "
@@ -39,7 +39,7 @@ case "${PPROFIL}" in
                 VPROG="x264 mkvmerge"
                 #AUDIOCODEC="aac"       # ist noch nicht reif, verursacht gelegentlich noch Störungen
                 AUDIOCODEC="ac3"        # derzeitiges Standard-Audioformat für die Ausgabe
-                CONTAINER="mkv"
+                CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
                 ;;
@@ -47,7 +47,7 @@ case "${PPROFIL}" in
                 VPROG="x264 mkvmerge"
                 #AUDIOCODEC="aac"       # ist noch nicht reif, verursacht gelegentlich noch Störungen
                 AUDIOCODEC="ac3"        # derzeitiges Standard-Audioformat für die Ausgabe
-                CONTAINER="mkv"
+                CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
                 ;;
