@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014012200"
+VERSION="v2014102000"
 
 
 echo "
@@ -49,54 +49,10 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} Seitenverhaeltnis
 
 #------------------------------------------------------------------------------#
 ### Pixel-Verhaeltnis
-
-#if [ -n "${SOLLVIDEOPixel}" ] ; then
-#        VIDEOPixelUMWANDLUNG ${SOLLVIDEOPixel}
-#        if [ -z "${SOLLVIDEOPixBr}" ] ; then
-#                SOLLVIDEOPixBr="${VIDEOPixelBruch}"
-#        fi
-#        SOLLVIDEOPixel="${VIDEOPixelFlies}"
-#fi
-
-#echo "# - 60: Seitenverhaeltnis ermitteln
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
-#if [ -z "${SOLLVIDEOPixel}" ] ; then
-#        SOLLVIDEOPixel="${ISTVIDEOPixel}"
-#fi
-
-#echo "# - 68: Seitenverhaeltnis ermitteln
-#ISTVIDEOPixel='${ISTVIDEOPixel}'
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
-#### wenn es ein Bruch ist, dann muss er verschoben und ausgerechnet werden
-#case "${SOLLVIDEOPixel}" in
-#        [0-9]*[:/][0-9]*)
-#                SOLLVIDEOPixBR="${SOLLVIDEOPixel}"
-#                SOLLVIDEOPixel="$(BRUCH_IN_FLIESSKOMMAZAHL ${SOLLVIDEOPixel})"
-#                ;;
-#esac
-
-#echo "# - 81: Seitenverhaeltnis ermitteln
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
-#if [ -z "${SOLLVIDEOPixBr}" ] ; then
-#        SOLLVIDEOPixBr="$(FLIESSKOMMA_ZU_BRUCH ${SOLLVIDEOPixel})"
-#fi
-
-#echo "# - 90: Seitenverhaeltnis ermitteln
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-    
-#------------------------------------------------------------------------------#
+###
 ### wenn erforderlich, dann das Seitenverhaeltnis des Bildes setzen
 
-echo "# - 98: Seitenverhaeltnis ermitteln
+echo "# - 55: Seitenverhaeltnis ermitteln
 ISTVIDEODispl='${ISTVIDEODispl}'
 ISTVIDEODisBr='${ISTVIDEODisBr}'
 
@@ -110,48 +66,57 @@ SOLLVIDEODispl='${SOLLVIDEODispl}'
 SOLLVIDEODisBr='${SOLLVIDEODisBr}'
 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-###
+#------------------------------------------------------------------------------#
+### Auto
 if [ -z "${SOLLVIDEODispl}" ] ; then
     if [ -n "${AUTOVIDEODispl}" ] ; then
         SOLLVIDEODispl="${AUTOVIDEODispl}"
+        SOLLVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${AUTOVIDEODispl})"
     fi
 fi
 
 if [ -z "${SOLLVIDEODisBr}" ] ; then
     if [ -n "${AUTOVIDEODisBr}" ] ; then
         SOLLVIDEODisBr="${AUTOVIDEODisBr}"
+        SOLLVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${AUTOVIDEODisBr})"
     fi
 fi
 
-###
+#------------------------------------------------------------------------------#
+### Crop
 if [ -z "${SOLLVIDEODispl}" ] ; then
     if [ -n "${CROPVIDEODispl}" ] ; then
         SOLLVIDEODispl="${CROPVIDEODispl}"
+        SOLLVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${CROPVIDEODispl})"
     fi
 fi
 
 if [ -z "${SOLLVIDEODisBr}" ] ; then
     if [ -n "${CROPVIDEODisBr}" ] ; then
         SOLLVIDEODisBr="${CROPVIDEODisBr}"
+        SOLLVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${CROPVIDEODisBr})"
     fi
 fi
 
-###
+#------------------------------------------------------------------------------#
+### Ist
 if [ -z "${SOLLVIDEODispl}" ] ; then
     if [ -n "${ISTVIDEODispl}" ] ; then
         SOLLVIDEODispl="${ISTVIDEODispl}"
+        SOLLVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${ISTVIDEODispl})"
     fi
 fi
 
 if [ -z "${SOLLVIDEODisBr}" ] ; then
     if [ -n "${ISTVIDEODisBr}" ] ; then
         SOLLVIDEODisBr="${ISTVIDEODisBr}"
+        SOLLVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${ISTVIDEODisBr})"
     fi
 fi
 
 #------------------------------------------------------------------------------#
 
-echo "# - 151 Ende: Seitenverhaeltnis ermitteln
+echo "# - 119 Ende: Seitenverhaeltnis ermitteln
 ISTVIDEODispl='${ISTVIDEODispl}'
 ISTVIDEODisBr='${ISTVIDEODisBr}'
 
@@ -168,4 +133,3 @@ SOLLVIDEODispl='${SOLLVIDEODispl}'
 SOLLVIDEODisBr='${SOLLVIDEODisBr}'
 ==========================================================================
 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
