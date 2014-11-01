@@ -333,10 +333,10 @@ ${BHVE16}
         #======================================================================#
 
         if [ "${PADDING}" = "Ja" ] ; then
-                PAD_OPTION=",pad=${STDVIDEOBREIT}:${STDVIDEO_HOCH}:${SCHWARZ_LINKS}:${SCHWARZ_OBEN}"
+                PADVIDEOBREIT="$(echo "${ISTVIDEOBREIT} ${SCHWARZBREIT}" | awk '{print $1 + $2}')"
+                PADVIDEO_HOCH="$(echo "${ISTVIDEO_HOCH} ${SCHWARZ_HOCH}" | awk '{print $1 + $2}')"
+                PAD_OPTION=",pad=${PADVIDEOBREIT}:${PADVIDEO_HOCH}:${SCHWARZ_LINKS}:${SCHWARZ_OBEN}"
         fi
-
-        #----------------------------------------------------------------------#
 
 #==============================================================================#
 
