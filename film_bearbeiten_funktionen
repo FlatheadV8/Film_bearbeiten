@@ -299,7 +299,7 @@ TON_TRANS()
                 if [ "${AUDIOCODEC}" = "cp" ] ; then
                         #
                         echo "#------------------------------------------------------------------------------#
-                        # - 283: TON_TRANS
+                        # - 302: TON_TRANS
 
                         ### Audiospur nicht transcodieren
                         ffmpeg -y -i ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv -vn -c:a copy ${2}_audiospur_${i}_original_.mkv && mv -v ${2}_audiospur_${i}_original_.mkv ${2}_audiospur_${i}
@@ -308,7 +308,7 @@ TON_TRANS()
                         ffmpeg -y -i ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv -vn -c:a copy ${2}_audiospur_${i}_original_.mkv && mv -v ${2}_audiospur_${i}_original_.mkv ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "wav" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 292: TON_TRANS
+                        # - 311: TON_TRANS
 
                         ### Audiospur nicht transcodieren
                         mv -vf ${2}_audiospur_${i}.wav ${2}_audiospur_${i}
@@ -317,7 +317,7 @@ TON_TRANS()
                         mv -vf ${2}_audiospur_${i}.wav ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "ac3" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 301: TON_TRANS
+                        # - 320: TON_TRANS
 
                         ### Audiospur transcodieren
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${2}_audiospur_${i}.ac3
@@ -327,7 +327,7 @@ TON_TRANS()
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${2}_audiospur_${i}.ac3 && mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "aac" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 311: TON_TRANS
+                        # - 330: TON_TRANS
 
                         ### Audiospur transcodieren
                         faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.wav
@@ -337,7 +337,7 @@ TON_TRANS()
                         faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.wav && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp2" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 321: TON_TRANS
+                        # - 340: TON_TRANS
 
                         ### Audiospur transcodieren
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${2}_audiospur_${i}.mp2
@@ -347,7 +347,7 @@ TON_TRANS()
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${2}_audiospur_${i}.mp2 && mv -vf ${2}_audiospur_${i}.mp2 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp3" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 331: TON_TRANS
+                        # - 350: TON_TRANS
 
                         ### Audiospur transcodieren
                         lame --tt '${TITELNAME}' -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.wav ${2}_audiospur_${i}.mp3
@@ -357,7 +357,7 @@ TON_TRANS()
                         lame --tt "${TITELNAME}" -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.wav ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "ogg" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 341: TON_TRANS
+                        # - 360: TON_TRANS
 
                         ### Audiospur transcodieren
                         oggenc -t '${TITELNAME}' -q ${OGGQUALI} -o ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}.wav
