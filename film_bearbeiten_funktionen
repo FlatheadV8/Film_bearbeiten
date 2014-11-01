@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014101900"
+VERSION="v2014110100"
 
 
 echo "
@@ -9,6 +9,14 @@ echo "
 ${VERSION} | ${ABARBEITUNGSNUMMER} Funktionen
 "
 
+
+#------------------------------------------------------------------------------#
+### NTSC-, PAL- oder Bluray-Pixel
+
+HILFE()
+{
+	cat $(dirname ${0})/film_bearbeiten_hilfe
+}
 
 #------------------------------------------------------------------------------#
 ### NTSC-, PAL- oder Bluray-Pixel
@@ -24,7 +32,7 @@ VIDEOPixelUMWANDLUNG()
                         ### "16/15"
                         VIDEOPixelBruch="16/15"
                         VIDEOPixelFlies="$(echo "${VIDEOPixelBruch}"|awk '{print $1}'|sed 's/[:/]/ /'|awk '{printf("%.16f\n",$1/$2)}')"
-                        echo "# - 27: VIDEOPixelUMWANDLUNG
+                        echo "# - 35: VIDEOPixelUMWANDLUNG
                         =>${1}
                         VIDEOPixelBruch=${VIDEOPixelBruch}
                         VIDEOPixelFlies=${VIDEOPixelFlies}
@@ -36,7 +44,7 @@ VIDEOPixelUMWANDLUNG()
                         ### "8/9"
                         VIDEOPixelBruch="8/9"
                         VIDEOPixelFlies="$(echo "${VIDEOPixelBruch}"|awk '{print $1}'|sed 's/[:/]/ /'|awk '{printf("%.16f\n",$1/$2)}')"
-                        echo "# - 39: VIDEOPixelUMWANDLUNG
+                        echo "# - 47: VIDEOPixelUMWANDLUNG
                         =>${1}
                         VIDEOPixelBruch=${VIDEOPixelBruch}
                         VIDEOPixelFlies=${VIDEOPixelFlies}
@@ -48,7 +56,7 @@ VIDEOPixelUMWANDLUNG()
                         ### "64/45"
                         VIDEOPixelBruch="64/45"
                         VIDEOPixelFlies="$(echo "${VIDEOPixelBruch}"|awk '{print $1}'|sed 's/[:/]/ /'|awk '{printf("%.16f\n",$1/$2)}')"
-                        echo "# - 51: VIDEOPixelUMWANDLUNG
+                        echo "# - 59: VIDEOPixelUMWANDLUNG
                         =>${1}
                         VIDEOPixelBruch=${VIDEOPixelBruch}
                         VIDEOPixelFlies=${VIDEOPixelFlies}
@@ -59,7 +67,7 @@ VIDEOPixelUMWANDLUNG()
                         # Seitenverhaeltnis eines Bildpunktes als Bruch angegeben
                         VIDEOPixelBruch="$(echo "${1}"|awk '{print $1}'|sed 's/[:]/\//')"
                         VIDEOPixelFlies="$(echo "${VIDEOPixelBruch}"|awk '{print $1}'|sed 's#[:/]# #'|awk '{printf("%.16f\n",$1/$2)}')"
-                        echo "# - 62: VIDEOPixelUMWANDLUNG
+                        echo "# - 70: VIDEOPixelUMWANDLUNG
                         =>${1}
                         VIDEOPixelBruch=${VIDEOPixelBruch}
                         VIDEOPixelFlies=${VIDEOPixelFlies}
@@ -70,7 +78,7 @@ VIDEOPixelUMWANDLUNG()
                         # Seitenverhaeltnis eines Bildpunktes als Fliesskommazahl angegeben
                         VIDEOPixelBruch="$(FLIESSKOMMA_ZU_BRUCH ${1})"
                         VIDEOPixelFlies="${1}"
-                        echo "# - 73: VIDEOPixelUMWANDLUNG
+                        echo "# - 81: VIDEOPixelUMWANDLUNG
                         =>${1}
                         VIDEOPixelBruch=${VIDEOPixelBruch}
                         VIDEOPixelFlies=${VIDEOPixelFlies}
@@ -131,7 +139,7 @@ BRUCH_IN_FLIESSKOMMAZAHL()
 
 FLIESSKOMMA_ZU_BRUCH()
 {
-        echo "# - 134: FLIESSKOMMA_ZU_BRUCH
+        echo "# - 142: FLIESSKOMMA_ZU_BRUCH
         # Beginn FLIESSKOMMA_ZU_BRUCH
         '${1}' in einen Bruch umrechnen...
         " >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -148,7 +156,7 @@ FLIESSKOMMA_ZU_BRUCH()
                         echo "${ERGEBNIS}" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                 fi
         done
-        echo "# - 151: Ende FLIESSKOMMA_ZU_BRUCH" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 159: Ende FLIESSKOMMA_ZU_BRUCH" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 }
 
 
@@ -198,7 +206,7 @@ TON_EXTRAHIEREN()
                 SOLLAUDIOSPURNR="1"
         fi
 
-        echo "# - 201: TON_EXTRAHIEREN
+        echo "# - 209: TON_EXTRAHIEREN
         1='${1}'
         2='${2}'
         TS='${TS}'
@@ -212,7 +220,7 @@ TON_EXTRAHIEREN()
                 #------------------------------------------------------#
                 ### Ton-Spuren extrahieren
 
-                echo "# - 215: TON_EXTRAHIEREN
+                echo "# - 223: TON_EXTRAHIEREN
                 # AudioSpur aus der Datei im Zwischenformat extrahieren
                 ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -220,7 +228,7 @@ TON_EXTRAHIEREN()
                 ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
 
                 if [ ! -s ${2}_audiospur_${i}.wav ] ; then
-                        echo "# - 223: TON_EXTRAHIEREN
+                        echo "# - 231: TON_EXTRAHIEREN
                         Die AudioSpur '${2}_audiospur_${i}.wav' konnte nicht erstellt werden.
                         Abbruch!
                         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -236,7 +244,7 @@ TON_EXTRAHIEREN()
                 AUDIOLAENGE=""
                 AUDIOLAENGE="$(mediainfo --BOM ${2}_audiospur_${i}.wav | sed -ne '/^Audio/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
                 if [ -z "${AUDIOLAENGE}" ] ; then
-                        echo "# - 239: TON_EXTRAHIEREN
+                        echo "# - 247: TON_EXTRAHIEREN
                         AUDIOLAENGE='${AUDIOLAENGE}' von '${2}_audiospur_${i}.wav' konnte nicht emittelt werden
                         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         exit 1
@@ -244,7 +252,7 @@ TON_EXTRAHIEREN()
                 MEDIAINFO_DURATION ${AUDIOLAENGE} > ${2}_audiospur_${i}.txt
                 AL="$(cat ${2}_audiospur_${i}.txt)"
 
-                echo "# - 247: TON_EXTRAHIEREN
+                echo "# - 255: TON_EXTRAHIEREN
                 audiospur_${i}: AL=${AL}
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
@@ -253,7 +261,7 @@ TON_EXTRAHIEREN()
 
         TONFEHLER="$(ls ${2}_audiospur_*)"
         if [ -z "${TONFEHLER}" ] ; then
-                echo "# - 256: TON_EXTRAHIEREN
+                echo "# - 264: TON_EXTRAHIEREN
                 Die AudioSpur '${2}_audiospur_*.wav' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -274,7 +282,7 @@ TON_TRANS()
                 TONKANAELE="$(mediainfo ${2}_audiospur_${i}.wav 2>&1 | grep -E '^Channel' | awk -F':' '/ channel/{print $2}' | awk '{print $1}')"
                 if [ "${TONKANAELE}" -gt "2" ] ; then
                         if [ "${AUDIOCODEC}" = "mp3" -o "${AUDIOCODEC}" = "MP3" ] ; then
-                                echo "# - 277: TON_TRANS
+                                echo "# - 285: TON_TRANS
 
                                 ### Audiospur transcodieren
                                 MP3 unterstützt keine '${TONKANAELE}' Kanäle sondern nur maximal '2' Kanäle...
@@ -362,7 +370,7 @@ TON_TRANS()
                 if [ -s ${2}_audiospur_${i} ] ; then
                         mkvmerge -i ${2}_audiospur_${i} > ${2}_audiospur_${i}.info
                 else
-                        echo "# - 365: TON_TRANS
+                        echo "# - 373: TON_TRANS
                         Die AudioSpur '${2}_audiospur_${i}' konnte nicht erstellt werden.
                         Abbruch!
                         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -385,7 +393,7 @@ FILM_TRANS_AVC()
         # 3. Audio-Ausgabe: ${FILMSTUECK}_audiospur.wav      => ${2}_audiospur.wav
         # 4. Ausgabe-Film : ${FILMSTUECK}.mkv                => ${2}.mkv
 
-        echo "# - 388: FILM_TRANS_AVC
+        echo "# - 396: FILM_TRANS_AVC
         # VideoSpur extrahieren und transkodieren
         ffmpeg -y -i ${1} -v 0 -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${CONTAINER} && mkvmerge -o ${2}_videospur.${CONTAINER} ${2}_videospur_.${CONTAINER} && rm -f ${2}_videospur_.${CONTAINER}
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -393,7 +401,7 @@ FILM_TRANS_AVC()
         ffmpeg -y -i ${1} -v 0 -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${CONTAINER} && mkvmerge -o ${2}_videospur.${CONTAINER} ${2}_videospur_.${CONTAINER} && rm -f ${2}_videospur_.${CONTAINER}
 
         if [ ! -r ${2}_videospur.${CONTAINER} ] ; then
-                echo "# - 396: FILM_TRANS_AVC
+                echo "# - 404: FILM_TRANS_AVC
                 # VideoSpur extrahieren und transkodieren
                 Die VideoSpur '${2}_videospur.${CONTAINER}' konnte nicht gefunden werden.
                 Abbruch!
@@ -413,7 +421,7 @@ FILM_LAUFZEIT()
         # wenn die Audio- und Video-Spuren sich in der Laenge um mehr als ${LDIFF} unterscheiden
 
         if [ ! -s ${2}_videospur.${CONTAINER} ] ; then
-                echo "# - 416: FILM_LAUFZEIT
+                echo "# - 424: FILM_LAUFZEIT
                 Die VideoSpur '${2}_videospur.${CONTAINER}' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -424,14 +432,14 @@ FILM_LAUFZEIT()
         VIDEOLAENGE=""
         VIDEOLAENGE="$(mediainfo --BOM ${2}_videospur.${CONTAINER} | sed -ne '/^Video/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
         if [ -z "${VIDEOLAENGE}" ] ; then
-                echo "# - 427: FILM_LAUFZEIT
+                echo "# - 435: FILM_LAUFZEIT
                 VIDEOLAENGE='${VIDEOLAENGE}' von '${2}_videospur.${CONTAINER}' konnte nicht emittelt werden
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                 exit 1
         fi
         VL="$(MEDIAINFO_DURATION ${VIDEOLAENGE})"
 
-        echo "# - 434: FILM_LAUFZEIT
+        echo "# - 442: FILM_LAUFZEIT
         MEDIAINFO_DURATION ${VIDEOLAENGE}
         VL='${VL}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -440,12 +448,12 @@ FILM_LAUFZEIT()
         do
                 AL="$(cat ${2}_audiospur_${i}.txt)"
 
-                echo "# - 443: FILM_LAUFZEIT
+                echo "# - 451: FILM_LAUFZEIT
                 Spurlaengen: Video='${VL}' Audio_${i}='${AL}'
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
                 if [ -z "${AL}" ] ; then
-                        echo "# - 448: FILM_LAUFZEIT
+                        echo "# - 456: FILM_LAUFZEIT
                         Tonspur '${i}' konnte nicht gefunden werden...
                         ABBRUCH" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         exit 1
@@ -459,7 +467,7 @@ FILM_LAUFZEIT()
                         DIFFP="$(echo "${VL} ${AL}" | awk '{print (($2*100)/$1)-100}' | sed 's/-//')"
                         AUSGLEICHEN="$(echo "${DIFFP} ${LDIFF}" | awk '{AUSGLEICHEN="NEIN"; if ($1 > $2) AUSGLEICHEN="JA"; print AUSGLEICHEN}')"
 
-                        echo "# - 462: FILM_TRANS_AVC
+                        echo "# - 470: FILM_TRANS_AVC
                         ### automatische Laengenanpassung aktiviert
                         DIFFP='${DIFFP}'
                         AUSGLEICHEN='${AUSGLEICHEN}' durch soundstretch
@@ -467,7 +475,7 @@ FILM_LAUFZEIT()
 
                         ### wenn Audio- und Videospur unterschiedlich lang sind, wird das korrigiert
                         if [ "${AUSGLEICHEN}" = "JA" -a "${VL}" != "0" -a "${AL}" != "0" ] ; then
-                                echo "# - 470: FILM_TRANS_AVC
+                                echo "# - 478: FILM_TRANS_AVC
                                 # wenn Audio- und Videospur unterschiedlich lang sind, wird die Audiospur angepasst
                                 mv ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_original.wav
                                 soundstretch ${2}_audiospur_${i}_original.wav ${2}_audiospur_${i}.wav -tempo=${DIFFP}
@@ -493,41 +501,16 @@ FILM_MKV()
 
         for i in $(echo "${SOLLAUDIOSPURNR}" | sed 's/[,]/ /g')
         do
+                echo "# - 504: FILM_MKV
+                ### keine automatische Laengenanpassung durch MKV
+                ### Audiostartzeitpunkt um ${DELAYTRANSTON}ms verschieben
+                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-#                if [ "${MKVSYNC}" = "JA" ] ; then
-#                        ### Laufzeit der Spuren ermitteln
-#                        # eine Asynchronitaet wird ausgeglichen,
-#                        # wenn die beiden Spuren sich in der Laenge um mehr als ${LDIFF} unterscheiden
-#                        AL="$(mplayer ${2}_audiospur -vo null -ao null -identify -frames 0 -nocache 2>/dev/null | fgrep ID_LENGTH | awk -F'=' '{print $2/1}')"
-#                        DIFFP="$(echo "${VL} ${AL}" | awk '{print (($2*100)/$1)-100}' | sed 's/-//')"
-#                        AUSGLEICHEN="$(echo "${DIFFP} ${LDIFF}" | awk '{AUSGLEICHEN="NEIN"; if ($1 > $2) AUSGLEICHEN="JA"; print AUSGLEICHEN}')"
-#
-#                        echo "# - 505: FILM_MKV
-#                        ### automatische Laengenanpassung durch MKV aktiviert
-#                        ### Audiostartzeitpunkt um ${DELAYTRANSTON}ms verschieben
-#                        Spurlaengen: Video='${VL}' Audio='${AL}'
-#
-#                        DIFFP='${DIFFP}'
-#                        AUSGLEICHEN='${AUSGLEICHEN}' durch mkvmerge
-#                        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-#
-#                        ### wenn Audio- und Videospur unterschiedlich lang sind, wird das korrigiert
-#                        if [ "${AUSGLEICHEN}" = "JA" -a "${VL}" != "0" -a "${AL}" != "0" ] ; then
-#                                YAS="-y ${ATRACKID}:${DELAYTRANSTON},${VL}/${AL}"
-#                        fi
-#                else
-                        echo "# - 519: FILM_MKV
-                        ### keine automatische Laengenanpassung durch MKV
-                        ### Audiostartzeitpunkt um ${DELAYTRANSTON}ms verschieben
-                        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
-                        TTON="${TTON} -D -y ${ATRACKID}:${DELAYTRANSTON} --compression ${ATRACKID}:none ${2}_audiospur_${i}"
-#                fi
-
+                TTON="${TTON} -D -y ${ATRACKID}:${DELAYTRANSTON} --compression ${ATRACKID}:none ${2}_audiospur_${i}"
         done
 
         if [ -n "${DELAYVIDEO}" ] ; then
-                echo "# - 530: FILM_MKV
+                echo "# - 513: FILM_MKV
                 ### Videostartzeitpunkt um ${DELAYVIDEO}ms verschieben
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                 YVS="-y ${VTRACKID}:${DELAYVIDEO}"
@@ -540,7 +523,7 @@ FILM_MKV()
         # dann auch die Originaltonspur mit uebernehmen
 
 #        if [ "${OTON}" = "JA" ] ; then
-#                echo "# - 543: FILM_MKV
+#                echo "# - 526: FILM_MKV
 #                ### Originaltonspur soll auch mit rein
 #                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 #                TSID="mkvmerge -i ${ORIGINAL} | fgrep 'Track ID ' | fgrep ' audio ' | awk '{gsub(":","");print $3}' | head -n${TSN} | tail -n1"
@@ -566,7 +549,7 @@ FILM_MKV()
         MKVASPECT="--aspect-ratio 0:${ASPECT}"
 
         KLAR="NEIN"
-        echo "# - 569: FILM_MKV
+        echo "# - 552: FILM_MKV
 	mkvmerge --list-languages
 	mkvmerge -l
         mkvmerge --default-language ger --language ${VTRACKID}:ger --language ${ATRACKID}:ger ${MKVASPECT} -o ${2}_.${CONTAINER} -A ${YVS} --compression ${VTRACKID}:none ${2}_videospur.${CONTAINER} ${TTON} && KLAR=JA
@@ -582,12 +565,12 @@ FILM_MKV()
         if [ "${KLAR}" = "JA" ] ; then
             mv -v ${2}_.${CONTAINER} ${2}.${CONTAINER} | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-            echo "# - 585: FILM_MKV
+            echo "# - 568: FILM_MKV
             rm -fv ${2}_audiospur_original.wav ${2}_audiospur.wav ${2}_audiospur ${2}_videospur.${CONTAINER} ${2}_async.${CONTAINER}
             " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
             rm -fv ${2}_audiospur_original.wav ${2}_audiospur.wav ${2}_audiospur ${2}_videospur.${CONTAINER} ${2}_async.${CONTAINER}
         else
-            echo "# - 590: FILM_MKV
+            echo "# - 573: FILM_MKV
             Leider ist beim zusammenfuehren von Audio- und Video-Spur ein Fehler aufgetreten...
             ABBRUCH!
             " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -607,13 +590,13 @@ AVC_MAKROBLOECKE()
 
         # ${0} "Bildbreite" "Bildhoehe"
 
-        echo "# - 610: Beginn AVC_MAKROBLOECKE" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 593: Beginn AVC_MAKROBLOECKE" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
         #----------------------------------------------------------------------#
 
         echo "${1} ${2}" | awk '{printf "%f %.0f %f %.0f\n",$1/16,$1/16,$2/16,$2/16}' | awk '{if ($1 > $2) $2 = $2+1 ; if ($3 > $4) $4 = $4+1 ; print $2,$4}' | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
         #----------------------------------------------------------------------#
-        echo "# - 616: Ende AVC_MAKROBLOECKE" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 599: Ende AVC_MAKROBLOECKE" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 }
 
 
@@ -624,7 +607,7 @@ AVC_LEVEL()
 
         # ${0} "Bildbreite in Makobloecke" "Bildhoehe in Makobloecke" "Bilder pro Sekunde"
 
-        echo "# - 627: Beginn AVC_LEVEL" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 610: Beginn AVC_LEVEL" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
         #----------------------------------------------------------------------#
 
         ### frame MB size
@@ -644,7 +627,7 @@ AVC_LEVEL()
         #----------------------------------------------------------------------#
 
         echo "${AVCLEVEL}" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-        echo "# - 647: Ende AVC_LEVEL" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 630: Ende AVC_LEVEL" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 }
 
 
@@ -657,13 +640,13 @@ QUADRATPIXELBERECHNUNG()
         #  4/3: QUADRATPIXELBERECHNUNG 277  4  3
         # 16/9: QUADRATPIXELBERECHNUNG  40 32 18
 
-        echo "# - 660: Beginn QUADRATPIXELBERECHNUNG" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 643: Beginn QUADRATPIXELBERECHNUNG" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
         #------------------------------------------------------------------------------#
 
         echo "${1} ${2} ${3}" | awk '{print $1*$2" "$1*$3}'
 
         #------------------------------------------------------------------------------#
-        echo "# - 666: Ende QUADRATPIXELBERECHNUNG" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 649: Ende QUADRATPIXELBERECHNUNG" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 }
 
 
@@ -675,7 +658,7 @@ BLURAY_PARAMETER()
 
         FNKLEVEL="${1}"
 
-        echo "# - 678: Beginn BLURAY_PARAMETER" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 661: Beginn BLURAY_PARAMETER" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
         #----------------------------------------------------------------------#
         ### Blu-ray-kompatible Parameter ermitteln
 
@@ -684,7 +667,7 @@ BLURAY_PARAMETER()
         BHVERH="$(echo "${MBREITE} ${MHOEHE} ${MaxFS}" | awk -v verhaeltnis="gut" '{if ($1 > (sqrt($3 * 8))) verhaeltnis="schlecht" ; if ($2 > (sqrt($3 * 8))) verhaeltnis="schlecht" ; print verhaeltnis}')"
                 
         if [ "${BHVERH}" != "gut" ] ; then
-                echo "# - 687: BLURAY_PARAMETER
+                echo "# - 670: BLURAY_PARAMETER
                 Seitenverhaeltnis wird von AVC nicht unterstuetzt!
                 ABBRUCH
                 "
@@ -757,7 +740,7 @@ BLURAY_PARAMETER()
                 CRF="20"
         fi
 
-        echo "# - 760: BLURAY_PARAMETER
+        echo "# - 743: BLURAY_PARAMETER
         BLURAY_PARAMETER
         BHVERH='${BHVERH}'
         BIAF420='${BIAF420}'
@@ -772,7 +755,7 @@ BLURAY_PARAMETER()
         CRF='${CRF}'
         MREFF='${MREFF}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-        echo "# - 775: Ende BLURAY_PARAMETER" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        echo "# - 758: Ende BLURAY_PARAMETER" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 }
 
 
