@@ -57,11 +57,6 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         CROPVIDEODispl='${CROPVIDEODispl}'
         CROPVIDEODisBr='${CROPVIDEODisBr}'
 
-        AUTOVIDEOBREIT='${AUTOVIDEOBREIT}'
-        AUTOVIDEO_HOCH='${AUTOVIDEO_HOCH}'
-        AUTOVIDEODispl='${AUTOVIDEODispl}'
-        AUTOVIDEODisBr='${AUTOVIDEODisBr}'
-
         ZVIDEOBREIT='${QUADVIDEOBREIT}'
         ZVIDEO_HOCH='${QUADVIDEO_HOCH}'
         ZVIDEODispl='${QUADVIDEODispl}'
@@ -129,7 +124,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        echo "# - 132: standardformat
+        echo "# - 127: standardformat
         F3MIN='${F3MIN}'
         F3MAX='${F3MAX}'
         F4MIN='${F4MIN}'
@@ -198,7 +193,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        echo "# - 201: standardformat
+        echo "# - 196: standardformat
         ZVIDEOBREIT='${ZVIDEOBREIT}'
         ZVIDEO_HOCH='${ZVIDEO_HOCH}'
         ZVIDEODispl='${ZVIDEODispl}'
@@ -223,7 +218,7 @@ ${BHVE16}
         STDVIDEODisBr="$(echo "${STDBILD_F}" | awk '{print $4}')"
         STDVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${STDVIDEODisBr})"
 
-        echo "# - 226: standardformat
+        echo "# - 221: standardformat
         BHVE3='${BHVE3}'
         BHVE4='${BHVE4}'
         BHVE9='${BHVE9}'
@@ -283,7 +278,7 @@ ${BHVE16}
 
                         SCHWARZ_HOCH="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print ($1 * $2 / $3) - $1}' | awk '{printf "%.0f", ($1 - $2)/2}' | awk '{print $1 * 2}')"
 
-                        echo "# - 286: Standardformat
+                        echo "# - 281: Standardformat
                         ISTVIDEOBREIT='${ISTVIDEOBREIT}'
                         ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
                         SCHWARZBREIT='${SCHWARZBREIT}'
@@ -298,7 +293,7 @@ ${BHVE16}
                                 VIRTUELL_HOCH="0"
                                 SCHWARZ_HOCH="0"
 
-                                echo "# - 301: Standardformat
+                                echo "# - 296: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -318,7 +313,7 @@ ${BHVE16}
                                 VIRTUELL_BREIT="0"
                                 SCHWARZBREIT="0"
 
-                                echo "# - 321: Standardformat
+                                echo "# - 316: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -347,7 +342,7 @@ ${BHVE16}
 
 fi
 
-echo "# - 350 Ende: Standardformat
+echo "# - 345 Ende: Standardformat
 ZVIDEOBREIT='${ZVIDEOBREIT}'
 ZVIDEO_HOCH='${ZVIDEO_HOCH}'
 
