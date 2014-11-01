@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014102000"
+VERSION="v2014110100"
 
 
 echo "
@@ -47,8 +47,10 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
         echo "# - 49: standardformat - Eingangswerte
-        CROPVIDEOBREIT='${CROPVIDEOBREIT}'
-        CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+        STDVIDEOBREIT='${STDVIDEOBREIT}'
+        STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+        STDVIDEODispl='${STDVIDEODispl}'
+        STDVIDEODisBr='${STDVIDEODisBr}'
 
         SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
         SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
@@ -61,49 +63,49 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        F3MIN="$(echo   "${CROPVIDEOBREIT}" | awk '{printf "%.0f\n", ($1*3/4)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F3MAX="$(echo   "${CROPVIDEOBREIT}" | awk '{printf "%.0f\n", ((1+$1)*3/4)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F4MIN="$(echo   "${CROPVIDEO_HOCH}" | awk '{printf "%.0f\n", ($1*4/3)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F4MAX="$(echo   "${CROPVIDEO_HOCH}" | awk '{printf "%.0f\n", ((1+$1)*4/3)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F9MIN="$(echo   "${CROPVIDEOBREIT}" | awk '{printf "%.0f\n", ($1*9/16)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F9MAX="$(echo   "${CROPVIDEOBREIT}" | awk '{printf "%.0f\n", ((1+$1)*9/16)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F16MIN="$(echo  "${CROPVIDEO_HOCH}" | awk '{printf "%.0f\n", ($1*16/9)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
-        F16MAX="$(echo  "${CROPVIDEO_HOCH}" | awk '{printf "%.0f\n", ((1+$1)*16/9)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F3MIN="$(echo   "${STDVIDEOBREIT}" | awk '{printf "%.0f\n", ($1*3/4)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F3MAX="$(echo   "${STDVIDEOBREIT}" | awk '{printf "%.0f\n", ((1+$1)*3/4)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F4MIN="$(echo   "${STDVIDEO_HOCH}" | awk '{printf "%.0f\n", ($1*4/3)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F4MAX="$(echo   "${STDVIDEO_HOCH}" | awk '{printf "%.0f\n", ((1+$1)*4/3)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F9MIN="$(echo   "${STDVIDEOBREIT}" | awk '{printf "%.0f\n", ($1*9/16)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F9MAX="$(echo   "${STDVIDEOBREIT}" | awk '{printf "%.0f\n", ((1+$1)*9/16)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F16MIN="$(echo  "${STDVIDEO_HOCH}" | awk '{printf "%.0f\n", ($1*16/9)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
+        F16MAX="$(echo  "${STDVIDEO_HOCH}" | awk '{printf "%.0f\n", ((1+$1)*16/9)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
 
-        #FHOEHE3MIN="$(echo "133333333 ${CROPVIDEOBREIT} ${F3MIN}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
-        FHOEHE3MIN="$(echo "133333333 ${CROPVIDEOBREIT} ${F3MIN}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FHOEHE3MAX="$(echo "133333333 ${CROPVIDEOBREIT} ${F3MAX}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
-        FHOEHE3MAX="$(echo "133333333 ${CROPVIDEOBREIT} ${F3MAX}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
+        #FHOEHE3MIN="$(echo "133333333 ${STDVIDEOBREIT} ${F3MIN}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
+        FHOEHE3MIN="$(echo "133333333 ${STDVIDEOBREIT} ${F3MIN}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
+        #FHOEHE3MAX="$(echo "133333333 ${STDVIDEOBREIT} ${F3MAX}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
+        FHOEHE3MAX="$(echo "133333333 ${STDVIDEOBREIT} ${F3MAX}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FHOEHE3MIN}" -le "${FHOEHE3MAX}" ] ; then
                 FHOEHE3="${F3MIN}"
         else
                 FHOEHE3="${F3MAX}"
         fi
 
-        #FBREIT4MIN="$(echo "133333333 ${F4MIN} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
-        FBREIT4MIN="$(echo "133333333 ${F4MIN} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FBREIT4MAX="$(echo "133333333 ${F4MAX} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
-        FBREIT4MAX="$(echo "133333333 ${F4MAX} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
+        #FBREIT4MIN="$(echo "133333333 ${F4MIN} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
+        FBREIT4MIN="$(echo "133333333 ${F4MIN} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
+        #FBREIT4MAX="$(echo "133333333 ${F4MAX} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
+        FBREIT4MAX="$(echo "133333333 ${F4MAX} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FBREIT4MIN}" -le "${FBREIT4MAX}" ] ; then
                 FBREIT4="${F4MIN}"
         else
                 FBREIT4="${F4MAX}"
         fi
 
-        #FHOEHE9MIN="$(echo "177777778 ${CROPVIDEOBREIT} ${F9MIN}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
-        FHOEHE9MIN="$(echo "177777778 ${CROPVIDEOBREIT} ${F9MIN}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FHOEHE9MAX="$(echo "177777778 ${CROPVIDEOBREIT} ${F9MAX}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
-        FHOEHE9MAX="$(echo "177777778 ${CROPVIDEOBREIT} ${F9MAX}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
+        #FHOEHE9MIN="$(echo "177777778 ${STDVIDEOBREIT} ${F9MIN}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
+        FHOEHE9MIN="$(echo "177777778 ${STDVIDEOBREIT} ${F9MIN}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
+        #FHOEHE9MAX="$(echo "177777778 ${STDVIDEOBREIT} ${F9MAX}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
+        FHOEHE9MAX="$(echo "177777778 ${STDVIDEOBREIT} ${F9MAX}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FHOEHE9MIN}" -le "${FHOEHE9MAX}" ] ; then
                 FHOEHE9="${F9MIN}"
         else
                 FHOEHE9="${F9MAX}"
         fi
 
-        #FBREIT16MIN="$(echo "177777778 ${F16MIN} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
-        FBREIT16MIN="$(echo "177777778 ${F16MIN} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FBREIT16MAX="$(echo "177777778 ${F16MAX} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
-        FBREIT16MAX="$(echo "177777778 ${F16MAX} ${CROPVIDEO_HOCH}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
+        #FBREIT16MIN="$(echo "177777778 ${F16MIN} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
+        FBREIT16MIN="$(echo "177777778 ${F16MIN} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
+        #FBREIT16MAX="$(echo "177777778 ${F16MAX} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
+        FBREIT16MAX="$(echo "177777778 ${F16MAX} ${STDVIDEO_HOCH}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FBREIT16MIN}" -le "${FBREIT16MAX}" ] ; then
                 FBREIT16="${F16MIN}"
         else
@@ -112,7 +114,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        echo "# - 115: standardformat
+        echo "# - 117: standardformat
         F3MIN='${F3MIN}'
         F3MAX='${F3MAX}'
         F4MIN='${F4MIN}'
@@ -143,6 +145,16 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         ISTVIDEODisBr='${ISTVIDEODisBr}'
         ISTVIDEODispl='${ISTVIDEODispl}'
 
+        STDVIDEOBREIT='${STDVIDEOBREIT}'
+        STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+        STDVIDEOPixBr='${STDVIDEOPixBr}'
+        STDVIDEOPixel='${STDVIDEOPixel}'
+
+        AUTOVIDEOBREIT='${AUTOVIDEOBREIT}'
+        AUTOVIDEO_HOCH='${AUTOVIDEO_HOCH}'
+        AUTOVIDEOPixBr='${AUTOVIDEOPixBr}'
+        AUTOVIDEOPixel='${AUTOVIDEOPixel}'
+
         SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
         SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
         SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
@@ -154,24 +166,24 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        if [ "${FHOEHE3}" -ge "${CROPVIDEO_HOCH}" ] ; then
-                SUMM3="$(echo "${CROPVIDEOBREIT} ${FHOEHE3}" | awk '{printf "%.0f\n", $1*$2}')"
-                BHVE3="${SUMM3} ${CROPVIDEOBREIT} ${FHOEHE3} 4/3"
+        if [ "${FHOEHE3}" -ge "${STDVIDEO_HOCH}" ] ; then
+                SUMM3="$(echo "${STDVIDEOBREIT} ${FHOEHE3}" | awk '{printf "%.0f\n", $1*$2}')"
+                BHVE3="${SUMM3} ${STDVIDEOBREIT} ${FHOEHE3} 4/3"
         fi
 
-        if [ "${FBREIT4}" -ge "${CROPVIDEOBREIT}" ] ; then
-                SUMM4="$(echo "${FBREIT4} ${CROPVIDEO_HOCH}" | awk '{printf "%.0f\n", $1*$2}')"
-                BHVE4="${SUMM4} ${FBREIT4} ${CROPVIDEO_HOCH} 4/3"
+        if [ "${FBREIT4}" -ge "${STDVIDEOBREIT}" ] ; then
+                SUMM4="$(echo "${FBREIT4} ${STDVIDEO_HOCH}" | awk '{printf "%.0f\n", $1*$2}')"
+                BHVE4="${SUMM4} ${FBREIT4} ${STDVIDEO_HOCH} 4/3"
         fi
 
-        if [ "${FHOEHE9}" -ge "${CROPVIDEO_HOCH}" ] ; then
-                SUMM9="$(echo "${CROPVIDEOBREIT} ${FHOEHE9}" | awk '{printf "%.0f\n", $1*$2}')"
-                BHVE9="${SUMM9} ${CROPVIDEOBREIT} ${FHOEHE9} 16/9"
+        if [ "${FHOEHE9}" -ge "${STDVIDEO_HOCH}" ] ; then
+                SUMM9="$(echo "${STDVIDEOBREIT} ${FHOEHE9}" | awk '{printf "%.0f\n", $1*$2}')"
+                BHVE9="${SUMM9} ${STDVIDEOBREIT} ${FHOEHE9} 16/9"
         fi
 
-        if [ "${FBREIT16}" -ge "${CROPVIDEOBREIT}" ] ; then
-                SUMM16="$(echo "${FBREIT16} ${CROPVIDEO_HOCH}" | awk '{printf "%.0f\n", $1*$2}')"
-                BHVE16="${SUMM16} ${FBREIT16} ${CROPVIDEO_HOCH} 16/9"
+        if [ "${FBREIT16}" -ge "${STDVIDEOBREIT}" ] ; then
+                SUMM16="$(echo "${FBREIT16} ${STDVIDEO_HOCH}" | awk '{printf "%.0f\n", $1*$2}')"
+                BHVE16="${SUMM16} ${FBREIT16} ${STDVIDEO_HOCH} 16/9"
         fi
 
         #----------------------------------------------------------------------#
@@ -189,7 +201,7 @@ ${BHVE16}
         AUTOVIDEODisBr="$(echo "${AUTOBILD_F}" | awk '{print $4}')"
         AUTOVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${AUTOVIDEODisBr})"
 
-        echo "# - 192: standardformat
+        echo "# - 204: standardformat
         BHVE3='${BHVE3}'
         BHVE4='${BHVE4}'
         BHVE9='${BHVE9}'
@@ -207,20 +219,20 @@ ${BHVE16}
         #======================================================================#
         ### Bildaufloesung bei AUTOFORMAT anpassen
 
-        if [ "${CROPVIDEOBREIT}" != "${AUTOBILDBREITE}" ] ; then
+        if [ "${STDVIDEOBREIT}" != "${AUTOBILDBREITE}" ] ; then
                 PADDING="Ja"
         fi
 
-        SCHWARZBREIT="$(echo "${AUTOBILDBREITE} ${CROPVIDEOBREIT}" | awk '{print $1 - $2}')"
+        SCHWARZBREIT="$(echo "${AUTOBILDBREITE} ${STDVIDEOBREIT}" | awk '{print $1 - $2}')"
         SCHWARZ_LINKS="$(echo "${SCHWARZBREIT}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
         SCHWARZRECHTS="$(echo "${SCHWARZBREIT} ${SCHWARZ_LINKS}" | awk '{print $1 - $2}')"
         #----------------------------------------------------------------------#
 
-        if [ "${CROPVIDEO_HOCH}" != "${AUTOBILD_HOEHE}" ] ; then
+        if [ "${STDVIDEO_HOCH}" != "${AUTOBILD_HOEHE}" ] ; then
                 PADDING="Ja"
         fi
 
-        SCHWARZ_HOCH="$(echo "${AUTOBILD_HOEHE} ${CROPVIDEO_HOCH}" | awk '{print $1 - $2}')"
+        SCHWARZ_HOCH="$(echo "${AUTOBILD_HOEHE} ${STDVIDEO_HOCH}" | awk '{print $1 - $2}')"
         SCHWARZ_OBEN="$(echo "${SCHWARZ_HOCH}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
         SCHWARZUNTEN="$(echo "${SCHWARZ_HOCH} ${SCHWARZ_OBEN}" | awk '{print $1 - $2}')"
         #----------------------------------------------------------------------#
@@ -246,18 +258,26 @@ ${BHVE16}
                 if [ "${ISTVIDEODisBr}" != "${AUTOVIDEODisBr}" ] ; then
                         PADDING="Ja"
 
-                        VIRTUELL_BREIT="$(echo "${ISTVIDEOBREIT} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print $1 * $2 / $3}')"
-                        SCHWARZBREIT="$(echo "${VIRTUELL_BREIT} ${ISTVIDEODisBr} ${AUTOVIDEODisBr}" | sed 's#/# #g' | awk '{print ($1 * $3 * $4 / $2 / $5) - $1}' | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
+                        SCHWARZBREIT="$(echo "${ISTVIDEOBREIT} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print ($1 * $3 / $2) - $1}' | awk '{printf "%.0f", ($1 - $2)/2}' | awk '{print $1 * 2}')"
 
-                        VIRTUELL_HOCH="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print $1 * $3 / $2}')"
-                        SCHWARZ_HOCH="$(echo "${VIRTUELL_HOCH} ${ISTVIDEODisBr} ${AUTOVIDEODisBr}" | sed 's#/# #g' | awk '{print ($1 * $2 * $5 / $3 / $4) - $1}' | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
+                        SCHWARZ_HOCH="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print ($1 * $2 / $3) - $1}' | awk '{printf "%.0f", ($1 - $2)/2}' | awk '{print $1 * 2}')"
+
+                        echo "# - 265: Standardformat
+                        ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+                        ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+                        SCHWARZBREIT='${SCHWARZBREIT}'
+                        SCHWARZ_HOCH='${SCHWARZ_HOCH}'
+                        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
                         if [ "${SCHWARZBREIT}" -gt "${SCHWARZ_HOCH}" ] ; then
                                 SCHWARZ_LINKS="$(echo "${SCHWARZBREIT}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
                                 SCHWARZRECHTS="$(echo "${SCHWARZBREIT} ${SCHWARZ_LINKS}" | awk '{print $1 - $2}')"
+                                AUTOBILDBREITE="$(echo "${AUTOBILDBREITE} ${SCHWARZBREIT}" | awk '{print $1 + $2}')"
+
                                 VIRTUELL_HOCH="0"
                                 SCHWARZ_HOCH="0"
-                                echo "# - 260: Standardformat
+
+                                echo "# - 280: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -265,13 +285,19 @@ ${BHVE16}
                                 SCHWARZ_HOCH='${SCHWARZ_HOCH}'
                                 SCHWARZ_OBEN='${SCHWARZ_OBEN}'
                                 SCHWARZUNTEN='${SCHWARZUNTEN}'
+
+                                AUTOBILDBREITE='${AUTOBILDBREITE}'
+                                AUTOBILD_HOEHE='${AUTOBILD_HOEHE}'
                                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         else
                                 SCHWARZ_OBEN="$(echo "${SCHWARZ_HOCH}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
                                 SCHWARZUNTEN="$(echo "${SCHWARZ_HOCH} ${SCHWARZ_OBEN}" | awk '{print $1 - $2}')"
+                                AUTOBILD_HOEHE="$(echo "${AUTOBILD_HOEHE} ${SCHWARZ_HOCH}" | awk '{print $1 + $2}')"
+
                                 VIRTUELL_BREIT="0"
                                 SCHWARZBREIT="0"
-                                echo "# - 274: Standardformat
+
+                                echo "# - 300: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -279,6 +305,9 @@ ${BHVE16}
                                 SCHWARZ_HOCH='${SCHWARZ_HOCH}'
                                 SCHWARZ_OBEN='${SCHWARZ_OBEN}'
                                 SCHWARZUNTEN='${SCHWARZUNTEN}'
+
+                                AUTOBILDBREITE='${AUTOBILDBREITE}'
+                                AUTOBILD_HOEHE='${AUTOBILD_HOEHE}'
                                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         fi
                 fi
@@ -291,11 +320,26 @@ ${BHVE16}
                 PAD_OPTION=",pad=${AUTOBILDBREITE}:${AUTOBILD_HOEHE}:${SCHWARZ_LINKS}:${SCHWARZ_OBEN}"
         fi
 
+        #----------------------------------------------------------------------#
+
+        STDBILDBREITE="${AUTOBILDBREITE}"
+        STDBILD_HOEHE="${AUTOBILD_HOEHE}"
+        STDVIDEODispl="${AUTOVIDEODispl}"
+        STDVIDEODisBr="${AUTOVIDEODisBr}"
+
 #==============================================================================#
 
 fi
 
-echo "# - 298 Ende: Standardformat
+echo "# - 334 Ende: Standardformat
+CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+
+QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
+QUADVIDEODispl='${QUADVIDEODispl}'
+QUADVIDEODisBr='${QUADVIDEODisBr}'
+
 BHVE3='${BHVE3}'
 BHVE4='${BHVE4}'
 BHVE9='${BHVE9}'
@@ -316,6 +360,11 @@ AUTOBILDBREITE='${AUTOBILDBREITE}'
 AUTOBILD_HOEHE='${AUTOBILD_HOEHE}'
 AUTOVIDEODispl='${AUTOVIDEODispl}'
 AUTOVIDEODisBr='${AUTOVIDEODisBr}'
+
+STDVIDEOBREIT='${STDVIDEOBREIT}'
+STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+STDVIDEODispl='${STDVIDEODispl}'
+STDVIDEODisBr='${STDVIDEODisBr}'
 
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
