@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014081700"
+VERSION="v2014110100"
 
 
 echo "
@@ -21,9 +21,23 @@ else
 fi
 
 #------------------------------------------------------------------------------#
+### Standard-Pixel-Format festlegen
+
+if [ -z "${SOLLVIDEOPixBr}" ] ; then
+        if [ -z "${SOLLVIDEOPixel}" ] ; then
+                if [ -z "${SOLLVIDEODisBr}" ] ; then
+                        if [ -z "${SOLLVIDEODispl}" ] ; then
+                                SOLLVIDEOPixBr="1/1"
+                                SOLLVIDEOPixel="1"
+                        fi
+                fi
+        fi
+fi
+
+#------------------------------------------------------------------------------#
 ### nur für die CROP-Tests
 
-if [ "${CROPTEST}" == "JA" ] ; then
+if [ "${CROPTEST}" = "JA" ] ; then
         PPROFIL="dx50"
 
         if [ -z "${SCHNITTZEITEN}" ] ; then
