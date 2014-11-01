@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014071600"
+VERSION="v2014110100"
 
 
 echo "
@@ -41,16 +41,17 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
 
+        STDVIDEOBREIT='${STDVIDEOBREIT}'
+        STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+        STDVIDEODispl='${STDVIDEODispl}'
+        STDVIDEODisBr='${STDVIDEODisBr}'
+
         CROPVIDEOBREIT='${CROPVIDEOBREIT}'
         CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
         CROPVIDEOPixel='${CROPVIDEOPixel}'
         CROPVIDEOPixBr='${CROPVIDEOPixBr}'
         CROPVIDEODispl='${CROPVIDEODispl}'
         CROPVIDEODisBr='${CROPVIDEODisBr}'
-
-        AUTOBILDBREITE='${AUTOBILDBREITE}'
-        AUTOBILD_HOEHE='${AUTOBILD_HOEHE}'
-        AUTOBILDFORMAT='${AUTOBILDFORMAT}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
         #----------------------------------------------------------------------#
@@ -59,18 +60,12 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         if [ -n "${CROPVIDEOBREIT}" ] ; then
                 STDVIDEOBREIT="${CROPVIDEOBREIT}"
         fi
-        if [ -n "${AUTOBILDBREITE}" ] ; then
-                STDVIDEOBREIT="${AUTOBILDBREITE}"
-        fi
         if [ -z "${STDVIDEOBREIT}" ] ; then
                 STDVIDEOBREIT="${ISTVIDEOBREIT}"
         fi
 
         if [ -n "${CROPVIDEO_HOCH}" ] ; then
                 STDVIDEO_HOCH="${CROPVIDEO_HOCH}"
-        fi
-        if [ -n "${AUTOBILD_HOEHE}" ] ; then
-                STDVIDEO_HOCH="${AUTOBILD_HOEHE}"
         fi
         if [ -z "${STDVIDEO_HOCH}" ] ; then
                 STDVIDEO_HOCH="${ISTVIDEO_HOCH}"
@@ -79,14 +74,11 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         if [ -n "${CROPVIDEODisBr}" ] ; then
                 STDVIDEODisBr="${CROPVIDEODisBr}"
         fi
-        if [ -n "${AUTOBILDFORMAT}" ] ; then
-                STDVIDEODisBr="${AUTOBILDFORMAT}"
-        fi
         if [ -z "${STDVIDEODisBr}" ] ; then
                 STDVIDEODisBr="${ISTVIDEODisBr}"
         fi
 
-        echo "# - 89: quadratische Bildpunkte
+        echo "# - 81: quadratische Bildpunkte
         STDVIDEOBREIT='${STDVIDEOBREIT}'
         STDVIDEO_HOCH='${STDVIDEO_HOCH}'
         STDVIDEODisBr='${STDVIDEODisBr}'
@@ -107,7 +99,7 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        echo "# - 110: quadratische Bildpunkte
+        echo "# - 102: quadratische Bildpunkte
         ISTVIDEODisBr='${ISTVIDEODisBr}'
         STDVIDEODisBr='${STDVIDEODisBr}'
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
@@ -126,14 +118,14 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         HMAKROFAKTOR="$(echo "${QUADVIDEO_HOCH} ${FHOCH}" | awk '{printf "%.0f\n", $1/$2}')"
 
         if [ "${BMAKROFAKTOR}" -lt "1" ] ; then
-                echo "# - 129: quadratische Bildpunkte
+                echo "# - 121: quadratische Bildpunkte
                 BMAKROFAKTOR='${BMAKROFAKTOR}' -> BMAKROFAKTOR=1
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                 BMAKROFAKTOR=1
         fi
 
         if [ "${HMAKROFAKTOR}" -lt "1" ] ; then
-                echo "# - 136: quadratische Bildpunkte
+                echo "# - 128: quadratische Bildpunkte
                 HMAKROFAKTOR='${HMAKROFAKTOR}' -> HMAKROFAKTOR=1
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                 HMAKROFAKTOR=1
@@ -145,7 +137,7 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
                 BILDVIDEOFAKTOR="${HMAKROFAKTOR}"
         fi
 
-        echo "# - 148: quadratische Bildpunkte
+        echo "# - 140: quadratische Bildpunkte
         STDVIDEOBREIT='${STDVIDEOBREIT}'
         STDVIDEO_HOCH='${STDVIDEO_HOCH}'
         STDVIDEODisBr='${STDVIDEODisBr}'
@@ -167,21 +159,21 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         #------------------------------------------------------------------------------#
         
         QUADRATPIXELAUFLOESUNG="$(QUADRATPIXELBERECHNUNG ${BILDVIDEOFAKTOR} ${FBREIT} ${FHOCH})"
-        echo "# - 170: quadratische Bildpunkte
+        echo "# - 162: quadratische Bildpunkte
         QUADRATPIXELAUFLOESUNG='${QUADRATPIXELAUFLOESUNG}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
         AVCMAKROBLOCK="$(AVC_MAKROBLOECKE ${QUADRATPIXELAUFLOESUNG})"
-        echo "# - 175: quadratische Bildpunkte
+        echo "# - 167: quadratische Bildpunkte
         AVCMAKROBLOCK='${AVCMAKROBLOCK}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
         QUADAVCLEVEL="$(AVC_LEVEL ${AVCMAKROBLOCK} ${SOLLVIDEOBilPS})"
-        echo "# - 180: quadratische Bildpunkte
+        echo "# - 172: quadratische Bildpunkte
         QUADAVCLEVEL='${QUADAVCLEVEL}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        echo "# - 184: quadratische Bildpunkte
+        echo "# - 176: quadratische Bildpunkte
         QUADESFORMAT='${QUADESFORMAT}'
         QUADVIDEOBREIT='${QUADVIDEOBREIT}'
         QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
@@ -190,7 +182,7 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         AVCMAKROBLOCK='${AVCMAKROBLOCK}'
         SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
 
-        while: '${QUADAVCLEVEL}' -gt '${ISTAVCLEVEL}'
+        # - 185: while '${QUADAVCLEVEL}' -gt '${ISTAVCLEVEL}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
         #------------------------------------------------------------------------------#
@@ -204,25 +196,25 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
                 fi
 
                 QUADRATPIXELAUFLOESUNG="$(QUADRATPIXELBERECHNUNG ${BILDVIDEOFAKTOR} ${FBREIT} ${FHOCH})"
-                echo "# - 207: quadratische Bildpunkte
+                echo "# - 199: quadratische Bildpunkte
                 QUADRATPIXELBERECHNUNG ${BILDVIDEOFAKTOR} ${FBREIT} ${FHOCH}
                 QUADRATPIXELAUFLOESUNG='${QUADRATPIXELAUFLOESUNG}'
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
                 AVCMAKROBLOCK="$(AVC_MAKROBLOECKE ${QUADRATPIXELAUFLOESUNG})"
-                echo "# - 213: quadratische Bildpunkte
+                echo "# - 205: quadratische Bildpunkte
                 AVC_MAKROBLOECKE ${QUADRATPIXELAUFLOESUNG}
                 AVCMAKROBLOCK='${AVCMAKROBLOCK}'
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
                 QUADAVCLEVEL="$(AVC_LEVEL ${AVCMAKROBLOCK} ${SOLLVIDEOBilPS})"
-                echo "# - 219: quadratische Bildpunkte
+                echo "# - 211: quadratische Bildpunkte
                 AVC_LEVEL ${AVCMAKROBLOCK} ${SOLLVIDEOBilPS}
                 QUADAVCLEVEL='${QUADAVCLEVEL}'
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
                 if [ "${QUADAVCLEVEL}" -lt "10" ] ; then
-                        echo "# - 225: quadratische Bildpunkte
+                        echo "# - 217: quadratische Bildpunkte
                         Fehler beim errechnen des AVC-Level's.
                         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
                         exit 1
@@ -231,7 +223,7 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
 
         BHVERH="$(echo "${SOLLMAKROBLOECKE}" | awk -v verhaeltnis="gut" '{if ($1 > (sqrt($1*$2 * 8))) verhaeltnis="schlecht" ; if ($2 > (sqrt($1*$2 * 8))) verhaeltnis="schlecht" ; print verhaeltnis}')"
         if [ "${BHVERH}" != "gut" ] ; then
-                echo "# - 234: quadratische Bildpunkte
+                echo "# - 226: quadratische Bildpunkte
                 Seitenverhaeltnis wird von AVC nicht unterstuetzt!
                 ABBRUCH
                 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -240,7 +232,7 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
 
         #------------------------------------------------------------------------------#
 
-        echo "# - 243: quadratische Bildpunkte
+        echo "# - 235: quadratische Bildpunkte
         QUADRATPIXELAUFLOESUNG='${QUADRATPIXELAUFLOESUNG}'
         QUADAVCLEVEL='${QUADAVCLEVEL}'
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
@@ -251,31 +243,29 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         QUADVIDEO_HOCH="$(echo "${QUADRATPIXELAUFLOESUNG}" | awk '{print $2}')"
         QUADVIDEODisBr="${STDVIDEODisBr}"
 
-        if [ -z "${SOLLVIDEOBREIT}" ] ; then
-                SOLLVIDEOBREIT="$(echo "${QUADRATPIXELAUFLOESUNG}" | awk '{print $1}')"
-        fi
-
-        if [ -z "${SOLLVIDEO_HOCH}" ] ; then
-                SOLLVIDEO_HOCH="$(echo "${QUADRATPIXELAUFLOESUNG}" | awk '{print $2}')"
-        fi
-
-        if [ -z "${SOLLVIDEODisBr}" ] ; then
-                SOLLVIDEODisBr="${STDVIDEODisBr}"
-        fi
-
-        SOLLVIDEOPixel="1"
-        SOLLVIDEOPixBr="1/1"
+        STDVIDEOBREIT="${QUADVIDEOBREIT}"
+        STDVIDEO_HOCH="${QUADVIDEO_HOCH}"
+        STDVIDEODispl="${QUADVIDEODispl}"
+        STDVIDEODisBr="${QUADVIDEODisBr}"
 fi
 
 #==============================================================================#
 
-echo "# - 272 Ende: quadratische Bildpunkte
+echo "# - 254 Ende: quadratische Bildpunkte
 STANDARDBILDFORMAT='${STANDARDBILDFORMAT}'
-QUADRATPIXELAUFLOESUNG='${QUADRATPIXELAUFLOESUNG}'
 
 QUADAVCLEVEL='${QUADAVCLEVEL}'
 ISTAVCLEVEL='${ISTAVCLEVEL}'
 SOLLAVCLEVEL='${SOLLAVCLEVEL}'
+
+QUADRATPIXELAUFLOESUNG='${QUADRATPIXELAUFLOESUNG}'
+QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
+QUADVIDEODisBr='${QUADVIDEODisBr}'
+
+STDVIDEOBREIT='${STDVIDEOBREIT}'
+STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+STDVIDEODisBr='${STDVIDEODisBr}'
 
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
