@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014012400"
+VERSION="v2014110100"
 
 
 echo "
@@ -28,54 +28,13 @@ CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
 AUTOVIDEOBREIT='${AUTOVIDEOBREIT}'
 AUTOVIDEO_HOCH='${AUTOVIDEO_HOCH}'
 
+STDVIDEOBREIT='${STDVIDEOBREIT}'
+STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-#------------------------------------------------------------------------------#
-#if [ -n "${SOLLVIDEOPixel}" ] ; then
-#        VIDEOPixelUMWANDLUNG ${SOLLVIDEOPixel}
-#        if [ -z "${SOLLVIDEOPixBr}" ] ; then
-#                SOLLVIDEOPixBr="${VIDEOPixelBruch}"
-#        fi
-#        SOLLVIDEOPixel="${VIDEOPixelFlies}"
-#fi
-#
-#echo "# - 44: Breit und Hoch
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-#
-#if [ -z "${SOLLVIDEOPixel}" ] ; then
-#        SOLLVIDEOPixel="${ISTVIDEOPixel}"
-#fi
-#
-#echo "# - 52: Breit und Hoch
-#ISTVIDEOPixel='${ISTVIDEOPixel}'
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-#
-#### wenn es ein Bruch ist, dann muss er verschoben und ausgerechnet werden
-#case "${SOLLVIDEOPixel}" in
-#        [0-9]*[:/][0-9]*)
-#                SOLLVIDEOPixBR="${SOLLVIDEOPixel}"
-#                SOLLVIDEOPixel="$(BRUCH_IN_FLIESSKOMMAZAHL ${SOLLVIDEOPixel})"
-#                ;;
-#esac
-#
-#echo "# - 65: Breit und Hoch
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-#
-#if [ -z "${SOLLVIDEOPixBr}" ] ; then
-#        SOLLVIDEOPixBr="$(FLIESSKOMMA_ZU_BRUCH ${SOLLVIDEOPixel})"
-#fi
-#
-#echo "# - 74: Breit und Hoch
-#SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-#SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
-#" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-#
 #------------------------------------------------------------------------------#
 ### Bild-Breite und Bild-Hoehe
 
