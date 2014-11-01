@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #set -x
-VERSION="v2014081700"
+VERSION="v2014110100"
 
 #------------------------------------------------------------------------------#
 ### Arbeitsweise
@@ -66,8 +66,8 @@ MEINVERZEICHNIS="$(dirname ${0})"
 . ${MEINVERZEICHNIS}/film_bearbeiten_eigenschaften_lesen                        # ist noch nicht fertig
 
 . ${MEINVERZEICHNIS}/film_bearbeiten_crop                                       # crop
-. ${MEINVERZEICHNIS}/film_bearbeiten_standardformat                             # AutoFormat => 4/3 oder 16/9
 . ${MEINVERZEICHNIS}/film_bearbeiten_quadratische_bildpunkte                    # QuadratischePixel => Blu-Ray-Format
+. ${MEINVERZEICHNIS}/film_bearbeiten_standardformat                             # AutoFormat => 4/3 oder 16/9
 
 . ${MEINVERZEICHNIS}/film_bearbeiten_breit_und_hoch                             # wenn noetig, die Breite bzw. Hoehe ermitteln
 . ${MEINVERZEICHNIS}/film_bearbeiten_bluray-kompatible_parameter_ermitteln      # Blu-Ray-Kode
