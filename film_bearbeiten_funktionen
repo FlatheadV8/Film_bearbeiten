@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110100"
+VERSION="v2014110200"
 
 
 echo "
@@ -603,7 +603,7 @@ AVC_MAKROBLOECKE()
 #------------------------------------------------------------------------------#
 AVC_LEVEL()
 {
-        VERSION="v2014011700"
+        VERSION="v2014110200"
 
         # ${0} "Bildbreite in Makobloecke" "Bildhoehe in Makobloecke" "Bilder pro Sekunde"
 
@@ -611,10 +611,10 @@ AVC_LEVEL()
         #----------------------------------------------------------------------#
 
         ### frame MB size
-        MLEVEL="$(echo "${1} ${2}" | awk '{fmbs=$1*$2 ; if (fmbs < 36865) LEVEL=51 ; if (fmbs < 22081) LEVEL=50 ; if (fmbs < 8193) LEVEL=42 ; if (fmbs < 5121) LEVEL=32 ; if (fmbs < 3601) LEVEL=31 ; if (fmbs < 1621) LEVEL=30 ; if (fmbs < 793) LEVEL=21 ; if (fmbs < 397) LEVEL=20 ; if (fmbs < 100) LEVEL=10 ; print LEVEL}')"
+        MLEVEL="$(echo "${1} ${2}" | awk '{fmbs=$1*$2 ; LEVEL=52 ; if (fmbs < 36865) LEVEL=51 ; if (fmbs < 22081) LEVEL=50 ; if (fmbs < 8193) LEVEL=42 ; if (fmbs < 5121) LEVEL=32 ; if (fmbs < 3601) LEVEL=31 ; if (fmbs < 1621) LEVEL=30 ; if (fmbs < 793) LEVEL=21 ; if (fmbs < 397) LEVEL=20 ; if (fmbs < 100) LEVEL=10 ; print LEVEL}')"
 
         ### MB rate
-        RLEVEL="$(echo "${1} ${2} ${3}" | awk '{mbr=$1*$2*$3 ; if (mbr < 983041) LEVEL=51 ; if (mbr < 589825) LEVEL=50 ; if (mbr < 589825) LEVEL=42 ; if (mbr < 216001) LEVEL=32 ; if (mbr < 108001) LEVEL=31 ; if (mbr < 40501) LEVEL=30 ; if (mbr < 19801) LEVEL=21 ; if (mbr < 11881) LEVEL=20 ; if (mbr < 1486) LEVEL=10 ; print LEVEL}')"
+        RLEVEL="$(echo "${1} ${2} ${3}" | awk '{mbr=$1*$2*$3 ; LEVEL=52 ; if (mbr < 983041) LEVEL=51 ; if (mbr < 589825) LEVEL=50 ; if (mbr < 589825) LEVEL=42 ; if (mbr < 216001) LEVEL=32 ; if (mbr < 108001) LEVEL=31 ; if (mbr < 40501) LEVEL=30 ; if (mbr < 19801) LEVEL=21 ; if (mbr < 11881) LEVEL=20 ; if (mbr < 1486) LEVEL=10 ; print LEVEL}')"
 
         echo "AVCLEVEL= '${MLEVEL}' -gt '${RLEVEL}'" >> ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
         AVCLEVEL=""
