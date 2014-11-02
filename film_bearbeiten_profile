@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110100"
+VERSION="v2014110200"
 
 
 echo "
@@ -18,6 +18,26 @@ if [ -z "${NUTZKERNE}" ] ; then
         NUTZKERNE="1"
 else
         NUTZKERNE="$(echo "${NUTZKERNE} 16" | egrep -v '[^0-9 ]' | awk '{KERNE=$1; if ($1 > $2) KERNE=$2; print KERNE}')"
+fi
+
+#------------------------------------------------------------------------------#
+### auf Dezimaltrennzeichen kontrollieren
+
+DEZ_INVIDEOBREIT="$(echo "${INVIDEOBREIT}" | grep -E '[,.]')"
+DEZ_INVIDEO_HOCH="$(echo "${INVIDEO_HOCH}" | grep -E '[,.]')"
+DEZ_INVIDEOPixel="$(echo "${INVIDEOPixel}" | grep -E '[,.]')"
+INVIDEODispl="$(echo "${INVIDEODispl}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+INVIDEOBilPS="$(echo "${INVIDEOBilPS}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+
+DEZ_SOLLVIDEOBREIT="$(echo "${SOLLVIDEOBREIT}" | grep -E '[,.]')"
+DEZ_SOLLVIDEO_HOCH="$(echo "${SOLLVIDEO_HOCH}" | grep -E '[,.]')"
+DEZ_SOLLVIDEOPixel="$(echo "${SOLLVIDEOPixel}" | grep -E '[,.]')"
+SOLLVIDEODispl="$(echo "${SOLLVIDEODispl}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+SOLLVIDEOBilPS="$(echo "${SOLLVIDEOBilPS}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+
+if [ -n "${DEZ_INVIDEOBREIT}${DEZ_INVIDEO_HOCH}${DEZ_INVIDEOPixel}${DEZ_SOLLVIDEOBREIT}${DEZ_SOLLVIDEO_HOCH}${DEZ_SOLLVIDEOPixel}" ] ; then
+        echo "${DEZ_INVIDEOBREIT} ${DEZ_INVIDEO_HOCH} ${DEZ_INVIDEOPixel} ${DEZ_SOLLVIDEOBREIT} ${DEZ_SOLLVIDEO_HOCH} ${DEZ_SOLLVIDEOPixel} darf kein Dezimalzeichen enthalten. Abbruch!"
+        exit 1
 fi
 
 #------------------------------------------------------------------------------#
