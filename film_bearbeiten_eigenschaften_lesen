@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110100"
+VERSION="v2014110200"
 
 
 echo "--------------------------------------------------------------------------
@@ -37,15 +37,15 @@ fi
 TITELNAME="${NEUERFILMNAME}"
 AUSGABEDATEI="${NEUESFILMVERZ}/${NEUERFILMNAME}"
 
-date +'%F %T' | tee ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
 if [ -e "${NEUESFILMVERZ}/${NEUERFILMNAME}.${CONTAINER}" ] ; then
-        echo "# - 43: Eigenschaften lesen
+        echo "# - 41: Eigenschaften lesen
         ${NEUESFILMVERZ}/${NEUERFILMNAME}.${CONTAINER} existiert schon!
         ABBRUCH
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
         exit 1
 fi
+
+date +'%F %T' | tee ${AUSGABEDATEI}.log
 
 #==============================================================================#
 FILMDATEN="$(mediainfo "${ORIGINAL}")"
