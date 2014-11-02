@@ -135,7 +135,7 @@ else
 fi
 
 #------------------------------------------------------------------------------#
-### aufraeumen
+### aufräumen
 
 date +'%F %T' | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
