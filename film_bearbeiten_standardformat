@@ -12,7 +12,7 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} standardformat
 #
 # Hier wird das Bild in ein Standardformat umgerechnet => 4/3 oder 16/9
 #
-" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+" | tee -a ${AUSGABEDATEI}.log
 
 #------------------------------------------------------------------------------#
 ### Testausgabe
@@ -46,21 +46,43 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} standardformat
 if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
-        ZVIDEOBREIT="${QUADVIDEOBREIT}"
-        ZVIDEO_HOCH="${QUADVIDEO_HOCH}"
-        ZVIDEODispl="${QUADVIDEODispl}"
-        ZVIDEODisBr="${QUADVIDEODisBr}"
+        if [ -n "${QUADVIDEOBREIT}" ] ; then
+                ZVIDEOBREIT="${QUADVIDEOBREIT}"
+                ZVIDEO_HOCH="${QUADVIDEO_HOCH}"
+                ZVIDEODispl="${QUADVIDEODispl}"
+                ZVIDEODisBr="${QUADVIDEODisBr}"
+        elif [ -n "${CROPVIDEOBREIT}" ] ; then
+                ZVIDEOBREIT="${CROPVIDEOBREIT}"
+                ZVIDEO_HOCH="${CROPVIDEO_HOCH}"
+                ZVIDEODispl="${CROPVIDEODispl}"
+                ZVIDEODisBr="${CROPVIDEODisBr}"
+        else
+                ZVIDEOBREIT="${ISTVIDEOBREIT}"
+                ZVIDEO_HOCH="${ISTVIDEO_HOCH}"
+                ZVIDEODispl="${ISTVIDEODispl}"
+                ZVIDEODisBr="${ISTVIDEODisBr}"
+        fi
 
-        echo "# - 54: standardformat - Eingangswerte
+        echo "# - 66: standardformat - Eingangswerte
         CROPVIDEOBREIT='${CROPVIDEOBREIT}'
         CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
         CROPVIDEODispl='${CROPVIDEODispl}'
         CROPVIDEODisBr='${CROPVIDEODisBr}'
 
-        ZVIDEOBREIT='${QUADVIDEOBREIT}'
-        ZVIDEO_HOCH='${QUADVIDEO_HOCH}'
-        ZVIDEODispl='${QUADVIDEODispl}'
-        ZVIDEODisBr='${QUADVIDEODisBr}'
+        QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+        QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
+        QUADVIDEODispl='${QUADVIDEODispl}'
+        QUADVIDEODisBr='${QUADVIDEODisBr}'
+
+        STDVIDEOBREIT='${STDVIDEOBREIT}'
+        STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+        STDVIDEODispl='${STDVIDEODispl}'
+        STDVIDEODisBr='${STDVIDEODisBr}'
+
+        ZVIDEOBREIT='${ZVIDEOBREIT}'
+        ZVIDEO_HOCH='${ZVIDEO_HOCH}'
+        ZVIDEODispl='${ZVIDEODispl}'
+        ZVIDEODisBr='${ZVIDEODisBr}'
 
         SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
         SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
@@ -69,7 +91,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
         SOLLVIDEODispl='${SOLLVIDEODispl}'
-        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        " | tee -a ${AUSGABEDATEI}.log
 
         #----------------------------------------------------------------------#
 
@@ -82,9 +104,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         F16MIN="$(echo  "${ZVIDEO_HOCH}" | awk '{printf "%.0f\n", ($1*16/9)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
         F16MAX="$(echo  "${ZVIDEO_HOCH}" | awk '{printf "%.0f\n", ((1+$1)*16/9)}' | awk -F'x' '{printf("%u\n",($1/2))}' | awk '{printf("%u\n",($1*2))}')"
 
-        #FHOEHE3MIN="$(echo "133333333 ${ZVIDEOBREIT} ${F3MIN}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
         FHOEHE3MIN="$(echo "133333333 ${ZVIDEOBREIT} ${F3MIN}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FHOEHE3MAX="$(echo "133333333 ${ZVIDEOBREIT} ${F3MAX}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
         FHOEHE3MAX="$(echo "133333333 ${ZVIDEOBREIT} ${F3MAX}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FHOEHE3MIN}" -le "${FHOEHE3MAX}" ] ; then
                 FHOEHE3="${F3MIN}"
@@ -92,9 +112,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
                 FHOEHE3="${F3MAX}"
         fi
 
-        #FBREIT4MIN="$(echo "133333333 ${F4MIN} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
         FBREIT4MIN="$(echo "133333333 ${F4MIN} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FBREIT4MAX="$(echo "133333333 ${F4MAX} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
         FBREIT4MAX="$(echo "133333333 ${F4MAX} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FBREIT4MIN}" -le "${FBREIT4MAX}" ] ; then
                 FBREIT4="${F4MIN}"
@@ -102,9 +120,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
                 FBREIT4="${F4MAX}"
         fi
 
-        #FHOEHE9MIN="$(echo "177777778 ${ZVIDEOBREIT} ${F9MIN}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
         FHOEHE9MIN="$(echo "177777778 ${ZVIDEOBREIT} ${F9MIN}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FHOEHE9MAX="$(echo "177777778 ${ZVIDEOBREIT} ${F9MAX}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
         FHOEHE9MAX="$(echo "177777778 ${ZVIDEOBREIT} ${F9MAX}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FHOEHE9MIN}" -le "${FHOEHE9MAX}" ] ; then
                 FHOEHE9="${F9MIN}"
@@ -112,9 +128,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
                 FHOEHE9="${F9MAX}"
         fi
 
-        #FBREIT16MIN="$(echo "177777778 ${F16MIN} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2/$3)*100000000))}')"
         FBREIT16MIN="$(echo "177777778 ${F16MIN} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ($1-(($2*100000000)/$3))}')"
-        #FBREIT16MAX="$(echo "177777778 ${F16MAX} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ((($2/$3)*100000000)-$1)}')"
         FBREIT16MAX="$(echo "177777778 ${F16MAX} ${ZVIDEO_HOCH}" | awk '{printf "%u\n", ((($2*100000000)/$3)-$1)}')"
         if [ "${FBREIT16MIN}" -le "${FBREIT16MAX}" ] ; then
                 FBREIT16="${F16MIN}"
@@ -124,7 +138,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        echo "# - 127: standardformat
+        echo "# - 141: standardformat
         F3MIN='${F3MIN}'
         F3MAX='${F3MAX}'
         F4MIN='${F4MIN}'
@@ -167,7 +181,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
         SOLLVIDEODispl='${SOLLVIDEODispl}'
-        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        " | tee -a ${AUSGABEDATEI}.log
 
         #----------------------------------------------------------------------#
 
@@ -193,7 +207,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
 
         #----------------------------------------------------------------------#
 
-        echo "# - 196: standardformat
+        echo "# - 210: standardformat
         ZVIDEOBREIT='${ZVIDEOBREIT}'
         ZVIDEO_HOCH='${ZVIDEO_HOCH}'
         ZVIDEODispl='${ZVIDEODispl}'
@@ -203,7 +217,7 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         STDVIDEO_HOCH='${STDVIDEO_HOCH}'
         STDVIDEODispl='${STDVIDEODispl}'
         STDVIDEODisBr='${STDVIDEODisBr}'
-        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        " | tee -a ${AUSGABEDATEI}.log
 
 # Diese Variable muss am Zeilenanfang beginnen!
 STDBILD_F="$( echo "
@@ -218,7 +232,7 @@ ${BHVE16}
         STDVIDEODisBr="$(echo "${STDBILD_F}" | awk '{print $4}')"
         STDVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${STDVIDEODisBr})"
 
-        echo "# - 221: standardformat
+        echo "# - 235: standardformat
         BHVE3='${BHVE3}'
         BHVE4='${BHVE4}'
         BHVE9='${BHVE9}'
@@ -230,7 +244,7 @@ ${BHVE16}
         STDVIDEO_HOCH='${STDVIDEO_HOCH}'
         STDVIDEODispl='${STDVIDEODispl}'
         STDVIDEODisBr='${STDVIDEODisBr}'
-        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        " | tee -a ${AUSGABEDATEI}.log
 
         #======================================================================#
         ### Bildaufloesung auf Standard-Format anpassen
@@ -278,12 +292,12 @@ ${BHVE16}
 
                         SCHWARZ_HOCH="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print ($1 * $2 / $3) - $1}' | awk '{printf "%.0f", ($1 - $2)/2}' | awk '{print $1 * 2}')"
 
-                        echo "# - 281: Standardformat
+                        echo "# - 295: Standardformat
                         ISTVIDEOBREIT='${ISTVIDEOBREIT}'
                         ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
                         SCHWARZBREIT='${SCHWARZBREIT}'
                         SCHWARZ_HOCH='${SCHWARZ_HOCH}'
-                        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+                        " | tee -a ${AUSGABEDATEI}.log
 
                         if [ "${SCHWARZBREIT}" -gt "${SCHWARZ_HOCH}" ] ; then
                                 SCHWARZ_LINKS="$(echo "${SCHWARZBREIT}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
@@ -293,7 +307,7 @@ ${BHVE16}
                                 VIRTUELL_HOCH="0"
                                 SCHWARZ_HOCH="0"
 
-                                echo "# - 296: Standardformat
+                                echo "# - 310: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -304,7 +318,7 @@ ${BHVE16}
 
                                 STDVIDEOBREIT='${STDVIDEOBREIT}'
                                 STDVIDEO_HOCH='${STDVIDEO_HOCH}'
-                                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+                                " | tee -a ${AUSGABEDATEI}.log
                         else
                                 SCHWARZ_OBEN="$(echo "${SCHWARZ_HOCH}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
                                 SCHWARZUNTEN="$(echo "${SCHWARZ_HOCH} ${SCHWARZ_OBEN}" | awk '{print $1 - $2}')"
@@ -313,7 +327,7 @@ ${BHVE16}
                                 VIRTUELL_BREIT="0"
                                 SCHWARZBREIT="0"
 
-                                echo "# - 316: Standardformat
+                                echo "# - 330: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -324,7 +338,7 @@ ${BHVE16}
 
                                 STDVIDEOBREIT='${STDVIDEOBREIT}'
                                 STDVIDEO_HOCH='${STDVIDEO_HOCH}'
-                                " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+                                " | tee -a ${AUSGABEDATEI}.log
                         fi
                 fi
         fi
@@ -342,7 +356,7 @@ ${BHVE16}
 
 fi
 
-echo "# - 345 Ende: Standardformat
+echo "# - 359 Ende: Standardformat
 ZVIDEOBREIT='${ZVIDEOBREIT}'
 ZVIDEO_HOCH='${ZVIDEO_HOCH}'
 
@@ -375,4 +389,4 @@ STDVIDEODisBr='${STDVIDEODisBr}'
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
 #----------------------------------------------------------------------#
-" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+" | tee -a ${AUSGABEDATEI}.log
