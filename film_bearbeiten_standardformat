@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110100"
+VERSION="v2014110300"
 
 
 echo "
@@ -232,7 +232,42 @@ ${BHVE16}
         STDVIDEODisBr="$(echo "${STDBILD_F}" | awk '{print $4}')"
         STDVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${STDVIDEODisBr})"
 
-        echo "# - 235: standardformat
+        Virt_1_VIDEOBREIT="$(echo "${STDVIDEOBREIT} ${STDVIDEODisBr} ${ZVIDEODisBr}" | awk '{gsub("/"," ");print $1 * $2 * $5 / $4 / $3}' | awk '{printf "%.0f\n", $1}')"
+        Virt_2_VIDEOBREIT="$(echo "${STDVIDEOBREIT} ${STDVIDEODisBr} ${ZVIDEODisBr}" | awk '{gsub("/"," ");print $1 * $3 * $4 / $2 / $5}' | awk '{printf "%.0f\n", $1}')"
+
+        SCHWARZ_1_BREIT="$(echo "${Virt_1_VIDEOBREIT} ${ZVIDEOBREIT}" | awk '{print $1 - $2}')"
+        SCHWARZ_2_BREIT="$(echo "${ZVIDEOBREIT} ${Virt_2_VIDEOBREIT}" | awk '{print $1 - $2}')"
+        SCHWARZ_3_BREIT="$(echo "${STDVIDEOBREIT} ${ZVIDEOBREIT}" | awk '{print $1 - $2}')"
+
+        echo "# - 242: Standardformat
+        1: '${Virt_1_VIDEOBREIT} - ${ZVIDEOBREIT} = ${SCHWARZ_1_BREIT}'
+        2: '${ZVIDEOBREIT} - ${Virt_2_VIDEOBREIT} = ${SCHWARZ_2_BREIT}'
+        3: '${STDVIDEOBREIT} - ${ZVIDEOBREIT} = ${SCHWARZ_3_BREIT}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        STD1="$(echo "${STDVIDEODispl}"|awk '{printf "%.0f\n", $1 * 100}')"
+        STD2="$(echo "${ZVIDEODispl}"|awk '{printf "%.0f\n", $1 * 100}')"
+
+        if [ "${STD1}" -gt "${STD2}" ] ; then
+                SCHWARZBREIT="${SCHWARZ_1_BREIT}"
+                SCHWARZNR="1"
+                SKALIEREN="Ja"
+        elif [ "${STD1}" -lt "${STD2}" ] ; then
+                SCHWARZBREIT="${SCHWARZ_2_BREIT}"
+                SCHWARZNR="2"
+                SKALIEREN="Ja"
+        else
+                SCHWARZBREIT="${SCHWARZ_3_BREIT}"
+                SCHWARZNR="3"
+        fi
+
+        SCHWARZ_LINKS="$(echo "${SCHWARZBREIT}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
+        SCHWARZRECHTS="$(echo "${SCHWARZBREIT} ${SCHWARZ_LINKS}" | awk '{print $1 - $2}')"
+        #----------------------------------------------------------------------#
+
+        echo "# - 268: standardformat
+        ${SCHWARZNR}: SCHWARZBREIT='${SCHWARZBREIT}'
+
         BHVE3='${BHVE3}'
         BHVE4='${BHVE4}'
         BHVE9='${BHVE9}'
@@ -253,9 +288,6 @@ ${BHVE16}
                 PADDING="Ja"
         fi
 
-        SCHWARZBREIT="$(echo "${STDVIDEOBREIT} ${ZVIDEOBREIT}" | awk '{print $1 - $2}')"
-        SCHWARZ_LINKS="$(echo "${SCHWARZBREIT}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
-        SCHWARZRECHTS="$(echo "${SCHWARZBREIT} ${SCHWARZ_LINKS}" | awk '{print $1 - $2}')"
         #----------------------------------------------------------------------#
 
         if [ "${ZVIDEO_HOCH}" != "${STDVIDEO_HOCH}" ] ; then
@@ -267,6 +299,15 @@ ${BHVE16}
         SCHWARZUNTEN="$(echo "${SCHWARZ_HOCH} ${SCHWARZ_OBEN}" | awk '{print $1 - $2}')"
         #----------------------------------------------------------------------#
 
+        echo "# - 302: Standardformat
+        SCHWARZBREIT='${SCHWARZBREIT}'
+        SCHWARZ_LINKS='${SCHWARZ_LINKS}'
+        SCHWARZRECHTS='${SCHWARZRECHTS}'
+
+        SCHWARZ_HOCH='${SCHWARZ_HOCH}'
+        SCHWARZ_OBEN='${SCHWARZ_OBEN}'
+        SCHWARZUNTEN='${SCHWARZUNTEN}'
+        " | tee -a ${AUSGABEDATEI}.log
 
         #======================================================================#
         ### wenn es Verzerrungen gibt, dann werden sie hier ausgeglichen
@@ -292,7 +333,7 @@ ${BHVE16}
 
                         SCHWARZ_HOCH="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEOPixBr}" | sed 's#/# #g' | awk '{print ($1 * $2 / $3) - $1}' | awk '{printf "%.0f", ($1 - $2)/2}' | awk '{print $1 * 2}')"
 
-                        echo "# - 295: Standardformat
+                        echo "# - 336: Standardformat
                         ISTVIDEOBREIT='${ISTVIDEOBREIT}'
                         ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
                         SCHWARZBREIT='${SCHWARZBREIT}'
@@ -302,12 +343,12 @@ ${BHVE16}
                         if [ "${SCHWARZBREIT}" -gt "${SCHWARZ_HOCH}" ] ; then
                                 SCHWARZ_LINKS="$(echo "${SCHWARZBREIT}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
                                 SCHWARZRECHTS="$(echo "${SCHWARZBREIT} ${SCHWARZ_LINKS}" | awk '{print $1 - $2}')"
-                                STDVIDEOBREIT="$(echo "${STDVIDEOBREIT} ${SCHWARZBREIT}" | awk '{print $1 + $2}')"
+                                PADVIDEOBREIT="$(echo "${STDVIDEOBREIT} ${SCHWARZBREIT}" | awk '{print $1 + $2}')"
+                                PADVIDEO_HOCH="${STDVIDEO_HOCH}"
 
-                                VIRTUELL_HOCH="0"
                                 SCHWARZ_HOCH="0"
 
-                                echo "# - 310: Standardformat
+                                echo "# - 351: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -322,12 +363,12 @@ ${BHVE16}
                         else
                                 SCHWARZ_OBEN="$(echo "${SCHWARZ_HOCH}" | awk '{printf "%.0f", ($1 - $2)/4}' | awk '{print $1 * 2}')"
                                 SCHWARZUNTEN="$(echo "${SCHWARZ_HOCH} ${SCHWARZ_OBEN}" | awk '{print $1 - $2}')"
-                                STDVIDEO_HOCH="$(echo "${STDVIDEO_HOCH} ${SCHWARZ_HOCH}" | awk '{print $1 + $2}')"
+                                PADVIDEOBREIT="${STDVIDEOBREIT}"
+                                PADVIDEO_HOCH="$(echo "${STDVIDEO_HOCH} ${SCHWARZ_HOCH}" | awk '{print $1 + $2}')"
 
-                                VIRTUELL_BREIT="0"
                                 SCHWARZBREIT="0"
 
-                                echo "# - 330: Standardformat
+                                echo "# - 371: Standardformat
                                 SCHWARZBREIT='${SCHWARZBREIT}'
                                 SCHWARZ_LINKS='${SCHWARZ_LINKS}'
                                 SCHWARZRECHTS='${SCHWARZRECHTS}'
@@ -347,8 +388,10 @@ ${BHVE16}
         #======================================================================#
 
         if [ "${PADDING}" = "Ja" ] ; then
-                PADVIDEOBREIT="$(echo "${ISTVIDEOBREIT} ${SCHWARZBREIT}" | awk '{print $1 + $2}')"
-                PADVIDEO_HOCH="$(echo "${ISTVIDEO_HOCH} ${SCHWARZ_HOCH}" | awk '{print $1 + $2}')"
+                if [ -z "${PADVIDEOBREIT}" ] ; then
+                        PADVIDEOBREIT="$(echo "${ISTVIDEOBREIT} ${SCHWARZBREIT}" | awk '{print $1 + $2}')"
+                        PADVIDEO_HOCH="$(echo "${ISTVIDEO_HOCH} ${SCHWARZ_HOCH}" | awk '{print $1 + $2}')"
+                fi
                 PAD_OPTION=",pad=${PADVIDEOBREIT}:${PADVIDEO_HOCH}:${SCHWARZ_LINKS}:${SCHWARZ_OBEN}"
         fi
 
@@ -356,7 +399,7 @@ ${BHVE16}
 
 fi
 
-echo "# - 359 Ende: Standardformat
+echo "# - 402 Ende: Standardformat
 ZVIDEOBREIT='${ZVIDEOBREIT}'
 ZVIDEO_HOCH='${ZVIDEO_HOCH}'
 
@@ -379,6 +422,8 @@ SCHWARZ_HOCH='${SCHWARZ_HOCH}'
 SCHWARZ_OBEN='${SCHWARZ_OBEN}'
 SCHWARZUNTEN='${SCHWARZUNTEN}'
 
+PADVIDEOBREIT='${PADVIDEOBREIT}'
+PADVIDEO_HOCH='${PADVIDEO_HOCH}'
 PAD_OPTION='${PAD_OPTION}'
 
 STDVIDEOBREIT='${STDVIDEOBREIT}'
