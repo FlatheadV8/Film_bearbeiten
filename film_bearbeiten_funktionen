@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110200"
+VERSION="v2014110900"
 
 
 echo "
@@ -355,9 +355,19 @@ TON_TRANS()
                         " | tee -a ${AUSGABEDATEI}.log
 
                         faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.wav && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
-                elif [ "${AUDIOCODEC}" = "mp2" ] ; then
+                elif [ "${AUDIOCODEC}" = "libfaac" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 5-6: TON_TRANS
+
+                        ### Audiospur transcodieren
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        " | tee -a ${AUSGABEDATEI}.log
+
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                elif [ "${AUDIOCODEC}" = "mp2" ] ; then
+                        echo "#------------------------------------------------------------------------------#
+                        # - 5-7: TON_TRANS
 
                         ### Audiospur transcodieren
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${2}_audiospur_${i}.mp2
@@ -367,7 +377,7 @@ TON_TRANS()
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${2}_audiospur_${i}.mp2 && mv -vf ${2}_audiospur_${i}.mp2 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp3" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 5-7: TON_TRANS
+                        # - 5-8: TON_TRANS
 
                         ### Audiospur transcodieren
                         lame --tt '${TITELNAME}' -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.wav ${2}_audiospur_${i}.mp3
@@ -375,9 +385,19 @@ TON_TRANS()
                         " | tee -a ${AUSGABEDATEI}.log
 
                         lame --tt "${TITELNAME}" -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.wav ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                elif [ "${AUDIOCODEC}" = "libmp3lame" ] ; then
+                        echo "#------------------------------------------------------------------------------#
+                        # - 5-9: TON_TRANS
+
+                        ### Audiospur transcodieren
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        " | tee -a ${AUSGABEDATEI}.log
+
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "ogg" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 5-8: TON_TRANS
+                        # - 5-10: TON_TRANS
 
                         ### Audiospur transcodieren
                         oggenc -t '${TITELNAME}' -q ${OGGQUALI} -o ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}.wav
@@ -390,7 +410,7 @@ TON_TRANS()
                 if [ -s ${2}_audiospur_${i} ] ; then
                         mkvmerge -i ${2}_audiospur_${i} > ${2}_audiospur_${i}.info
                 else
-                        echo "# - 5-9: TON_TRANS
+                        echo "# - 5-11: TON_TRANS
                         Die AudioSpur '${2}_audiospur_${i}' konnte nicht erstellt werden.
                         Abbruch!
                         " | tee -a ${AUSGABEDATEI}.log
