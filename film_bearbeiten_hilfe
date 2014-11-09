@@ -1,5 +1,5 @@
 
-Stand: 2014-11-01 00
+Stand: 2014-11-08 00
 
 HILFE:
     -hilfe
@@ -79,9 +79,13 @@ das Seitenformat der Bildpunkte der Ausgabe (PAR/SAR) - VIDEOPixel:
     -opar 16/15     (als Bruch angeben)
     -opar 1.0666666 (als Fliesskommazahl angeben)
 
+es wird direkt in einem Arbeitsschritt (mit FFmpeg) transkodiert, ohne erweiterte Funktionen wie z.B. die Schnittfunktion
+    -direkt
+
 Profil:
     -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
     -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
+    -profil ipad         (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4)
     -profil xmp3         (Video-Codec: x264 / Audio-Codec: MP3)
     -profil xogg         (Video-Codec: x264 / Audio-Codec: OGG)
     -profil asp          (synonym für xvid)
@@ -94,12 +98,14 @@ Profil:
     -profil 3gp          MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
     -profil sp5dx        (Video-Codec: Xvid / Audio-Codec: MP3)
     -profil sp5xv        (Video-Codec: Xvid / Audio-Codec: MP3)
-    -profil sqcif        (-skal 128x96)
-    -profil qcif         (-skal 176x144) / 176x144 [PAR 16:11 DAR 16:9]
-    -profil qvga         (-skal 320x240)
-    -profil cif          (-skal 352x288)
-    -profil vga          (-skal 640x480)
-    -profil 4cif         (-skal 704x576)
+
+Bildformat:
+    -bildformat sqcif        (-skal 128x96)
+    -bildformat qcif         (-skal 176x144) / 176x144 [PAR 16:11 DAR 16:9]
+    -bildformat qvga         (-skal 320x240)
+    -bildformat cif          (-skal 352x288)
+    -bildformat vga          (-skal 640x480)
+    -bildformat 4cif         (-skal 704x576)
 
 Name der Quell-Video-Datei:
     -rein Alf.mpg
