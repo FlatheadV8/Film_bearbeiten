@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110800"
+VERSION="v2014110900"
 
 
 echo "
@@ -30,39 +30,60 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                 direktes transkodieren beginnt
                 "
 
+                #----------------------------------------------------------------------#
                 ### Audio-Qualitaet
-                if [ "${AACQUALI}" = "aac" ] ; then
-                        FFAACQUALI="-b:a ${AACQUALI}k"
-                elif [ "${AACQUALI}" = "libfaac" ] ; then
-                        FFAACQUALI="-b:a ${AACQUALI}k"
+                if [ -n "${FFACODEC}" ] ; then
+                         FFAACQUALI="-b:a ${ABITR}k"
+                         FFAUDIOCODEC="-c:a ${FFACODEC}"
                 fi
 
+                #----------------------------------------------------------------------#
                 ### Bildbreite
                 if [ -z "${SOLLVIDEOBREIT}" ] ; then
-                        SOLLVIDEOBREIT="1000000"
+                        SOLLVIDEOBREIT="10000000"
                 fi
 
-                if [ "${SOLLVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
+                if [ -n "${PBILDBREITE}" ] ; then
+                    if [ "${SOLLVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
                         FFVIDEOBREIT="${SOLLVIDEOBREIT}"
-                elif [ "${CROPVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
+                    elif [ "${CROPVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
                         FFVIDEOBREIT="${CROPVIDEOBREIT}"
-                elif [ "${ISTVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
+                    elif [ "${ISTVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
                         FFVIDEOBREIT="${ISTVIDEOBREIT}"
-                else
+                    else
                         FFVIDEOBREIT="${PBILDBREITE}"
-                fi
-
-                ### Bildhoehe
-                if [ "${SOLLVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
-                        FFVIDEO_HOCH="${SOLLVIDEO_HOCH}"
-                elif [ "${CROPVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
-                        FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
-                elif [ "${ISTVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
-                        FFVIDEO_HOCH="${ISTVIDEO_HOCH}"
+                    fi
                 else
-                        FFVIDEO_HOCH="${PBILDHOEHE}"
+                        FFVIDEOBREIT="${CROPVIDEOBREIT}"
                 fi
 
+                #----------------------------------------------------------------------#
+                ### Bildhoehe
+                if [ -z "${SOLLVIDEO_HOCH}" ] ; then
+                        SOLLVIDEO_HOCH="1000000"
+                fi
+
+                if [ -n "${PBILDHOEHE}" ] ; then
+                    if [ "${SOLLVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
+                        FFVIDEO_HOCH="${SOLLVIDEO_HOCH}"
+                    elif [ "${CROPVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
+                        FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
+                    elif [ "${ISTVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
+                        FFVIDEO_HOCH="${ISTVIDEO_HOCH}"
+                    else
+                        FFVIDEO_HOCH="${PBILDHOEHE}"
+                    fi
+                else
+                        FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
+                fi
+
+                #----------------------------------------------------------------------#
+                ### Video-Qualitaet
+                if [ -n "${VBITRTEILER}" ] ; then
+                         FFVIDEOQUALI="-b:v $(echo "${FFVIDEOBREIT} ${FFVIDEO_HOCH} ${VBITRTEILER}" | awk '{printf "%.0f\n", $1 * $2 / $3}')k"
+                fi
+
+                #----------------------------------------------------------------------#
                 ### Bildausschnitt
                 if [ -n "${CROP_OPTION}" ] ; then
                         # crop=width:height:left:top
@@ -81,27 +102,55 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                         FFBILDSKALIEREN="scale,"
                 fi
 
+                ### Video-Optionen - BitRate
+                VBITR="$(echo "${PIXELBIT} ${FFVIDEOBREIT} ${FFVIDEO_HOCH}" | awk '{printf("%u\n",($1*$2*$3)/1000)}')"
+
+                echo "# - 108:
+                PIXELBIT=${PIXELBIT}
+                ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+                ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+                CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+                CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+                SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+                SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+                FFVIDEOBREIT=${FFVIDEOBREIT}
+                FFVIDEO_HOCH=${FFVIDEO_HOCH}
+                VBITR=${VBITR}
+                " | tee -a ${AUSGABEDATEI}.log
+
+                VBITR="$(echo "${PIXELBIT} ${FFVIDEOBREIT} ${FFVIDEO_HOCH}" | awk '{printf("%u\n",($1*$2*$3)/1000)}')"
+                if [ -n "${VIDEOOPTION}" ] ; then
+                        FFVIDEOOPTION="$(echo "${VIDEOOPTION}" | sed "s/@VBITR@/${VBITR}/g")"
+                fi
+
+                if [ -z "${VBITR}" ] ; then
+                        echo "die Video-Bit-Rate ist mit '${VBITR}' falsch gesetzt..." | tee -a ${AUSGABEDATEI}.log
+                        exit 1
+                elif [ "${VBITR}" -eq "0" ] ; then
+                        echo "die Video-Bit-Rate ist mit '${VBITR}' falsch gesetzt..." | tee -a ${AUSGABEDATEI}.log
+                        exit 1
+                fi
+
                 ### Video-Filter
                 if [ -n "${VF}" ] ; then
-                        FFVF="-vf $(echo "${VF}" | sed "s/@BILDAUSSCH@/${FFBILDAUSSCH}/g;s/@BILDSKALIEREN@/${FFBILDSKALIEREN}/g;s/@BILDBREITE@/${FFVIDEOBREIT}/g;s/@BILDHOEHE@/${FFVIDEO_HOCH}/g;s/[,]$//g")"
+                        FFVF="-vf $(echo "${VF}" | sed "s/@BILDAUSSCH@/${FFBILDAUSSCH}/g;s/@BILDSKALIEREN@/${FFBILDSKALIEREN}/g;s/@BILDBREITE@/${FFVIDEOBREIT}/g;s/@BILDHOEHE@/${FFVIDEO_HOCH}/g;s/[,]$//g;s/[,][ ]/ /g")"
                 fi
 
                 #----------------------------------------------------------------------#
-                echo "# - 90: DIREKT
-                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${VIDEOOPTION} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
+                echo "# - 140: DIREKT
+                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
                 " | tee -a ${AUSGABEDATEI}.log
 
-                ###ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} -vf scale=${PBILDBREITE}:${PBILDHOEHE} -c:a ${AUDIOCODEC} ${AUDIOOPTION} -b:a ${AACQUALI}k -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
-                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${VIDEOOPTION} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
+                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
 
-                echo "# - 97: DIREKT
-                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${VIDEOOPTION} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
+                echo "# - 146: DIREKT
+                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
                 " | tee -a ${AUSGABEDATEI}.log
 
                 ls -lha ${NEUERFILMNAME}.${CONTAINER}
 
                 echo "
-                # - 104: DIREKT
+                # - 153: DIREKT
                 #----------------------------------------------------------------------#
                 ORIGINAL='${ORIGINAL}'
                 VF='${VF}'
@@ -131,10 +180,18 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                 SOLLVIDEODisBr='${SOLLVIDEODisBr}'
                 SOLLVIDEODispl='${SOLLVIDEODispl}'
 
+                BILDQUALIT='${BILDQUALIT}'
+                SOLLCRF='${SOLLCRF}'
                 VIDEOCODEC='${VIDEOCODEC}'
+
+                PIXELBIT='${PIXELBIT}'
                 VIDEOOPTION='${VIDEOOPTION}'
+                FFVIDEOOPTION='${FFVIDEOOPTION}'
+                VBITR='${VBITR}'
 
                 AUDIOCODEC='${AUDIOCODEC}'
+                FFACODEC='${FFACODEC}'
+                FFAUDIOCODEC='${FFAUDIOCODEC}'
                 AUDIOOPTION='${AUDIOOPTION}'
 
                 PBILDBREITE='${PBILDBREITE}'
@@ -157,7 +214,7 @@ fi
 
 #==============================================================================#
 
-echo "# - 160: DIREKT
+echo "# - 217: DIREKT
 #----------------------------------------------------------------------#
 PPROFIL='${PPROFIL}'
 #----------------------------------------------------------------------#
