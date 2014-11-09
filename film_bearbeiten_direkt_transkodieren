@@ -1,0 +1,165 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2014110800"
+
+
+echo "
+================================================================================
+${VERSION} | ${ABARBEITUNGSNUMMER} DIREKT
+
+
+#
+# hier wird der Film in einem einzigen Arbeitsschritt direkt transkodiert,
+# ohne ihn zu schneiden
+#
+" | tee -a ${AUSGABEDATEI}.log
+
+#==============================================================================#
+### direkt transkodieren, kein schneiden
+
+echo "# - 21: DIREKT
+PPROFIL='${PPROFIL}'
+" | tee -a ${AUSGABEDATEI}.log
+
+if [ "${DIREKT_TRANS}" = "direkt" ] ; then
+    case "${PPROFIL}" in
+        ipad|asp|divx|dx50|sp3dx|xvid|sp3xv|em880|3gp|sp5dx|sp5xv)
+                echo "# - 28: DIREKT
+                #----------------------------------------------------------------------#
+                direktes transkodieren beginnt
+                "
+
+                ### Audio-Qualitaet
+                if [ "${AACQUALI}" = "aac" ] ; then
+                        FFAACQUALI="-b:a ${AACQUALI}k"
+                elif [ "${AACQUALI}" = "libfaac" ] ; then
+                        FFAACQUALI="-b:a ${AACQUALI}k"
+                fi
+
+                ### Bildbreite
+                if [ -z "${SOLLVIDEOBREIT}" ] ; then
+                        SOLLVIDEOBREIT="1000000"
+                fi
+
+                if [ "${SOLLVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
+                        FFVIDEOBREIT="${SOLLVIDEOBREIT}"
+                elif [ "${CROPVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
+                        FFVIDEOBREIT="${CROPVIDEOBREIT}"
+                elif [ "${ISTVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
+                        FFVIDEOBREIT="${ISTVIDEOBREIT}"
+                else
+                        FFVIDEOBREIT="${PBILDBREITE}"
+                fi
+
+                ### Bildhoehe
+                if [ "${SOLLVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
+                        FFVIDEO_HOCH="${SOLLVIDEO_HOCH}"
+                elif [ "${CROPVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
+                        FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
+                elif [ "${ISTVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
+                        FFVIDEO_HOCH="${ISTVIDEO_HOCH}"
+                else
+                        FFVIDEO_HOCH="${PBILDHOEHE}"
+                fi
+
+                ### Bildausschnitt
+                if [ -n "${CROP_OPTION}" ] ; then
+                        # crop=width:height:left:top
+                        # FFBILDAUSSCH="${CROP_OPTION}"
+                        FFBILDAUSSCH="$(echo "${CROP_OPTION}" | sed 's/[,]//g;s/.*/&,/')"
+                fi
+
+                ### Bildskalierung
+                if [ -n "${FFVIDEOBREIT}" ] ; then
+                    if [ -n "${FFVIDEO_HOCH}" ] ; then
+                        FFBILDSKALIEREN="scale=${FFVIDEOBREIT}:${FFVIDEO_HOCH},"
+                    else
+                        FFBILDSKALIEREN="scale,"
+                    fi
+                else
+                        FFBILDSKALIEREN="scale,"
+                fi
+
+                ### Video-Filter
+                if [ -n "${VF}" ] ; then
+                        FFVF="-vf $(echo "${VF}" | sed "s/@BILDAUSSCH@/${FFBILDAUSSCH}/g;s/@BILDSKALIEREN@/${FFBILDSKALIEREN}/g;s/@BILDBREITE@/${FFVIDEOBREIT}/g;s/@BILDHOEHE@/${FFVIDEO_HOCH}/g;s/[,]$//g")"
+                fi
+
+                #----------------------------------------------------------------------#
+                echo "# - 90: DIREKT
+                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${VIDEOOPTION} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
+                " | tee -a ${AUSGABEDATEI}.log
+
+                ###ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} -vf scale=${PBILDBREITE}:${PBILDHOEHE} -c:a ${AUDIOCODEC} ${AUDIOOPTION} -b:a ${AACQUALI}k -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
+                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${VIDEOOPTION} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
+
+                echo "# - 97: DIREKT
+                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${VIDEOOPTION} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
+                " | tee -a ${AUSGABEDATEI}.log
+
+                ls -lha ${NEUERFILMNAME}.${CONTAINER}
+
+                echo "
+                # - 104: DIREKT
+                #----------------------------------------------------------------------#
+                ORIGINAL='${ORIGINAL}'
+                VF='${VF}'
+
+                ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+                ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+                ISTVIDEOPixBr='${ISTVIDEOPixBr}'
+                ISTVIDEOPixel='${ISTVIDEOPixel}'
+                ISTVIDEOBilPS='${ISTVIDEOBilPS}'
+                ISTVIDEODisBr='${ISTVIDEODisBr}'
+                ISTVIDEODispl='${ISTVIDEODispl}'
+
+                CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+                CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+                CROPVIDEOPixBr='${CROPVIDEOPixBr}'
+                CROPVIDEOPixel='${CROPVIDEOPixel}'
+                CROPVIDEOBilPS='${CROPVIDEOBilPS}'
+                CROPVIDEODisBr='${CROPVIDEODisBr}'
+                CROPVIDEODispl='${CROPVIDEODispl}'
+                CROP_OPTION='${CROP_OPTION}'
+
+                SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+                SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+                SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
+                SOLLVIDEOPixel='${SOLLVIDEOPixel}'
+                SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
+                SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+                SOLLVIDEODispl='${SOLLVIDEODispl}'
+
+                VIDEOCODEC='${VIDEOCODEC}'
+                VIDEOOPTION='${VIDEOOPTION}'
+
+                AUDIOCODEC='${AUDIOCODEC}'
+                AUDIOOPTION='${AUDIOOPTION}'
+
+                PBILDBREITE='${PBILDBREITE}'
+                PBILDHOEHE='${PBILDHOEHE}'
+                FFVIDEOBREIT='${FFVIDEOBREIT}'
+                FFVIDEO_HOCH='${FFVIDEO_HOCH}'
+                FFBILDAUSSCH="${FFBILDAUSSCH}"
+
+                FFVF='${FFVF}'
+                NEUERFILMNAME='${NEUERFILMNAME}'
+                CONTAINER='${CONTAINER}'
+                #----------------------------------------------------------------------#
+                Ende DIREKT
+                " | tee -a ${AUSGABEDATEI}.log
+
+                exit 0
+                ;;
+    esac
+fi
+
+#==============================================================================#
+
+echo "# - 160: DIREKT
+#----------------------------------------------------------------------#
+PPROFIL='${PPROFIL}'
+#----------------------------------------------------------------------#
+Ende DIREKT
+" | tee -a ${AUSGABEDATEI}.log
