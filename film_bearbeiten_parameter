@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110100"
+VERSION="v2014110800"
 
 
 echo "
@@ -246,8 +246,16 @@ while [ "${#}" -ne "0" ] ; do
                         MKVSYNC="JA"                            # (nur für AVC/x264) automatische Laufzeitsyncronisation zw. Audio- und Video-Spur durch MKV-Container-Parameter aktivieren
                         shift
                         ;;
+                -direkt)
+                        DIREKT_TRANS="direkt"                   # der Film wird direkt in einem Arbeitsschritt transkodiert, ohne Schnittfunktion
+                        shift
+                        ;;
                 -profil)
-                        PPROFIL="${2}"                          # avc, asp, sp3dx, sp3xv, sp5dx, sp5xv, em880, x264, xvid, divx, dx50, 3gp
+                        PPROFIL="${2}"                          # avc asp sp3dx sp3xv sp5dx sp5xv em880 x264 ipad xvid divx dx50 3gp
+                        shift
+                        ;;
+                -bildformat)
+                        BILDFORMAT="${2}"                       # sqcif qcif qvga cif vga 4cif
                         shift
                         ;;
                 -entrauschen)
