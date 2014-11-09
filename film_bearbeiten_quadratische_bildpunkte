@@ -290,7 +290,7 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
 #        QUADVIDEOBREIT="$(echo "${QUADRATPIXELAUFLOESUNG}" | awk '{print $1}')"
 #        QUADVIDEO_HOCH="$(echo "${QUADRATPIXELAUFLOESUNG}" | awk '{print $2}')"
 #        QUADVIDEODisBr="${QUADVIDEOBREIT}/${QUADVIDEO_HOCH}"
-#fi
+fi
 
 #==============================================================================#
 
