@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #set -x
-VERSION="v2014110100"
+VERSION="v2014110800"
 
 #------------------------------------------------------------------------------#
 ### Arbeitsweise
@@ -59,20 +59,21 @@ fi
 ABARBEITUNGSNUMMER="0"
 #==============================================================================#
 MEINVERZEICHNIS="$(dirname ${0})"
-. ${MEINVERZEICHNIS}/film_bearbeiten_funktionen
-. ${MEINVERZEICHNIS}/film_bearbeiten_parameter
-. ${MEINVERZEICHNIS}/film_bearbeiten_profile
-. ${MEINVERZEICHNIS}/film_bearbeiten_programme
-. ${MEINVERZEICHNIS}/film_bearbeiten_eigenschaften_lesen                        # ist noch nicht fertig
+. ${MEINVERZEICHNIS}/film_bearbeiten_funktionen                            || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_parameter                             || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_profile                               || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_programme                             || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_eigenschaften_lesen                   || exit 1    # ist noch nicht fertig
 
-. ${MEINVERZEICHNIS}/film_bearbeiten_crop                                       # crop
-. ${MEINVERZEICHNIS}/film_bearbeiten_quadratische_bildpunkte                    # QuadratischePixel => Blu-Ray-Format
-. ${MEINVERZEICHNIS}/film_bearbeiten_standardformat                             # Standard-Format => 4/3 oder 16/9
+. ${MEINVERZEICHNIS}/film_bearbeiten_crop                                  || exit 1    # crop
+. ${MEINVERZEICHNIS}/film_bearbeiten_direkt_transkodieren                  || exit 1    # mit FFmpeg direkt transkodieren, kein schneiden
+. ${MEINVERZEICHNIS}/film_bearbeiten_quadratische_bildpunkte               || exit 1    # QuadratischePixel => Blu-Ray-Format
+. ${MEINVERZEICHNIS}/film_bearbeiten_standardformat                        || exit 1    # Standard-Format => 4/3 oder 16/9
 
-. ${MEINVERZEICHNIS}/film_bearbeiten_breit_und_hoch                             # wenn noetig, die Breite bzw. Hoehe ermitteln
-. ${MEINVERZEICHNIS}/film_bearbeiten_bluray-kompatible_parameter_ermitteln      # Blu-Ray-Kode
+. ${MEINVERZEICHNIS}/film_bearbeiten_breit_und_hoch                        || exit 1    # wenn noetig, die Breite bzw. Hoehe ermitteln
+. ${MEINVERZEICHNIS}/film_bearbeiten_bluray-kompatible_parameter_ermitteln || exit 1    # Blu-Ray-Kode
 
-. ${MEINVERZEICHNIS}/film_bearbeiten_bearbeiten                                 # in das Zwischenformat transkodiert | zerschneiden | wieder zum Film zusammensetzen
-. ${MEINVERZEICHNIS}/film_bearbeiten_seitenverhaeltnis                          # das richtige Seitenverhaeltnis ermitteln
-. ${MEINVERZEICHNIS}/film_bearbeiten_transkodieren                              # in Audio- und Video-Spur zerlegt | transkodieren | wieder zum Film zusammenmuxen
+. ${MEINVERZEICHNIS}/film_bearbeiten_bearbeiten                            || exit 1    # in das Zwischenformat transkodiert | zerschneiden | wieder zum Film zusammensetzen
+. ${MEINVERZEICHNIS}/film_bearbeiten_seitenverhaeltnis                     || exit 1    # das richtige Seitenverhaeltnis ermitteln
+. ${MEINVERZEICHNIS}/film_bearbeiten_transkodieren                         || exit 1    # in Audio- und Video-Spur zerlegt | transkodieren | wieder zum Film zusammenmuxen
 #==============================================================================#
