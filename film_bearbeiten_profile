@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110200"
+VERSION="v2014110800"
 
 
 echo "
@@ -66,74 +66,106 @@ if [ "${CROPTEST}" = "JA" ] ; then
 fi
 
 #------------------------------------------------------------------------------#
-### Profildaten fest legen
+### Profildaten festlegen
 
-case "${PPROFIL}" in
-        avc)
+echo "# - 71: Profil
+PPROFIL='${PPROFIL}'
+"
+ANPASSUNG=""
+if [ -n "${PPROFIL}" ] ; then
+    case "${PPROFIL}" in
+        avc|x264)
                 VPROG="x264 mkvmerge"
-                #AUDIOCODEC="aac"       # ist noch nicht reif, verursacht gelegentlich noch Störungen
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
+                #AUDIOCODEC="aac"        # ist noch nicht reif, verursacht gelegentlich noch Störungen
                 AUDIOCODEC="ac3"        # derzeitiges Standard-Audioformat für die Ausgabe
                 CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
-        x264)
-                VPROG="x264 mkvmerge"
-                #AUDIOCODEC="aac"       # ist noch nicht reif, verursacht gelegentlich noch Störungen
-                AUDIOCODEC="ac3"        # derzeitiges Standard-Audioformat für die Ausgabe
-                CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
+        ipad)
+                # optimal: ffmpeg -i rein.mkv -c:v libx264 -vf scale=1024:576 -c:a libfaac -b:a 128k -ar 44100 -y raus.mp4
+                # max. Aufloesung (iPad, iPad2, iPad mini): 1024:576
+                # max. Video-Bit-Rate:   2,5M
+                # max. Audio-Bit-Rate:   160k
+                # max. Audio-Sample-Rate: 48k
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="libx264"    # ASP (MPEG4p2), AVC (MPEGp10)
+                #AUDIOCODEC="aac"        # "free"-Lizenz / noch experimentell
+                AUDIOCODEC="libfaac"    # "non-free"-Lizenz
+                AUDIOOPTION="-ar 44100 -ac 2"
+                CONTAINER="mp4"         # mp4 m4v mov
+                PBILDBREITE="1024"      # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
+                PBILDHOEHE="576"        # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
+                PTONQUALIT="4"          # max. Audio-Bit-Rate: 160k (4: AACQUALI="130" / 5: AACQUALI="160")
+                VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
         xmp3)
                 VPROG="x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
                 AUDIOCODEC="mp3"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
         xogg)
                 VPROG="x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
                 AUDIOCODEC="ogg"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
-        asp)
+        asp|xvid)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="xvid"       # ASP (MPEGp2)
+                VIDEOOPTION="-xvidencopts me_quality=6:trellis:hq_ac:vhq=4:lumi_mask:threads=1:autoaspect:bitrate="	# ${VIDEOOPTION}${VBITR}${FARBE}
                 AUDIOCODEC="mp3"
                 CONTAINER="avi"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
-                ;;
-        divx)
-                AUDIOCODEC="mp3"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                ;;
-        dx50)
-                AUDIOCODEC="mp3"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                ;;
-        sp3dx)
-                AUDIOCODEC="mp2"
-                CONTAINER="avi"
-                PBILDQUALIT="3"
-                PTONQUALIT="3"
-                PBILDBREITE="320"
-                PBILDHOEHE="240"
-                PFPS="15"
-                ANPASSUNG="nein"
-                ;;
-        xvid)
-                AUDIOCODEC="mp3"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
                 ;;
         sp3xv)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="xvid"       # ASP (MPEGp2)
+                VIDEOOPTION="-xvidencopts profile=sp3:max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate="	# ${VIDEOOPTION}${VBITR}${FARBE}
+                AUDIOCODEC="mp2"
+                CONTAINER="avi"
+                PBILDQUALIT="3"
+                PTONQUALIT="3"
+                PBILDBREITE="320"
+                PBILDHOEHE="240"
+                ANPASSUNG="nein"
+                VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -ofps 15/1"
+                ;;
+        divx)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="lavc"       # ASP (MPEGp2)
+                VIDEOOPTION="-lavcopts vcodec=mpeg4:autoaspect:trell=yes:mbd=2:v4mv=yes:qpel:vbitrate="		# ${VIDEOOPTION}${VBITR}
+                AUDIOCODEC="mp3"
+                CONTAINER="avi"
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
+                ;;
+        dx50)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="lavc"       # ASP (MPEGp2)
+                VIDEOOPTION="-lavcopts vcodec=mpeg4:autoaspect:trell=yes:mbd=2:v4mv=yes:qpel:vbitrate="		# ${VIDEOOPTION}${VBITR}
+                AUDIOCODEC="mp3"
+                CONTAINER="avi"
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup -ffourcc DX50"
+                ;;
+        sp3dx)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="lavc"       # ASP (MPEGp2)
+                VIDEOOPTION="-lavcopts vcodec=mpeg4:autoaspect:trell=yes:mbd=2:v4mv=yes:qpel:vbitrate="         # ${VIDEOOPTION}${VBITR}
                 AUDIOCODEC="mp2"
                 CONTAINER="avi"
                 PBILDQUALIT="3"
@@ -142,31 +174,42 @@ case "${PPROFIL}" in
                 PBILDHOEHE="240"
                 PFPS="15"
                 ANPASSUNG="nein"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup -ofps 15/1"
                 ;;
         em880)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="xvid"       # ASP (MPEGp2)
+                VIDEOOPTION="-xvidencopts max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate="		# ${VIDEOOPTION}${VBITR}
                 AUDIOCODEC="mp2"
                 CONTAINER="avi"
                 PBILDQUALIT="3"
                 PTONQUALIT="3"
                 PBILDBREITE="320"
                 PBILDHOEHE="240"
-                PFPS="20"
                 ANPASSUNG="nein"
                 PASPECT="4/3"
+                VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -ofps 20/1"
                 ;;
         3gp)
                 # MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
                 # optimal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b 200k -r 15 -c:a libfaac -ar 24k -ab 64k -ac 1 -y raus.3gp
                 # maximal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b 200k -r 25 -c:a libfaac -ar 24k -ab 64k -ac 2 -y raus.3gp
-                AUDIOCODEC="aac"
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="h263"
+                VIDEOOPTION="-b 200k -s qcif -ofps 15"
+                AUDIOCODEC="libfaac"
+                AUDIOOPTION="-ar 24k -ab 64k -ac 1"
                 CONTAINER="3gp"
                 PBILDBREITE="176"
                 PBILDHOEHE="144"
-                PFPS="15"               # "15", "20" oder "25" (wegen der geringen Bitrate ist die Qualitaet bei "15" am besten)
                 ANPASSUNG="nein"
                 PASPECT="4/3"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
                 ;;
         sp5dx)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="lavc"       # ASP (MPEGp2)
+                VIDEOOPTION="-lavcopts vcodec=mpeg4:threads=1:autoaspect:mbd=2:v4mv:trell:cbp:mv0:mv0_threshold=0:qprd:umv:nr=0:lumi_mask=0.1:dark_mask=0.1:p_mask=0.1:vbitrate="		# ${VIDEOOPTION}${VBITR}
                 AUDIOCODEC="mp3"
                 CONTAINER="avi"
                 PBILDQUALIT="5"
@@ -174,8 +217,12 @@ case "${PPROFIL}" in
                 PBILDBREITE="720"
                 PBILDHOEHE="576"
                 ANPASSUNG="nein"
+                VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -ffourcc DX50"
                 ;;
         sp5xv)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="xvid"       # ASP (MPEGp2)
+                VIDEOOPTION="-xvidencopts profile=sp5:max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate="               # ${VIDEOOPTION}${VBITR}
                 AUDIOCODEC="mp3"
                 CONTAINER="avi"
                 PBILDQUALIT="5"
@@ -183,7 +230,41 @@ case "${PPROFIL}" in
                 PBILDBREITE="720"
                 PBILDHOEHE="576"
                 ANPASSUNG="nein"
+                VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup"
                 ;;
+        *)
+                echo "# - 236: Profil
+                aus folgenden Profilen kann eines ausgewählt werden:
+                -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
+                -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
+                -profil xmp3         (Video-Codec: x264 / Audio-Codec: MP3)
+                -profil xogg         (Video-Codec: x264 / Audio-Codec: OGG)
+                -profil 3gp          (Video-Codec: x264 / Audio-Codec: AAC / Container: 3gp)
+                -profil ipad         (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4,m4v,mov)
+                -profil asp          (synonym für xvid)
+                -profil divx         (Video-Codec: DivX 4/5 / Audio-Codec: MP3)
+                -profil dx50         (Video-Codec: DivX 5 / Audio-Codec: MP3)
+                -profil sp3dx        (Video-Codec: DivX 5 / Audio-Codec: MP2)
+                -profil xvid         (Video-Codec: Xvid / Audio-Codec: MP3)
+                -profil sp3xv        (Video-Codec: Xvid / Audio-Codec: MP2)
+                -profil em880        (Video-Codec: Xvid / Audio-Codec: MP2; optimiert für den MiniPlayer 'entryx EM880RB')
+                -profil sp5dx        (Video-Codec: Xvid / Audio-Codec: MP3)
+                -profil sp5xv        (Video-Codec: Xvid / Audio-Codec: MP3)
+                ABBRUCH
+                "
+                exit 1
+                ;;
+    esac
+fi
+
+#------------------------------------------------------------------------------#
+### Bildformate festlegen
+
+echo "# - 260: Profil
+BILDFORMAT='${BILDFORMAT}'
+"
+if [ -n "${BILDFORMAT}" ] ; then
+    case "${BILDFORMAT}" in
         sqcif)
                 PBILDBREITE="128"
                 PBILDHOEHE="96"
@@ -211,32 +292,20 @@ case "${PPROFIL}" in
                 PBILDHOEHE="576"
                 ;;
         *)
-                echo "
-                aus folgenden Profilen kann eines ausgewählt werden:
-                -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
-                -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
-                -profil xmp3         (Video-Codec: x264 / Audio-Codec: MP3)
-                -profil xogg         (Video-Codec: x264 / Audio-Codec: OGG)
-                -profil asp          (synonym für xvid)
-                -profil divx         (Video-Codec: DivX 4/5 / Audio-Codec: MP3)
-                -profil dx50         (Video-Codec: DivX 5 / Audio-Codec: MP3)
-                -profil sp3dx        (Video-Codec: DivX 5 / Audio-Codec: MP2)
-                -profil xvid         (Video-Codec: Xvid / Audio-Codec: MP3)
-                -profil sp3xv        (Video-Codec: Xvid / Audio-Codec: MP2)
-                -profil em880        (Video-Codec: Xvid / Audio-Codec: MP2; optimiert für den MiniPlayer 'entryx EM880RB')
-                -profil sp5dx        (Video-Codec: Xvid / Audio-Codec: MP3)
-                -profil sp5xv        (Video-Codec: Xvid / Audio-Codec: MP3)
-                -profil sqcif        (-skal 128x96)
-                -profil qcif         (-skal 176x144)
-                -profil qvga         (-skal 320x240)
-                -profil cif          (-skal 352x288)
-                -profil vga          (-skal 640x480)
-                -profil 4cif         (-skal 704x576)
+                echo "# - 290: Profil
+                aus folgenden Bildformaten kann eines ausgewählt werden:
+                -bildformat sqcif    entspricht    -skal 128x96
+                -bildformat qcif     entspricht    -skal 176x144
+                -bildformat qvga     entspricht    -skal 320x240
+                -bildformat cif      entspricht    -skal 352x288
+                -bildformat vga      entspricht    -skal 640x480
+                -bildformat 4cif     entspricht    -skal 704x576
                 ABBRUCH
                 "
                 exit 1
                 ;;
-esac
+    esac
+fi
 
 if [ "${AS}" == "JA" ] ; then
         ASTRETCH="soundstretch"
