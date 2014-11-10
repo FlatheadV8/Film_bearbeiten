@@ -10,6 +10,7 @@ Es wird von mir hauptsächlich auf FreeBSD eingesetzt aber gelegentlich auch auf
 Ich bin bestrebt den Kode so zu gestalten, dass er auf allen BSD's und allen Linux'en laufen sollte.
 Wenn man die entsprechenden Programme installiert, sollte es ggf. auch auf einem Mac laufen.
 
+Seit der Version 1.2.0 kann man hiermit auch Filme erstellen, die auf dem iPad, iPad 2 und iPad mini abgespielt werden können. Hierfür ist nur der Parameter "-profil ipad" nötig.
 
 beispielhafte Parameterkombinationen
 ====================================
@@ -34,5 +35,6 @@ Beispiele:
     /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC10 -crop 202,200,0,2
     /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC11 -skal 720x512 -crop 202,200,0,2
     /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC12 -progress -quad -skal 214x120 -anr 1,7
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC13 -profil ipad
 
 Noch gibt es möglicherweise ein paar Rechenfehler, bei der Bildformatsberechnung. Deshalb kann es sein, dass in einigen Fällen die Kreise beim Ergebnis nicht immer rund geblieben sind, dann muss man etwas genauere Angaben bei der Eingabe machen (z.B.: „-idar“, „-ipar“, „-odar“, „-opar“). Das wird aber in späteren Versionen ausgebessert.
