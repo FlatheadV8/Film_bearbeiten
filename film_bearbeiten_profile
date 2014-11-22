@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110900"
+VERSION="v2014112200"
 
 
 echo "
@@ -59,6 +59,7 @@ fi
 
 if [ "${CROPTEST}" = "JA" ] ; then
         PPROFIL="dx50"
+        DIREKT_TRANS="direkt"
 
         if [ -z "${SCHNITTZEITEN}" ] ; then
                 SCHNITTZEITEN="${TESTSZ}"
@@ -74,18 +75,56 @@ PPROFIL='${PPROFIL}'
 ANPASSUNG=""
 if [ -n "${PPROFIL}" ] ; then
     case "${PPROFIL}" in
-        avc|x264)
-                VPROG="x264 mkvmerge"
-                VIDEOCODEC="libx264"    # AVC (MPEGp10)
-                VIDEOOPTION=""
-                AUDIOCODEC="ac3"        # ac3 libfaac faac aac
-                AUDIOOPTION=""
-                CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
-                VBITRTEILER="370"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
+        3gp)
+                # MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
+                # optimal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b:v 200k -r 15 -c:a libfaac -ar 24k -ab 64k -ac 1 -y raus.3gp
+                # maximal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b:v 200k -r 25 -c:a libfaac -ar 24k -ab 64k -ac 2 -y raus.3gp
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="h263"	# max. Bit-Rate (Video): ~200k
+                VIDEOOPTION="-b:v 200k -s qcif -r 15"
+                AUDIOCODEC="libfaac"	# max. Bit-Rate (Audio): 64k
+                AUDIOOPTION="-ar 24k -ab 64k -ac 1"
+                CONTAINER="3gp"
+                PBILDBREITE="176"
+                PBILDHOEHE="144"
+                PBILDQUALIT="2"
+                PTONQUALIT="0"
+                ANPASSUNG="nein"
+                PASPECT="4/3"
                 #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@,yadif"
+                ;;
+        sp3|sp3l3)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video): 320k
+                VIDEOOPTION=""
+                AUDIOCODEC="mp2"        # max. Bit-Rate (Audio): 64k
+                AUDIOOPTION=""
+                CONTAINER="avi"
+                PBILDQUALIT="4"
+                PTONQUALIT="1"
+                PBILDBREITE="320"
+                PBILDHOEHE="240"
+                PFPS="15"
+                ANPASSUNG="nein"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@,yadif"
+                ;;
+        em880)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video): 320k
+                VIDEOOPTION=""
+                AUDIOCODEC="mp2"        # max. Bit-Rate (Audio): 64k
+                AUDIOOPTION=""
+                CONTAINER="avi"
+                PBILDQUALIT="4"
+                PTONQUALIT="1"
+                PBILDBREITE="320"
+                PBILDHOEHE="240"
+                PFPS="20"
+                ANPASSUNG="nein"
+                PASPECT="4/3"
+                #VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -r 20/1"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@,yadif"
                 ;;
         ipad)
                 # optimal: ffmpeg -i rein.mkv -c:v libx264 -vf scale=1024:576 -c:a libfaac -b:a 128k -ar 44100 -y raus.mp4
@@ -94,16 +133,61 @@ if [ -n "${PPROFIL}" ] ; then
                 # max. Audio-Bit-Rate:   160k
                 # max. Audio-Sample-Rate: 48k
                 DIREKT_TRANS="direkt"
-                VIDEOCODEC="libx264"    # ASP (MPEG4p2), AVC (MPEGp10)
+                VIDEOCODEC="libx264"    # ASP (MPEG4p2), AVC (MPEGp10) / max. Video-Bit-Rate: ~1600k
                 VIDEOOPTION=""
-                AUDIOCODEC="libfaac"    # "non-free"-Lizenz
+                AUDIOCODEC="libfaac"    # "non-free"-Lizenz / max. Audio-Bit-Rate: 160k
                 AUDIOOPTION="-ar 44100 -ac 2"
                 CONTAINER="mp4"         # mp4 m4v mov
-                VBITRTEILER="370"
+                #VBITRTEILER="370"
                 PBILDBREITE="1024"      # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
                 PBILDHOEHE="576"        # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
-                PBILDQUALIT="5"
+                PBILDQUALIT="3"         # bei "2" -> 1180k / bei "3" -> 1770k
                 PTONQUALIT="4"          # max. Audio-Bit-Rate: 160k (4: AACQUALI="130" / 5: AACQUALI="160")
+                #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@"
+                ;;
+        aspl3)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 768k
+                VIDEOOPTION=""
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION="-ac 2"
+                CONTAINER="avi"
+                PBILDQUALIT="3"
+                PTONQUALIT="4"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@,yadif"
+                ;;
+        aspl4)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 3072k
+                VIDEOOPTION=""
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION="-ac 2"
+                CONTAINER="avi"
+                PBILDQUALIT="5"
+                PTONQUALIT="4"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@,yadif"
+                ;;
+        aspl5|dx50)
+                DIREKT_TRANS="direkt"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 8192k
+                VIDEOOPTION=""
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION="-ac 2"
+                CONTAINER="avi"
+                PBILDQUALIT="4"
+                PTONQUALIT="5"
+                VF="@BILDAUSSCH@@BILDSKALIEREN@ -tag:v DX50"
+                ;;
+        avc|x264)
+                VPROG="x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
+                VIDEOOPTION=""
+                AUDIOCODEC="ac3"        # ac3 libfaac faac aac
+                AUDIOOPTION=""
+                CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
                 #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
                 VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
@@ -115,7 +199,6 @@ if [ -n "${PPROFIL}" ] ; then
                 AUDIOCODEC="libmp3lame" # ffmpeg
                 AUDIOOPTION="-ac 2"
                 CONTAINER="mkv"
-                VBITRTEILER="370"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
                 #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
@@ -128,161 +211,9 @@ if [ -n "${PPROFIL}" ] ; then
                 AUDIOCODEC="ogg"
                 AUDIOOPTION=""
                 CONTAINER="mkv"
-                VBITRTEILER="370"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
                 #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
-                ;;
-        asp|xvid)
-                DIREKT_TRANS="direkt"
-                VIDEOCODEC="libxvid"    # ASP (MPEGp2)
-                #VIDEOOPTION="-xvidencopts me_quality=6:trellis:hq_ac:vhq=4:lumi_mask:threads=1:autoaspect:bitrate=@VBITR@"	# ${VIDEOOPTION}${VBITR}${FARBE}
-                VIDEOOPTION=""
-                #AUDIOCODEC="mp3"        # lame
-                AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
-                ;;
-        sp3xv)
-                DIREKT_TRANS="direkt"
-                VIDEOCODEC="libxvid"    # ASP (MPEGp2)
-                #VIDEOOPTION="-xvidencopts profile=sp3:max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate=@VBITR@"	# ${VIDEOOPTION}${VBITR}${FARBE}
-                VIDEOOPTION=""
-                AUDIOCODEC="mp2"
-                AUDIOOPTION=""
-                CONTAINER="avi"
-                PBILDQUALIT="3"
-                PTONQUALIT="3"
-                PBILDBREITE="320"
-                PBILDHOEHE="240"
-                ANPASSUNG="nein"
-                #VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -r 15/1"
-                #VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@ -r 15/1"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
-                ;;
-        divx)
-                DIREKT_TRANS="direkt"
-                #VIDEOCODEC="lavc"
-                #VIDEOOPTION="-lavcopts vcodec=mpeg4:autoaspect:trell=yes:mbd=2:v4mv=yes:qpel:vbitrate=@VBITR@"		# ${VIDEOOPTION}${VBITR}
-                VIDEOCODEC="mpeg4"      # ASP (MPEGp2)
-                VIDEOOPTION=""
-                #AUDIOCODEC="mp3"        # lame
-                AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
-                ;;
-        dx50)
-                DIREKT_TRANS="direkt"
-                #VIDEOCODEC="lavc"       # ASP (MPEGp2)
-                #VIDEOOPTION="-lavcopts vcodec=mpeg4:autoaspect:trell=yes:mbd=2:v4mv=yes:qpel:vbitrate=@VBITR@"		# ${VIDEOOPTION}${VBITR}
-                VIDEOCODEC="mpeg4"      # ASP (MPEGp2)
-                VIDEOOPTION=""
-                #AUDIOCODEC="mp3"        # lame
-                AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup -ffourcc DX50"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@ -tag:v DX50"
-                ;;
-        sp3dx)
-                DIREKT_TRANS="direkt"
-                #VIDEOCODEC="lavc"       # ASP (MPEGp2)
-                #VIDEOOPTION="-lavcopts vcodec=mpeg4:autoaspect:trell=yes:mbd=2:v4mv=yes:qpel:vbitrate=@VBITR@"         # ${VIDEOOPTION}${VBITR}
-                VIDEOCODEC="mpeg4"      # ASP (MPEGp2)
-                VIDEOOPTION=""
-                AUDIOCODEC="mp2"
-                AUDIOOPTION=""
-                CONTAINER="avi"
-                PBILDQUALIT="3"
-                PTONQUALIT="3"
-                PBILDBREITE="320"
-                PBILDHOEHE="240"
-                PFPS="15"
-                ANPASSUNG="nein"
-                #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup -r 15/1"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@ -r 15/1"
-                ;;
-        em880)
-                DIREKT_TRANS="direkt"
-                VIDEOCODEC="libxvid"    # ASP (MPEGp2)
-                #VIDEOOPTION="-xvidencopts max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate=@VBITR@"		# ${VIDEOOPTION}${VBITR}
-                VIDEOOPTION=""
-                AUDIOCODEC="mp2"
-                AUDIOOPTION=""
-                CONTAINER="avi"
-                PBILDQUALIT="3"
-                PTONQUALIT="3"
-                PBILDBREITE="320"
-                PBILDHOEHE="240"
-                ANPASSUNG="nein"
-                PASPECT="4/3"
-                #VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -r 20/1"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
-                ;;
-        3gp)
-                # MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
-                # optimal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b:v 200k -r 15 -c:a libfaac -ar 24k -ab 64k -ac 1 -y raus.3gp
-                # maximal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b:v 200k -r 25 -c:a libfaac -ar 24k -ab 64k -ac 2 -y raus.3gp
-                DIREKT_TRANS="direkt"
-                VIDEOCODEC="h263"
-                VIDEOOPTION="-b:v 200k -s qcif -r 15"
-                AUDIOCODEC="libfaac"
-                AUDIOOPTION="-ar 24k -ab 64k -ac 1"
-                CONTAINER="3gp"
-                PBILDBREITE="176"
-                PBILDHOEHE="144"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                ANPASSUNG="nein"
-                PASPECT="4/3"
-                #VF="@BILDAUSSCH@@BILDSKALIEREN@softskip,harddup"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@"
-                ;;
-        sp5dx)
-                DIREKT_TRANS="direkt"
-                #VIDEOCODEC="lavc"       # ASP (MPEGp2)
-                #VIDEOOPTION="-lavcopts vcodec=mpeg4:threads=1:autoaspect:mbd=2:v4mv:trell:cbp:mv0:mv0_threshold=0:qprd:umv:nr=0:lumi_mask=0.1:dark_mask=0.1:p_mask=0.1:vbitrate=@VBITR@"		# ${VIDEOOPTION}${VBITR}
-                VIDEOCODEC="mpeg4"      # ASP (MPEGp2)
-                VIDEOOPTION=""
-                #AUDIOCODEC="mp3"        # lame
-                AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                PBILDBREITE="720"
-                PBILDHOEHE="576"
-                ANPASSUNG="nein"
-                #VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup -ffourcc DX50"
-                VF="@BILDAUSSCH@@BILDSKALIEREN@ -tag:v DX50"
-                ;;
-        sp5xv)
-                DIREKT_TRANS="direkt"
-                VIDEOCODEC="libxvid"    # ASP (MPEGp2)
-                #VIDEOOPTION="-xvidencopts max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate=@VBITR@"		# ${VIDEOOPTION}${VBITR}
-                #VIDEOOPTION="-xvidencopts profile=sp5:max_bframes=0:me_quality=6:trellis:chroma_opt:hq_ac:vhq=4:lumi_mask:threads=1:bitrate=@VBITR@"               # ${VIDEOOPTION}${VBITR}
-                VIDEOOPTION=""
-                #AUDIOCODEC="mp3"        # lame
-                AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
-                CONTAINER="avi"
-                PBILDQUALIT="5"
-                PTONQUALIT="5"
-                PBILDBREITE="720"
-                PBILDHOEHE="576"
-                ANPASSUNG="nein"
-                #VF="scale=@BILDBREITE@:-2,expand=:@BILDHOEHE@:::1,crop=@BILDBREITE@:@BILDHOEHE@,softskip,harddup"
                 VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
         *)
