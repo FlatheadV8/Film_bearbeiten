@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110900"
+VERSION="v2014112200"
 
 
 echo "
@@ -24,7 +24,7 @@ PPROFIL='${PPROFIL}'
 
 if [ "${DIREKT_TRANS}" = "direkt" ] ; then
     case "${PPROFIL}" in
-        ipad|asp|divx|dx50|sp3dx|xvid|sp3xv|em880|3gp|sp5dx|sp5xv)
+        3gp|sp3|sp3l3|em880|ipad|aspl3|aspl4|aspl5|dx50|avc|x264|xmp3|xogg)
                 echo "# - 28: DIREKT
                 #----------------------------------------------------------------------#
                 direktes transkodieren beginnt
