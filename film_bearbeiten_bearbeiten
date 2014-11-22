@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110100"
+VERSION="v2014112000"
 
 
 echo "
@@ -30,6 +30,7 @@ echo "# - 29: bearbeiten
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
 SKALIERFORMAT='${SKALIERFORMAT}'
+AUSGABESKALIEREN='${AUSGABESKALIEREN}'
 CROP_OPTION='${CROP_OPTION}'
 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
@@ -76,10 +77,10 @@ fi
 
 echo "
 # - 78: bearbeiten
-ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} -r ${SOLLVIDEOBilPS} ${TONSPUREN} -async 0 -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
+ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} ${AUSGABESKALIEREN} -r ${SOLLVIDEOBilPS} ${TONSPUREN} -async 0 -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-ffmpeg ${INFPS} -i "${ORIGINAL}" -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} -r ${SOLLVIDEOBilPS} ${TONSPUREN} -async 0 -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv 2>&1 | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log && mv ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv || echo Fehler | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+ffmpeg ${INFPS} -i "${ORIGINAL}" -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} ${AUSGABESKALIEREN} -r ${SOLLVIDEOBilPS} ${TONSPUREN} -async 0 -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv 2>&1 | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log && mv ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv || echo Fehler | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
 
 echo "
@@ -95,10 +96,10 @@ if [ ! -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
 
         echo "
         # - 97: bearbeiten
-        ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} -r ${SOLLVIDEOBilPS} -async 0 ${TONSPUREN} -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
+        ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} ${AUSGABESKALIEREN} -r ${SOLLVIDEOBilPS} -async 0 ${TONSPUREN} -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
         " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-        ffmpeg ${INFPS} -i "${ORIGINAL}" -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} -r ${SOLLVIDEOBilPS} -async 0 ${TONSPUREN} -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv 2>&1 | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log && mv ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv 2>&1 | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log || echo Fehler | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+        ffmpeg ${INFPS} -i "${ORIGINAL}" -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} ${AUSGABESKALIEREN} -r ${SOLLVIDEOBilPS} -async 0 ${TONSPUREN} -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv 2>&1 | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log && mv ${NEUERFILMNAME}_verlustfreies_zwischenformat_.mkv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv 2>&1 | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log || echo Fehler | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 fi
 
 if [ ! -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
