@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110900"
+VERSION="v2014112200"
 
 
 echo "
@@ -257,7 +257,7 @@ while [ "${#}" -ne "0" ] ; do
                         shift
                         ;;
                 -profil)
-                        PPROFIL="${2}"                          # avc asp sp3dx sp3xv sp5dx sp5xv em880 x264 ipad xvid divx dx50 3gp
+                        PPROFIL="${2}"                          # 3gp sp3 sp3l3 em880 ipad aspl3 aspl4 aspl5 dx50 avc x264 xmp3 xogg
                         shift
                         ;;
                 -bildformat)
