@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014110300"
+VERSION="v2014112000"
 
 
 echo "
@@ -142,13 +142,18 @@ if [ "${SKALIEREN}" == "Ja" ] ; then
         echo "# - 142: Breit und Hoch
         Das Bildformat skalieren.
         " | tee -a ${AUSGABEDATEI}.log
-        SKALIERFORMAT=",scale=${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH}"
+
+        ### Filter-Syntax (-vf), als Ausgabefilter muss er ans Ende der Filterschlange
+        #SKALIERFORMAT=",scale=${SOLLVIDEOBREIT}:${SOLLVIDEO_HOCH}"
+
+        ### Ausgabe-Format-Syntax (-s), der setzt den scale-Filter automatisch ans Ende der Filterschlange
+        AUSGABESKALIEREN="-s ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH}"
 fi
 
 #------------------------------------------------------------------------------#
 ### wenn erforderlich, dann das Seitenverhaeltnis des Bildes setzen
 
-echo "# - 151 Ende: Breit und Hoch
+echo "# - 156 Ende: Breit und Hoch
 INVIDEOBREIT='${INVIDEOBREIT}'
 INVIDEO_HOCH='${INVIDEO_HOCH}'
 
@@ -163,5 +168,8 @@ STDVIDEO_HOCH='${STDVIDEO_HOCH}'
 
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+
+SKALIERFORMAT='${SKALIERFORMAT}'
+AUSGABESKALIEREN='${AUSGABESKALIEREN}'
 ==========================================================================
 " | tee -a ${AUSGABEDATEI}.log
