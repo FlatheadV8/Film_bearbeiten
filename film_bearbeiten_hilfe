@@ -1,8 +1,26 @@
 
-Stand: 2014-11-08 00
+Stand: 2014-11-22 00
 
 HILFE:
     -hilfe
+
+INPUT-Parameter; die sind erforderlich, wenn die Filme falsche Meta-Daten enthalten
+  das Seitenformat der Bildpunkte der Quelle (PAR/SAR) - VIDEOPixel:
+    -ipar 1         (die Quelldatei enthaelt quadratische Bildpunkte)
+    -ipar ntsc      (720x480 wird so dargestellt wie 640x480)
+    -ipar pal       (720x576 wird so dargestellt wie 768x576)
+    -ipar dvb       (720x576 wird so dargestellt wie 1024x576)
+    -ipar 16/15     (als Bruch angeben)
+    -ipar 1.0666666 (als Fliesskommazahl angeben)
+
+OUTPUT-Parameter; die sind erforderlich, wenn die Geometrie des Bildes verändert werden soll
+  das Seitenformat der Bildpunkte der Ausgabe (PAR/SAR) - VIDEOPixel:
+    -opar 1         (die Ausgabe wird quadratische Bildpunkte haben)
+    -opar ntsc      (720x480 wird so dargestellt wie 640x480)
+    -opar pal       (720x576 wird so dargestellt wie 768x576)
+    -opar dvb       (720x576 wird so dargestellt wie 1024x576)
+    -opar 16/15     (als Bruch angeben)
+    -opar 1.0666666 (als Fliesskommazahl angeben)
 
 ASPECT:
     -odar 16/9
@@ -63,41 +81,24 @@ diese Abschnitte aus dem Film sollen erhalten bleiben, Angaben in Sekunden der S
 die Ausgabe soll quadratische Bildpunkte haben
     -quad
 
-das Seitenformat der Bildpunkte der Quelle (PAR/SAR) - VIDEOPixel:
-    -ipar 1         (die Quelldatei enthaelt quadratische Bildpunkte)
-    -ipar ntsc      (720x480 wird so dargestellt wie 640x480)
-    -ipar pal       (720x576 wird so dargestellt wie 768x576)
-    -ipar dvb       (720x576 wird so dargestellt wie 1024x576)
-    -ipar 16/15     (als Bruch angeben)
-    -ipar 1.0666666 (als Fliesskommazahl angeben)
-
-das Seitenformat der Bildpunkte der Ausgabe (PAR/SAR) - VIDEOPixel:
-    -opar 1         (die Ausgabe wird quadratische Bildpunkte haben)
-    -opar ntsc      (720x480 wird so dargestellt wie 640x480)
-    -opar pal       (720x576 wird so dargestellt wie 768x576)
-    -opar dvb       (720x576 wird so dargestellt wie 1024x576)
-    -opar 16/15     (als Bruch angeben)
-    -opar 1.0666666 (als Fliesskommazahl angeben)
-
 es wird direkt in einem Arbeitsschritt (mit FFmpeg) transkodiert, ohne erweiterte Funktionen wie z.B. die Schnittfunktion
+  hiermit ist nur das möglich, was FFmpeg kann
     -direkt
 
 Profil:
+    -profil 3gp          MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
+    -profil sp3          (Video-Codec: DivX 4 / Audio-Codec: MP2)
+    -profil sp3l3        (Video-Codec: DivX 4 / Audio-Codec: MP2)
+    -profil em880        (Video-Codec: DivX 4 / Audio-Codec: MP2)
+    -profil ipad         (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4)
+    -profil aspl3        (Video-Codec: DivX 4 / Audio-Codec: MP3)
+    -profil aspl4        (Video-Codec: DivX 4 / Audio-Codec: MP3)
+    -profil aspl5        (Video-Codec: DivX 5 / Audio-Codec: MP3)
+    -profil dx50         (Video-Codec: DivX 5 / Audio-Codec: MP3)
     -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
     -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
-    -profil ipad         (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4)
     -profil xmp3         (Video-Codec: x264 / Audio-Codec: MP3)
     -profil xogg         (Video-Codec: x264 / Audio-Codec: OGG)
-    -profil asp          (synonym für xvid)
-    -profil divx         (Video-Codec: DivX 4/5 / Audio-Codec: MP3)
-    -profil dx50         (Video-Codec: DivX 5 / Audio-Codec: MP3)
-    -profil sp3dx        (Video-Codec: DivX 5 / Audio-Codec: MP2)
-    -profil xvid         (Video-Codec: Xvid / Audio-Codec: MP3)
-    -profil sp3xv        (Video-Codec: Xvid / Audio-Codec: MP2)
-    -profil em880        (Video-Codec: Xvid / Audio-Codec: MP2; optimiert für den MiniPlayer 'entryx EM880RB')
-    -profil 3gp          MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
-    -profil sp5dx        (Video-Codec: Xvid / Audio-Codec: MP3)
-    -profil sp5xv        (Video-Codec: Xvid / Audio-Codec: MP3)
 
 Bildformat:
     -bildformat sqcif        (-skal 128x96)
@@ -145,21 +146,11 @@ MPEG 4 Part 10 (x264 / MP3):
 MPEG 4 Part 10 (x264 / OGG):
     film_bearbeiten.sh -rein film02.mpg -profil xogg
 
-MPEG 4 Part 2 (Xvid):
-    film_bearbeiten.sh -rein film02.mpg -profil asp
-    film_bearbeiten.sh -rein film02.mpg -profil xvid
-
-MPEG 4 Part 2 (DivX 4/5 - kompatibel):
-    film_bearbeiten.sh -rein film02.mpg -profil divx
-
 MPEG 4 Part 2 (DivX 5 - kompatibel):
     film_bearbeiten.sh -rein film02.mpg -profil dx50
 
-simple profile at level 3 (allgemein für MiniPlayer / DivX 5):
-    film_bearbeiten.sh -rein film02.mpg -profil sp3dx
-
-simple profile at level 3 (allgemein für MiniPlayer / Xvid):
-    film_bearbeiten.sh -rein film02.mpg -profil sp3xv
+simple profile at level 3 (allgemein für MiniPlayer):
+    film_bearbeiten.sh -rein film02.mpg -profil sp3l3
 
 fuer einen MiniPlayer 'entryx EM880RB' (Xvid):
     film_bearbeiten.sh -rein film02.mpg -profil em880
