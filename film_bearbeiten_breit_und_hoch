@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112000"
+VERSION="v2014112300"
 
 
 echo "
@@ -41,19 +41,24 @@ if [ -z "${SOLLVIDEOBREIT}" ] ; then
                 echo "# - 41: Breit und Hoch
                 STDVIDEOBREIT => SOLLVIDEOBREIT
                 " | tee -a ${AUSGABEDATEI}.log
+        elif [ -n "${QUADVIDEOBREIT}" ] ; then
+                SOLLVIDEOBREIT="${QUADVIDEOBREIT}"
+                echo "# - 46: Breit und Hoch
+                QUADVIDEOBREIT => SOLLVIDEOBREIT
+                " | tee -a ${AUSGABEDATEI}.log
         elif [ -n "${CROPVIDEOBREIT}" ] ; then
                 SOLLVIDEOBREIT="${CROPVIDEOBREIT}"
-                echo "# - 46: Breit und Hoch
+                echo "# - 51: Breit und Hoch
                 CROPVIDEOBREIT => SOLLVIDEOBREIT
                 " | tee -a ${AUSGABEDATEI}.log
         elif [ -n "${ISTVIDEOBREIT}" ] ; then
                 SOLLVIDEOBREIT="${ISTVIDEOBREIT}"
-                echo "# - 51: Breit und Hoch
+                echo "# - 56: Breit und Hoch
                 ISTVIDEOBREIT => SOLLVIDEOBREIT
                 " | tee -a ${AUSGABEDATEI}.log
         elif [ -n "${INVIDEO_HOCH}" ] ; then
                 SOLLVIDEOBREIT="${INVIDEO_HOCH}"
-                echo "# - 56: Breit und Hoch
+                echo "# - 61: Breit und Hoch
                 INVIDEO_HOCH => SOLLVIDEOBREIT
                 " | tee -a ${AUSGABEDATEI}.log
         fi
@@ -62,22 +67,27 @@ fi
 if [ -z "${SOLLVIDEO_HOCH}" ] ; then
         if [ -n "${STDVIDEO_HOCH}" ] ; then
                 SOLLVIDEO_HOCH="${STDVIDEO_HOCH}"
-                echo "# - 65: Breit und Hoch
+                echo "# - 70: Breit und Hoch
                 STDVIDEO_HOCH => STDVIDEO_HOCH
+                " | tee -a ${AUSGABEDATEI}.log
+        elif [ -n "${QUADVIDEO_HOCH}" ] ; then
+                SOLLVIDEO_HOCH="${QUADVIDEO_HOCH}"
+                echo "# - 75: Breit und Hoch
+                QUADVIDEO_HOCH => STDVIDEO_HOCH
                 " | tee -a ${AUSGABEDATEI}.log
         elif [ -n "${CROPVIDEO_HOCH}" ] ; then
                 SOLLVIDEO_HOCH="${CROPVIDEO_HOCH}"
-                echo "# - 70: Breit und Hoch
+                echo "# - 80: Breit und Hoch
                 CROPVIDEO_HOCH => STDVIDEO_HOCH
                 " | tee -a ${AUSGABEDATEI}.log
         elif [ -n "${ISTVIDEO_HOCH}" ] ; then
                 SOLLVIDEO_HOCH="${ISTVIDEO_HOCH}"
-                echo "# - 75: Breit und Hoch
+                echo "# - 85: Breit und Hoch
                 ISTVIDEO_HOCH => STDVIDEO_HOCH
                 " | tee -a ${AUSGABEDATEI}.log
         elif [ -n "${INVIDEO_HOCH}" ] ; then
                 SOLLVIDEO_HOCH="${INVIDEO_HOCH}"
-                echo "# - 80: Breit und Hoch
+                echo "# - 90: Breit und Hoch
                 INVIDEO_HOCH => STDVIDEO_HOCH
                 " | tee -a ${AUSGABEDATEI}.log
         fi
@@ -88,7 +98,7 @@ fi
 
 # IN-Bildbreite
 if [ "${INVIDEOBREIT}" != "${SOLLVIDEOBREIT}" ] ; then
-        echo "# - 91: Breit und Hoch
+        echo "# - 101: Breit und Hoch
         Die Bildbreite soll geaendert werden.
         " | tee -a ${AUSGABEDATEI}.log
         SKALIEREN="Ja"
@@ -96,7 +106,7 @@ fi
 
 # IN-Bildhoehe
 if [ "${INVIDEO_HOCH}" != "${SOLLVIDEO_HOCH}" ] ; then
-        echo "# - 99: Breit und Hoch
+        echo "# - 109: Breit und Hoch
         Die Bildhoehe soll geaendert werden.
         " | tee -a ${AUSGABEDATEI}.log
         SKALIEREN="Ja"
@@ -105,7 +115,7 @@ fi
 
 # IST-Bildbreite
 if [ "${ISTVIDEOBREIT}" != "${SOLLVIDEOBREIT}" ] ; then
-        echo "# - 108: Breit und Hoch
+        echo "# - 118: Breit und Hoch
         Die Bildbreite soll geaendert werden.
         " | tee -a ${AUSGABEDATEI}.log
         SKALIEREN="Ja"
@@ -113,7 +123,7 @@ fi
 
 # IST-Bildhoehe
 if [ "${ISTVIDEO_HOCH}" != "${SOLLVIDEO_HOCH}" ] ; then
-        echo "# - 116: Breit und Hoch
+        echo "# - 126: Breit und Hoch
         Die Bildhoehe soll geaendert werden.
         " | tee -a ${AUSGABEDATEI}.log
         SKALIEREN="Ja"
@@ -122,7 +132,7 @@ fi
 
 # CROP-Bildbreite
 if [ "${CROPVIDEOBREIT}" != "${SOLLVIDEOBREIT}" ] ; then
-        echo "# - 125: Breit und Hoch
+        echo "# - 135: Breit und Hoch
         Die Bildbreite soll geaendert werden.
         " | tee -a ${AUSGABEDATEI}.log
         SKALIEREN="Ja"
@@ -130,7 +140,7 @@ fi
 
 # CROP-Bildhoehe
 if [ "${CROPVIDEO_HOCH}" != "${SOLLVIDEO_HOCH}" ] ; then
-        echo "# - 133: Breit und Hoch
+        echo "# - 143: Breit und Hoch
         Die Bildhoehe soll geaendert werden.
         " | tee -a ${AUSGABEDATEI}.log
         SKALIEREN="Ja"
@@ -139,7 +149,7 @@ fi
 
 # Bildformat skalieren
 if [ "${SKALIEREN}" == "Ja" ] ; then
-        echo "# - 142: Breit und Hoch
+        echo "# - 152: Breit und Hoch
         Das Bildformat skalieren.
         " | tee -a ${AUSGABEDATEI}.log
 
@@ -153,7 +163,7 @@ fi
 #------------------------------------------------------------------------------#
 ### wenn erforderlich, dann das Seitenverhaeltnis des Bildes setzen
 
-echo "# - 156 Ende: Breit und Hoch
+echo "# - 166 Ende: Breit und Hoch
 INVIDEOBREIT='${INVIDEOBREIT}'
 INVIDEO_HOCH='${INVIDEO_HOCH}'
 
