@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014061600"
+VERSION="v2014112300"
 
 
 echo "
@@ -21,27 +21,7 @@ echo "# - 20: CROP
 CROP_PARAMETER='${CROP_PARAMETER}'
 " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-if [ -z "${CROP_PARAMETER}" ] ; then
-        #----------------------------------------------------------------------#
-
-        CROPVIDEOBREIT="${ISTVIDEOBREIT}"
-        CROPVIDEO_HOCH="${ISTVIDEO_HOCH}"
-        CROPVIDEOPixel="${ISTVIDEOPixel}"
-        CROPVIDEOPixBr="${ISTVIDEOPixBr}"
-        CROPVIDEODispl="${ISTVIDEODispl}"
-        CROPVIDEODisBr="${ISTVIDEODisBr}"
-
-        echo "# - 34: CROP
-        CROPVIDEOBREIT='${CROPVIDEOBREIT}'
-        CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
-        CROPVIDEOPixel='${CROPVIDEOPixel}'
-        CROPVIDEOPixBr='${CROPVIDEOPixBr}'
-        CROPVIDEODispl='${CROPVIDEODispl}'
-        CROPVIDEODisBr='${CROPVIDEODisBr}'
-        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
-
-        #----------------------------------------------------------------------#
-else
+if [ -n "${CROP_PARAMETER}" ] ; then
         #----------------------------------------------------------------------#
         #
         # Dem Parameter "-crop" sollen jeweils die Anzahl der unerwuenschten
