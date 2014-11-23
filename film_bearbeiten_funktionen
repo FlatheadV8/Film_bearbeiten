@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112200"
+VERSION="v2014112300"
 
 
 echo "
@@ -868,7 +868,7 @@ STDFORMAT()
 	4='${4}'
 	" >> ${AUSGABEDATEI}.log
 
-        FORMATPOSITION="$(echo "${3}"|awk '{sv=$1; if (sv < 1.54) {if (sv == 1.33333333) a="4/3"; if (sv < 1.33333333) a=431; if (sv > 1.33333333) a=432}; if (sv >= 1.54) {if (sv == 1.77777777) a="16/9"; {if (sv < 1.77777777) a=1691; {if (sv > 1.77777777) a=1692}}}; print a}')"
+        FORMATPOSITION="$(echo "${3}"|awk '{sv=$1; if (sv < 1.54) {if (sv == 1.33333) a="4/3"; if (sv < 1.33333) a=431; if (sv > 1.33333) a=432}; if (sv >= 1.54) {if (sv == 1.77778) a="16/9"; {if (sv < 1.77778) a=1691; {if (sv > 1.77778) a=1692}}}; print a}')"
 
         echo "# - 14-2: STDFORMAT
         FORMATPOSITION='${FORMATPOSITION}'
