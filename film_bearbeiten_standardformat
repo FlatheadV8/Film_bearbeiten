@@ -105,6 +105,17 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         	ZVIDEODispl="$(echo "${ZVIDEODisBr}"|awk -F'/' '{print $1/$2}')"
         fi
 
+        #----------------------------------------------------------------------#
+        ### Berechnung - Anfang
+        ### wenn es bereits ein Standardformat ist,
+        ### dann braucht hier nicht gerechnet werden
+
+        if [ "${ZVIDEODisBr}" != "4/3" ] ; then
+
+        if [ "${ZVIDEODisBr}" != "16/9" ] ; then
+
+        #----------------------------------------------------------------------#
+
         ### Ausgabe: "Seitenverhaeltnis" "Bildbreite" "Bildhoehe" "linker schwarzer Balken" "oberer schwarzer Balken"
         echo "
         # - 100: standardformat
@@ -320,6 +331,13 @@ if [ "${STANDARDBILDFORMAT}" == "Ja" ] ; then
         STDVIDEODisBr='${STDVIDEODisBr}'
         " | tee -a ${AUSGABEDATEI}.log
 
+        #----------------------------------------------------------------------#
+        ### Berechnung - Ende
+
+        fi
+
+        fi
+
 #==============================================================================#
 
 fi
@@ -355,5 +373,5 @@ STDVIDEODisBr='${STDVIDEODisBr}'
 
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
-#----------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 " | tee -a ${AUSGABEDATEI}.log
