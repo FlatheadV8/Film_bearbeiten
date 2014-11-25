@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112300"
+VERSION="v2014112400"
 
 
 echo "
@@ -284,10 +284,10 @@ TON_EXTRAHIEREN()
 
                 echo "# - 6-2: TON_EXTRAHIEREN
                 # AudioSpur aus der Datei im Zwischenformat extrahieren
-                ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
+                ffmpeg -i ${1} -vn -map 0:a:${TS} ${AC} -async 0 -c:a pcm_s16le -y ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
                 " | tee -a ${AUSGABEDATEI}.log
 
-                ffmpeg -y -i ${1} -vn -map 0:a:${TS} -async 0 -c:a pcm_s16le ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
+                ffmpeg -i ${1} -vn -map 0:a:${TS} ${AC} -async 0 -c:a pcm_s16le -y ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
 
                 if [ ! -s ${2}_audiospur_${i}.wav ] ; then
                         echo "# - 6-3: TON_EXTRAHIEREN
@@ -382,11 +382,11 @@ TON_TRANS()
                         # - 7-4: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${2}_audiospur_${i}.ac3
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3
                         mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${2}_audiospur_${i}.ac3 && mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3 && mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "aac" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-5: TON_TRANS
@@ -402,21 +402,21 @@ TON_TRANS()
                         # - 7-6: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                         mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp2" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-7: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${2}_audiospur_${i}.mp2
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${AC} ${2}_audiospur_${i}.mp2
                         mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${2}_audiospur_${i}.mp2 && mv -vf ${2}_audiospur_${i}.mp2 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${AC} ${2}_audiospur_${i}.mp2 && mv -vf ${2}_audiospur_${i}.mp2 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp3" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-8: TON_TRANS
@@ -432,11 +432,11 @@ TON_TRANS()
                         # - 7-9: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                         mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "ogg" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-10: TON_TRANS
