@@ -1,5 +1,5 @@
 
-Stand: 2014-11-22 00
+Stand: 2014-11-24 00
 
 HILFE:
     -hilfe
@@ -25,11 +25,14 @@ OUTPUT-Parameter; die sind erforderlich, wenn die Geometrie des Bildes veränder
 ASPECT:
     -odar 16/9
 
-ID der gewünschten Tonspur (Audio-ID):
-    -anr 1
+Nummer der gewünschten Untertitel-Spur:
+    -unter 2
 
-gewuenschte Anzahl der Ausgabe-Tonspuren
-    -aspuren 2
+Nummer der gewünschten Ton-Spur:
+    -anr 3
+
+gewuenschte Anzahl der Ausgabe-Ton-Kanäle:
+    -akanal 2
 
 Audioqualität (Std.: 5; mögliche Werte: 0-10):
     -aqual 5
@@ -82,7 +85,8 @@ die Ausgabe soll quadratische Bildpunkte haben
     -quad
 
 es wird direkt in einem Arbeitsschritt (mit FFmpeg) transkodiert, ohne erweiterte Funktionen wie z.B. die Schnittfunktion
-  hiermit ist nur das möglich, was FFmpeg kann
+  (es kann nur ein einziges zusammenhängendes Stück rausgeschnitten werden), mit dieser Option ist nur das möglich,
+  was FFmpeg in einem einzigen Durchlauf kann
     -direkt
 
 Profil:
@@ -116,9 +120,6 @@ Rauschunterdrückungswert:
 
 Bild auf diesen Wert scalieren:
     -skal 640x512
-
-Nummer der gewünschten TonSpur:
-    -ts 2
 
 Name des Zielvideos (ohne Endung):
     -raus Alf_avc
