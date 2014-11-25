@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112200"
+VERSION="v2014112400"
 
 
 echo "
@@ -69,7 +69,7 @@ fi
 #------------------------------------------------------------------------------#
 ### Profildaten festlegen
 
-echo "# - 71: Profil
+echo "# - 72: Profil
 PPROFIL='${PPROFIL}'
 "
 ANPASSUNG=""
@@ -83,7 +83,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VIDEOCODEC="h263"	# max. Bit-Rate (Video): ~200k
                 VIDEOOPTION="-b:v 200k -s qcif -r 15"
                 AUDIOCODEC="libfaac"	# max. Bit-Rate (Audio): 64k
-                AUDIOOPTION="-ar 24k -ab 64k -ac 1"
+                AUDIOOPTION="-ar 24k -ab 64k"
+                AUDIOKANAELE="1"
                 CONTAINER="3gp"
                 PBILDBREITE="176"
                 PBILDHOEHE="144"
@@ -136,7 +137,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VIDEOCODEC="libx264"    # ASP (MPEG4p2), AVC (MPEGp10) / max. Video-Bit-Rate: ~1600k
                 VIDEOOPTION=""
                 AUDIOCODEC="libfaac"    # "non-free"-Lizenz / max. Audio-Bit-Rate: 160k
-                AUDIOOPTION="-ar 44100 -ac 2"
+                AUDIOOPTION="-ar 44100"
+                AUDIOKANAELE="2"
                 CONTAINER="mp4"         # mp4 m4v mov
                 #VBITRTEILER="370"
                 PBILDBREITE="1024"      # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
@@ -151,7 +153,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 768k
                 VIDEOOPTION=""
                 AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
                 CONTAINER="avi"
                 PBILDQUALIT="3"
                 PTONQUALIT="4"
@@ -162,7 +165,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 3072k
                 VIDEOOPTION=""
                 AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
                 CONTAINER="avi"
                 PBILDQUALIT="5"
                 PTONQUALIT="4"
@@ -173,7 +177,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 8192k
                 VIDEOOPTION=""
                 AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
                 CONTAINER="avi"
                 PBILDQUALIT="4"
                 PTONQUALIT="5"
@@ -197,7 +202,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VIDEOOPTION=""
                 #AUDIOCODEC="mp3"        # lame
                 AUDIOCODEC="libmp3lame" # ffmpeg
-                AUDIOOPTION="-ac 2"
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
@@ -217,7 +223,7 @@ if [ -n "${PPROFIL}" ] ; then
                 VF="@BILDAUSSCH@@BILDSKALIEREN@"
                 ;;
         *)
-                echo "# - 291: Profil
+                echo "# - 226: Profil
                 aus folgenden Profilen kann eines ausgewählt werden:
                 -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
                 -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
@@ -244,7 +250,7 @@ fi
 #------------------------------------------------------------------------------#
 ### Bildformate festlegen
 
-echo "# - 318: Profil
+echo "# - 253: Profil
 BILDFORMAT='${BILDFORMAT}'
 "
 if [ -n "${BILDFORMAT}" ] ; then
@@ -276,7 +282,7 @@ if [ -n "${BILDFORMAT}" ] ; then
                 PBILDHOEHE="576"
                 ;;
         *)
-                echo "# - 350: Profil
+                echo "# - 285: Profil
                 aus folgenden Bildformaten kann eines ausgewählt werden:
                 -bildformat sqcif    entspricht    -skal 128x96
                 -bildformat qcif     entspricht    -skal 176x144
@@ -519,6 +525,15 @@ fi
 
 
 #------------------------------------------------------------------------------#
+### Tonkanäle pro Tonspur
+
+if [ -n "${SOLLAUDIOKANAELE}" ] ; then
+        AC="-ac ${SOLLAUDIOKANAELE}"
+elif [ -n "${AUDIOKANAELE}" ] ; then
+        AC="-ac ${AUDIOKANAELE}"
+fi
+
+#------------------------------------------------------------------------------#
 ### Tabelle der Aspect-Formate (steht so codiert im MPEG2-Container)
 
 ASPTTAB="
@@ -528,7 +543,7 @@ ASPTTAB="
 4 2.21:1
 "
 
-echo "# - 602: Ende - Profile
+echo "# - 546: Ende - Profile
 PPROFIL='${PPROFIL}'
 BILDFORMAT='${BILDFORMAT}'
 
