@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112200"
+VERSION="v2014112400"
 
 
 echo "
@@ -130,8 +130,12 @@ while [ "${#}" -ne "0" ] ; do
                         SOLLAUDIOSPURNR="${2}"                  # die Audio-Spur-Nummer: "1" fuer die erste Audiospur (auch mehrere kommasepariert möglich)
                         shift
                         ;;
+                -akanal)
+                        SOLLAUDIOKANAELE="${2}"                 # Anzahl der Audio-Kanäle: "2" fuer Stereo
+                        shift
+                        ;;
                 -unter)
-                        UNTERTITELPARAM="${2}"                  # die Untertitel-ID, die in der Video-Datei drin steht
+                        SOLLUNTERTITELNR="${2}"                 # die Untertitel-ID, die in der Video-Datei drin steht
                         shift
                         ;;
                 -syncstretch)
