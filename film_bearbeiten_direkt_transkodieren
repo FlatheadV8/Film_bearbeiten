@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112200"
+VERSION="v2014112500"
 
 
 echo "
@@ -26,21 +26,39 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
     case "${PPROFIL}" in
         3gp|sp3|sp3l3|em880|ipad|aspl3|aspl4|aspl5|dx50|avc|x264|xmp3|xogg)
                 echo "# - 28: DIREKT
-                #----------------------------------------------------------------------#
+                #--------------------------------------------------------------#
                 direktes transkodieren beginnt
-                "
+                " | tee -a ${AUSGABEDATEI}.log
 
-                #----------------------------------------------------------------------#
+                #--------------------------------------------------------------#
                 ### Audio-Qualitaet
                 if [ -n "${FFACODEC}" ] ; then
                          FFAACQUALI="-b:a ${ABITR}k"
                          FFAUDIOCODEC="-c:a ${FFACODEC}"
                 fi
 
-                #----------------------------------------------------------------------#
+                #--------------------------------------------------------------#
+                ### Audio-Spur
+                if [ -n "${SOLLAUDIOSPURNR}" ] ; then
+                        AUDIOSPUR="-map 0:a:${SOLLAUDIOSPURNR}"
+                        FILMSPUR="-map 0:v"
+                fi
+
+                #--------------------------------------------------------------#
+                ### Untertitel-Spur
+                if [ -n "${SOLLUNTERTITELNR}" ] ; then
+                        UNTERTITELSPUR="-map 0:s:${SOLLUNTERTITELNR}"
+                        FILMSPUR="-map 0:v"
+                fi
+
+                #--------------------------------------------------------------#
                 ### Bildbreite
                 if [ -z "${SOLLVIDEOBREIT}" ] ; then
                         SOLLVIDEOBREIT="10000000"
+                fi
+
+                if [ -z "${CROPVIDEOBREIT}" ] ; then
+                        CROPVIDEOBREIT="10000000"
                 fi
 
                 if [ -n "${PBILDBREITE}" ] ; then
@@ -57,10 +75,14 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                         FFVIDEOBREIT="${CROPVIDEOBREIT}"
                 fi
 
-                #----------------------------------------------------------------------#
+                #--------------------------------------------------------------#
                 ### Bildhoehe
                 if [ -z "${SOLLVIDEO_HOCH}" ] ; then
                         SOLLVIDEO_HOCH="1000000"
+                fi
+
+                if [ -z "${CROPVIDEO_HOCH}" ] ; then
+                        CROPVIDEO_HOCH="1000000"
                 fi
 
                 if [ -n "${PBILDHOEHE}" ] ; then
@@ -77,13 +99,13 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                         FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
                 fi
 
-                #----------------------------------------------------------------------#
+                #--------------------------------------------------------------#
                 ### Video-Qualitaet
                 if [ -n "${VBITRTEILER}" ] ; then
                          FFVIDEOQUALI="-b:v $(echo "${FFVIDEOBREIT} ${FFVIDEO_HOCH} ${VBITRTEILER}" | awk '{printf "%.0f\n", $1 * $2 / $3}')k"
                 fi
 
-                #----------------------------------------------------------------------#
+                #--------------------------------------------------------------#
                 ### Bildausschnitt
                 if [ -n "${CROP_OPTION}" ] ; then
                         # crop=width:height:left:top
@@ -102,10 +124,39 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                         FFBILDSKALIEREN="scale,"
                 fi
 
+                #--------------------------------------------------------------#
+                ### Film zuschneiden
+                # Von "-schnitt '105-1250 1578.5-2498.3'" wird bei "direkt" nur
+                # "-schnitt '105-1250'" beachtet.
+
+                echo "
+                # - 133: bearbeiten
+                SCHNITTZEITEN='${SCHNITTZEITEN}'
+                Von den angegebenen Schittzeiten wird beim direkten transkodieren
+                nur der erste Teil übernommen, da es sonst nicht mehr direkt
+                möglich wäre.
+                Von "-schnitt '105-1250 1578.5-2498.3'" wird also bei "direkt" nur
+                "-schnitt '105-1250'" beachtet!
+                " | tee -a ${AUSGABEDATEI}.log
+
+                if [ -n "${SCHNITTZEITEN}" ] ; then
+                        DIREKTSCHNITTZEIT="$(echo "${SCHNITTZEITEN}"|awk '{print $1}')"
+                        DIREKTSCHNITTBEGI="-ss $(echo "${DIREKTSCHNITTZEIT}"|awk -F'-' '{printf "%.0u\n", $1}')"
+                        DIREKTSCHNITTENDE="-t $(echo "${DIREKTSCHNITTZEIT}"|awk -F'-' '{printf "%.0u\n", $2 - $1}')"
+                fi
+
+                echo "
+                # - 149: bearbeiten
+                DIREKTSCHNITTZEIT='${DIREKTSCHNITTZEIT}'
+                DIREKTSCHNITTBEGI='${DIREKTSCHNITTBEGI}'
+                DIREKTSCHNITTENDE='${DIREKTSCHNITTENDE}'
+                " | tee -a ${AUSGABEDATEI}.log
+
+                #--------------------------------------------------------------#
                 ### Video-Optionen - BitRate
                 VBITR="$(echo "${PIXELBIT} ${FFVIDEOBREIT} ${FFVIDEO_HOCH}" | awk '{printf("%u\n",($1*$2*$3)/1000)}')"
 
-                echo "# - 108:
+                echo "# - 159:
                 PIXELBIT=${PIXELBIT}
                 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
                 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
@@ -137,20 +188,20 @@ if [ "${DIREKT_TRANS}" = "direkt" ] ; then
                 fi
 
                 #----------------------------------------------------------------------#
-                echo "# - 140: DIREKT
-                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
+                echo "# - 191: DIREKT
+                ffmpeg -i ${ORIGINAL} ${DIREKTSCHNITTBEGI} ${DIREKTSCHNITTENDE} ${FILMSPUR} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${AUDIOSPUR} ${AC} ${FFAACQUALI} ${FFVF} ${UNTERTITELSPUR} -y ${NEUERFILMNAME}.${CONTAINER}
                 " | tee -a ${AUSGABEDATEI}.log
 
-                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
+                ffmpeg -i ${ORIGINAL} ${DIREKTSCHNITTBEGI} ${DIREKTSCHNITTENDE} ${FILMSPUR} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${AUDIOSPUR} ${AC} ${FFAACQUALI} ${FFVF} ${UNTERTITELSPUR} -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
 
-                echo "# - 146: DIREKT
-                ffmpeg -i ${ORIGINAL} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${FFAACQUALI} ${FFVF} -y ${NEUERFILMNAME}.${CONTAINER}
+                echo "# - 197: DIREKT
+                ffmpeg -i ${ORIGINAL} ${DIREKTSCHNITTBEGI} ${DIREKTSCHNITTENDE} ${FILMSPUR} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${AUDIOSPUR} ${AC} ${FFAACQUALI} ${FFVF} ${UNTERTITELSPUR} -y ${NEUERFILMNAME}.${CONTAINER}
                 " | tee -a ${AUSGABEDATEI}.log
 
                 ls -lha ${NEUERFILMNAME}.${CONTAINER}
 
                 echo "
-                # - 153: DIREKT
+                # - 204: DIREKT
                 #----------------------------------------------------------------------#
                 ORIGINAL='${ORIGINAL}'
                 VF='${VF}'
@@ -214,7 +265,7 @@ fi
 
 #==============================================================================#
 
-echo "# - 217: DIREKT
+echo "# - 268: DIREKT
 #----------------------------------------------------------------------#
 PPROFIL='${PPROFIL}'
 #----------------------------------------------------------------------#
