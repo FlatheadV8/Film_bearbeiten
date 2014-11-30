@@ -1,273 +1,149 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112500"
+VERSION="v2014071600"
 
 
 echo "
-================================================================================
-${VERSION} | ${ABARBEITUNGSNUMMER} DIREKT
+--------------------------------------------------------------------------
+${VERSION} | ${ABARBEITUNGSNUMMER} transkodieren
 
 
 #
-# hier wird der Film in einem einzigen Arbeitsschritt direkt transkodiert,
-# ohne ihn zu schneiden
+# Hier werden die einzelnen Audio- und Video-Teile
+# - transcodiert
+# - die Filmstuecken zum kompletten Film zusammengesetzt
 #
-" | tee -a ${AUSGABEDATEI}.log
+" | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+
+
+#------------------------------------------------------------------------------#
+# Deinterlacing -> ffmpeg -filter:v yadif -vf hqdn3d,format=yuv444p -shortest -r fps -f yuv4mpegpipe
+# x264 --threads 1 --input-res 1920x1080 --demuxer raw --input-csp i420 --muxer mkv --force-cfr --bluray-compat
+# x264 --threads 1 --input-res 1920x1080 --demuxer raw --input-csp i444 --muxer mkv --force-cfr --bluray-compat
+# x264 --threads 1                       --demuxer y4m --input-csp i444 --muxer mkv --force-cfr --bluray-compat
+# x264 --vf resize:[width,height][,sar][,fittobox][,csp][,method]
+# x264 --vf resize:320,240,1/1,fittobox,i444,method=bicubic
+# x264 --vf pad:0,40,0,40 --sar 1:1
+
+# http://doom10.org/index.php?topic=177.0
+# x264 ... resize:crop(2,2,2,2),704x480,pad(0,8,0,8,008080)
+# it would crop, then resize, then pad...
+#     resize: resizes frames to the given size
+#     syntax: resize:widthxheight:method
+#     available methods: bilinear
+#                        bicubic (default)
+#                        lanczos
+#     special-case dimensions:  0 -- scale this by the same factor as the other
+#                              -1 -- do not scale
+#                              -2 -- scale this to get square pixels
+
+# -formats (-f) -> h264           : raw H.264 video format
+# -formats (-f) -> rawvideo       : raw video format
+# ffmpeg -i ${EINGABEDATEI} -r ${ISTVIDEOBilPS} -v 0 -c:v rawvideo -vsync 0 -an -r ${SOLLVIDEOBilPS} -pix_fmt yuv420p -f rawvideo -
+# -formats (-f) -> yuv4mpegpipe   : YUV4MPEG pipe format
+# ffmpeg -i ${EINGABEDATEI} -r ${ISTVIDEOBilPS} -v 0 -c:v rawvideo -vsync 0 -an -r ${SOLLVIDEOBilPS} -pix_fmt yuv420p -f yuv4mpegpipe -
+# -pix_fmt yuv420p
+# -pix_fmt yuv420p16le
+# -pix_fmt yuv420p16be
+#
+# DivX5: -f avi -c:v mpeg4 -b 800k -c:a libmp3lame -ab 128k
+# DivX5: -f avi -c:v mpeg4 -b 800k -c:a ac3 -ab 384k
+# B-frames (MPEG-4)      : -bf 2
+# I-frames (MPEG-4 / GOP): -g 4     (Schnittpunkte mit mkvmerge)
+#
+# -codec
+# mpeg4                  : MPEG-4 part 2
+# libtheora              : libtheora Theora
+# vorbis                 : Vorbis
+# aac                    : Advanced Audio Coding
+# libmp3lame             : libmp3lame MP3 (MPEG audio layer 3)
+# flac                   : FLAC (Free Lossless Audio Codec)
+# pcm_s16le              : Standard-Wave-Format
+# pcm_s24be              : bestes DVD- und BluRay-Wave-Format (96kHz)
+# pcm_f64be              : bestes Wave-Format
+# pcm_f64le              : bestes Wave-Format (Intel)
+#
+# x264:  YUV4MPEG (*.y4m)
+
+#------------------------------------------------------------------------------#
+### Tonspur transkodieren
+#faac -I 5,6 -C 6 -q 160 -w -o tonspur.m4a tonspur.wav
+
+#------------------------------------------------------------------------------#
+### Videospur transkodieren
+
+#
+# 3GP (Standard) - 192kbps
+# 3GP (HG)       - 384kbps
+#
 
 #==============================================================================#
-### direkt transkodieren, kein schneiden
+### Film transkodieren
 
-echo "# - 21: DIREKT
-PPROFIL='${PPROFIL}'
-" | tee -a ${AUSGABEDATEI}.log
+### VideoSpur transkodieren + AudioSpur auslesen
+# 1. Eingabe-Film : ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv => ${1}
+#                   ${NEUERFILMNAME}                                   => ${2}
+# 2. Video-Ausgabe: ${NEUERFILMNAME}_videospur.mkv                     => ${2}_videospur.mkv
+# 3. Audio-Ausgabe: ${NEUERFILMNAME}_audiospur.wav                     => ${2}_audiospur.wav
+# 4. Ausgabe-Film : ${NEUERFILMNAME}.mkv                               => ${2}.mkv
 
-if [ "${DIREKT_TRANS}" = "direkt" ] ; then
-    case "${PPROFIL}" in
-        3gp|sp3|sp3l3|em880|ipad|aspl3|aspl4|aspl5|dx50|avc|x264|xmp3|xogg)
-                echo "# - 28: DIREKT
-                #--------------------------------------------------------------#
-                direktes transkodieren beginnt
-                " | tee -a ${AUSGABEDATEI}.log
 
-                #--------------------------------------------------------------#
-                ### Audio-Qualitaet
-                if [ -n "${FFACODEC}" ] ; then
-                         FFAACQUALI="-b:a ${ABITR}k"
-                         FFAUDIOCODEC="-c:a ${FFACODEC}"
-                fi
+if [ -r "${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv" ] ; then
+        #----------------------------------------------------------------------#
+        echo "# - 094: Film transkodieren
+        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                #--------------------------------------------------------------#
-                ### Audio-Spur
-                if [ -n "${SOLLAUDIOSPURNR}" ] ; then
-                        AUDIOSPUR="-map 0:a:${SOLLAUDIOSPURNR}"
-                        FILMSPUR="-map 0:v"
-                fi
+        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
-                #--------------------------------------------------------------#
-                ### Untertitel-Spur
-                if [ -n "${SOLLUNTERTITELNR}" ] ; then
-                        UNTERTITELSPUR="-map 0:s:${SOLLUNTERTITELNR}"
-                        FILMSPUR="-map 0:v"
-                fi
+        #----------------------------------------------------------------------#
+        echo "# - 101: Film transkodieren
+        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                #--------------------------------------------------------------#
-                ### Bildbreite
-                if [ -z "${SOLLVIDEOBREIT}" ] ; then
-                        SOLLVIDEOBREIT="10000000"
-                fi
+        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
-                if [ -z "${CROPVIDEOBREIT}" ] ; then
-                        CROPVIDEOBREIT="10000000"
-                fi
+        #----------------------------------------------------------------------#
+        echo "# - 108: Film transkodieren
+        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                if [ -n "${PBILDBREITE}" ] ; then
-                    if [ "${SOLLVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
-                        FFVIDEOBREIT="${SOLLVIDEOBREIT}"
-                    elif [ "${CROPVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
-                        FFVIDEOBREIT="${CROPVIDEOBREIT}"
-                    elif [ "${ISTVIDEOBREIT}" -le "${PBILDBREITE}" ] ; then
-                        FFVIDEOBREIT="${ISTVIDEOBREIT}"
-                    else
-                        FFVIDEOBREIT="${PBILDBREITE}"
-                    fi
-                else
-                        FFVIDEOBREIT="${CROPVIDEOBREIT}"
-                fi
+        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
-                #--------------------------------------------------------------#
-                ### Bildhoehe
-                if [ -z "${SOLLVIDEO_HOCH}" ] ; then
-                        SOLLVIDEO_HOCH="1000000"
-                fi
+        #----------------------------------------------------------------------#
+        echo "# - 115: Film transkodieren
+        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                if [ -z "${CROPVIDEO_HOCH}" ] ; then
-                        CROPVIDEO_HOCH="1000000"
-                fi
+        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
 
-                if [ -n "${PBILDHOEHE}" ] ; then
-                    if [ "${SOLLVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
-                        FFVIDEO_HOCH="${SOLLVIDEO_HOCH}"
-                    elif [ "${CROPVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
-                        FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
-                    elif [ "${ISTVIDEO_HOCH}" -le "${PBILDHOEHE}" ] ; then
-                        FFVIDEO_HOCH="${ISTVIDEO_HOCH}"
-                    else
-                        FFVIDEO_HOCH="${PBILDHOEHE}"
-                    fi
-                else
-                        FFVIDEO_HOCH="${CROPVIDEO_HOCH}"
-                fi
+        #----------------------------------------------------------------------#
+        echo "# - 122: Film transkodieren
+        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                #--------------------------------------------------------------#
-                ### Video-Qualitaet
-                if [ -n "${VBITRTEILER}" ] ; then
-                         FFVIDEOQUALI="-b:v $(echo "${FFVIDEOBREIT} ${FFVIDEO_HOCH} ${VBITRTEILER}" | awk '{printf "%.0f\n", $1 * $2 / $3}')k"
-                fi
+        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+else
+        #----------------------------------------------------------------------#
+        echo "# - 129: Film transkodieren
+        '${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv' konnte nicht gefunden werden.
+        ABBRUCH!
+        " | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
 
-                #--------------------------------------------------------------#
-                ### Bildausschnitt
-                if [ -n "${CROP_OPTION}" ] ; then
-                        # crop=width:height:left:top
-                        # FFBILDAUSSCH="${CROP_OPTION}"
-                        FFBILDAUSSCH="$(echo "${CROP_OPTION}" | sed 's/[,]//g;s/.*/&,/')"
-                fi
-
-                ### Bildskalierung
-                if [ -n "${FFVIDEOBREIT}" ] ; then
-                    if [ -n "${FFVIDEO_HOCH}" ] ; then
-                        FFBILDSKALIEREN="scale=${FFVIDEOBREIT}:${FFVIDEO_HOCH},"
-                    else
-                        FFBILDSKALIEREN="scale,"
-                    fi
-                else
-                        FFBILDSKALIEREN="scale,"
-                fi
-
-                #--------------------------------------------------------------#
-                ### Film zuschneiden
-                # Von "-schnitt '105-1250 1578.5-2498.3'" wird bei "direkt" nur
-                # "-schnitt '105-1250'" beachtet.
-
-                echo "
-                # - 133: bearbeiten
-                SCHNITTZEITEN='${SCHNITTZEITEN}'
-                Von den angegebenen Schittzeiten wird beim direkten transkodieren
-                nur der erste Teil übernommen, da es sonst nicht mehr direkt
-                möglich wäre.
-                Von "-schnitt '105-1250 1578.5-2498.3'" wird also bei "direkt" nur
-                "-schnitt '105-1250'" beachtet!
-                " | tee -a ${AUSGABEDATEI}.log
-
-                if [ -n "${SCHNITTZEITEN}" ] ; then
-                        DIREKTSCHNITTZEIT="$(echo "${SCHNITTZEITEN}"|awk '{print $1}')"
-                        DIREKTSCHNITTBEGI="-ss $(echo "${DIREKTSCHNITTZEIT}"|awk -F'-' '{printf "%.0u\n", $1}')"
-                        DIREKTSCHNITTENDE="-t $(echo "${DIREKTSCHNITTZEIT}"|awk -F'-' '{printf "%.0u\n", $2 - $1}')"
-                fi
-
-                echo "
-                # - 149: bearbeiten
-                DIREKTSCHNITTZEIT='${DIREKTSCHNITTZEIT}'
-                DIREKTSCHNITTBEGI='${DIREKTSCHNITTBEGI}'
-                DIREKTSCHNITTENDE='${DIREKTSCHNITTENDE}'
-                " | tee -a ${AUSGABEDATEI}.log
-
-                #--------------------------------------------------------------#
-                ### Video-Optionen - BitRate
-                VBITR="$(echo "${PIXELBIT} ${FFVIDEOBREIT} ${FFVIDEO_HOCH}" | awk '{printf("%u\n",($1*$2*$3)/1000)}')"
-
-                echo "# - 159:
-                PIXELBIT=${PIXELBIT}
-                ISTVIDEOBREIT='${ISTVIDEOBREIT}'
-                ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
-                CROPVIDEOBREIT='${CROPVIDEOBREIT}'
-                CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
-                SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
-                SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
-                FFVIDEOBREIT=${FFVIDEOBREIT}
-                FFVIDEO_HOCH=${FFVIDEO_HOCH}
-                VBITR=${VBITR}
-                " | tee -a ${AUSGABEDATEI}.log
-
-                VBITR="$(echo "${PIXELBIT} ${FFVIDEOBREIT} ${FFVIDEO_HOCH}" | awk '{printf("%u\n",($1*$2*$3)/1000)}')"
-                if [ -n "${VIDEOOPTION}" ] ; then
-                        FFVIDEOOPTION="$(echo "${VIDEOOPTION}" | sed "s/@VBITR@/${VBITR}/g")"
-                fi
-
-                if [ -z "${VBITR}" ] ; then
-                        echo "die Video-Bit-Rate ist mit '${VBITR}' falsch gesetzt..." | tee -a ${AUSGABEDATEI}.log
-                        exit 1
-                elif [ "${VBITR}" -eq "0" ] ; then
-                        echo "die Video-Bit-Rate ist mit '${VBITR}' falsch gesetzt..." | tee -a ${AUSGABEDATEI}.log
-                        exit 1
-                fi
-
-                ### Video-Filter
-                if [ -n "${VF}" ] ; then
-                        FFVF="-vf $(echo "${VF}" | sed "s/@BILDAUSSCH@/${FFBILDAUSSCH}/g;s/@BILDSKALIEREN@/${FFBILDSKALIEREN}/g;s/@BILDBREITE@/${FFVIDEOBREIT}/g;s/@BILDHOEHE@/${FFVIDEO_HOCH}/g;s/[,]$//g;s/[,][ ]/ /g")"
-                fi
-
-                #----------------------------------------------------------------------#
-                echo "# - 191: DIREKT
-                ffmpeg -i ${ORIGINAL} ${DIREKTSCHNITTBEGI} ${DIREKTSCHNITTENDE} ${FILMSPUR} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${AUDIOSPUR} ${AC} ${FFAACQUALI} ${FFVF} ${UNTERTITELSPUR} -y ${NEUERFILMNAME}.${CONTAINER}
-                " | tee -a ${AUSGABEDATEI}.log
-
-                ffmpeg -i ${ORIGINAL} ${DIREKTSCHNITTBEGI} ${DIREKTSCHNITTENDE} ${FILMSPUR} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${AUDIOSPUR} ${AC} ${FFAACQUALI} ${FFVF} ${UNTERTITELSPUR} -y ${NEUERFILMNAME}.${CONTAINER} 2>&1 | tee -a ${AUSGABEDATEI}.log
-
-                echo "# - 197: DIREKT
-                ffmpeg -i ${ORIGINAL} ${DIREKTSCHNITTBEGI} ${DIREKTSCHNITTENDE} ${FILMSPUR} -c:v ${VIDEOCODEC} ${FFVIDEOOPTION} ${FFVIDEOQUALI} ${FFAUDIOCODEC} ${AUDIOOPTION} ${AUDIOSPUR} ${AC} ${FFAACQUALI} ${FFVF} ${UNTERTITELSPUR} -y ${NEUERFILMNAME}.${CONTAINER}
-                " | tee -a ${AUSGABEDATEI}.log
-
-                ls -lha ${NEUERFILMNAME}.${CONTAINER}
-
-                echo "
-                # - 204: DIREKT
-                #----------------------------------------------------------------------#
-                ORIGINAL='${ORIGINAL}'
-                VF='${VF}'
-
-                ISTVIDEOBREIT='${ISTVIDEOBREIT}'
-                ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
-                ISTVIDEOPixBr='${ISTVIDEOPixBr}'
-                ISTVIDEOPixel='${ISTVIDEOPixel}'
-                ISTVIDEOBilPS='${ISTVIDEOBilPS}'
-                ISTVIDEODisBr='${ISTVIDEODisBr}'
-                ISTVIDEODispl='${ISTVIDEODispl}'
-
-                CROPVIDEOBREIT='${CROPVIDEOBREIT}'
-                CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
-                CROPVIDEOPixBr='${CROPVIDEOPixBr}'
-                CROPVIDEOPixel='${CROPVIDEOPixel}'
-                CROPVIDEOBilPS='${CROPVIDEOBilPS}'
-                CROPVIDEODisBr='${CROPVIDEODisBr}'
-                CROPVIDEODispl='${CROPVIDEODispl}'
-                CROP_OPTION='${CROP_OPTION}'
-
-                SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
-                SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
-                SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
-                SOLLVIDEOPixel='${SOLLVIDEOPixel}'
-                SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
-                SOLLVIDEODisBr='${SOLLVIDEODisBr}'
-                SOLLVIDEODispl='${SOLLVIDEODispl}'
-
-                BILDQUALIT='${BILDQUALIT}'
-                SOLLCRF='${SOLLCRF}'
-                VIDEOCODEC='${VIDEOCODEC}'
-
-                PIXELBIT='${PIXELBIT}'
-                VIDEOOPTION='${VIDEOOPTION}'
-                FFVIDEOOPTION='${FFVIDEOOPTION}'
-                VBITR='${VBITR}'
-
-                AUDIOCODEC='${AUDIOCODEC}'
-                FFACODEC='${FFACODEC}'
-                FFAUDIOCODEC='${FFAUDIOCODEC}'
-                AUDIOOPTION='${AUDIOOPTION}'
-
-                PBILDBREITE='${PBILDBREITE}'
-                PBILDHOEHE='${PBILDHOEHE}'
-                FFVIDEOBREIT='${FFVIDEOBREIT}'
-                FFVIDEO_HOCH='${FFVIDEO_HOCH}'
-                FFBILDAUSSCH="${FFBILDAUSSCH}"
-
-                FFVF='${FFVF}'
-                NEUERFILMNAME='${NEUERFILMNAME}'
-                CONTAINER='${CONTAINER}'
-                #----------------------------------------------------------------------#
-                Ende DIREKT
-                " | tee -a ${AUSGABEDATEI}.log
-
-                exit 0
-                ;;
-    esac
+        exit 1
 fi
 
-#==============================================================================#
+#------------------------------------------------------------------------------#
+### aufräumen
 
-echo "# - 268: DIREKT
-#----------------------------------------------------------------------#
-PPROFIL='${PPROFIL}'
-#----------------------------------------------------------------------#
-Ende DIREKT
-" | tee -a ${AUSGABEDATEI}.log
+date +'%F %T' | tee -a ${NEUESFILMVERZ}/${NEUERFILMNAME}.log
+
+#exit
+rm -fv *${ZUFALLSNR}*
+rm -fv ${FILMSTUECK}_videospur.mkv
+rm -fv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
+rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv
+rm -fv ${NEUERFILMNAME}_audiospur_*
+rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv
+rm -fv ${NEUERFILMNAME}_zwischenformat_originalton.mkv
