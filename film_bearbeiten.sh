@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #set -x
-VERSION="v2014110800"
+VERSION="v2015092700"
 
 #------------------------------------------------------------------------------#
 ### Arbeitsweise
@@ -34,6 +34,7 @@ VERSION="v2014110800"
 PROFILE="high"                          # Standardwert: es wird zur Zeit nur das Profil "high" unterstützt
 
 ### Standardwerte für nicht übergebene Parameter
+P_AAC_CODEC="libfaac"                   # leider ist das freie "aac" noch nicht fertig, deshalb verwenden wir erstmal "libfaac"
 TESTSZ="300-330"
 SOLLTONSPUREN="2"
 AS="NEIN"                               # im Standard kein Audio-stretch, zu aktivieren mit "-syncstretch"
@@ -59,21 +60,25 @@ fi
 ABARBEITUNGSNUMMER="0"
 #==============================================================================#
 MEINVERZEICHNIS="$(dirname ${0})"
-. ${MEINVERZEICHNIS}/film_bearbeiten_funktionen                            || exit 1
-. ${MEINVERZEICHNIS}/film_bearbeiten_parameter                             || exit 1
-. ${MEINVERZEICHNIS}/film_bearbeiten_profile                               || exit 1
-. ${MEINVERZEICHNIS}/film_bearbeiten_programme                             || exit 1
-. ${MEINVERZEICHNIS}/film_bearbeiten_eigenschaften_lesen                   || exit 1    # ist noch nicht fertig
 
-. ${MEINVERZEICHNIS}/film_bearbeiten_crop                                  || exit 1    # crop
-. ${MEINVERZEICHNIS}/film_bearbeiten_direkt_transkodieren                  || exit 1    # mit FFmpeg direkt transkodieren, kein schneiden
-. ${MEINVERZEICHNIS}/film_bearbeiten_quadratische_bildpunkte               || exit 1    # QuadratischePixel => Blu-Ray-Format
-. ${MEINVERZEICHNIS}/film_bearbeiten_standardformat                        || exit 1    # Standard-Format => 4/3 oder 16/9
+ABARBEITUNGSNUMMER="1"								# Offset zum zaehlen
 
-. ${MEINVERZEICHNIS}/film_bearbeiten_breit_und_hoch                        || exit 1    # wenn noetig, die Breite bzw. Hoehe ermitteln
-. ${MEINVERZEICHNIS}/film_bearbeiten_bluray-kompatible_parameter_ermitteln || exit 1    # Blu-Ray-Kode
+# ${MEINVERZEICHNIS}/film_bearbeiten_01_hilfe.sht
+. ${MEINVERZEICHNIS}/film_bearbeiten_02_funktionen.sht                            || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_03_parameter.sht                             || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_04_profile.sht                               || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_05_programme.sht                             || exit 1
+. ${MEINVERZEICHNIS}/film_bearbeiten_06_eigenschaften_lesen.sht                   || exit 1    # ist noch nicht fertig
 
-. ${MEINVERZEICHNIS}/film_bearbeiten_bearbeiten                            || exit 1    # in das Zwischenformat transkodiert | zerschneiden | wieder zum Film zusammensetzen
-. ${MEINVERZEICHNIS}/film_bearbeiten_seitenverhaeltnis                     || exit 1    # das richtige Seitenverhaeltnis ermitteln
-. ${MEINVERZEICHNIS}/film_bearbeiten_transkodieren                         || exit 1    # in Audio- und Video-Spur zerlegt | transkodieren | wieder zum Film zusammenmuxen
+. ${MEINVERZEICHNIS}/film_bearbeiten_07_crop.sht                                  || exit 1    # crop
+. ${MEINVERZEICHNIS}/film_bearbeiten_08_standardformat.sht                        || exit 1    # Standard-Format => 4/3 oder 16/9
+. ${MEINVERZEICHNIS}/film_bearbeiten_09_quadratische_bildpunkte.sht               || exit 1    # QuadratischePixel => Standard-Blu-Ray-Format
+. ${MEINVERZEICHNIS}/film_bearbeiten_10_direkt_transkodieren.sht                  || exit 1    # mit FFmpeg direkt transkodieren, kein schneiden
+
+. ${MEINVERZEICHNIS}/film_bearbeiten_11_breit_und_hoch.sht                        || exit 1    # wenn noetig, die Breite bzw. Hoehe ermitteln
+. ${MEINVERZEICHNIS}/film_bearbeiten_12_bluray-kompatible_parameter_ermitteln.sht || exit 1    # Blu-Ray-Kode
+
+. ${MEINVERZEICHNIS}/film_bearbeiten_13_bearbeiten.sht                            || exit 1    # in das Zwischenformat transkodiert | zerschneiden | wieder zum Film zusammensetzen
+. ${MEINVERZEICHNIS}/film_bearbeiten_14_seitenverhaeltnis.sht                     || exit 1    # das richtige Seitenverhaeltnis ermitteln
+. ${MEINVERZEICHNIS}/film_bearbeiten_15_transkodieren.sht                         || exit 1    # in Audio- und Video-Spur zerlegt | transkodieren | wieder zum Film zusammenmuxen
 #==============================================================================#
