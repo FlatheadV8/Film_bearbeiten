@@ -1,0 +1,161 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2014113000"
+
+
+echo "
+================================================================================
+${VERSION} | ${ABARBEITUNGSNUMMER} crop
+
+
+#
+# hier werden die unerwuenschten Bereiche entfernt
+#
+" | tee -a ${AUSGABEDATEI}.log
+
+#==============================================================================#
+### crop
+
+echo "# - 20: CROP
+CROP_PARAMETER='${CROP_PARAMETER}'
+" | tee -a ${AUSGABEDATEI}.log
+
+unset CROP_OPTION
+
+if [ -n "${CROP_PARAMETER}" ] ; then
+        #----------------------------------------------------------------------#
+        #
+        # Dem Parameter "-crop" sollen jeweils die Anzahl der unerwuenschten
+        # schwarzen Bildpunkte uebergeben werden,
+        # die durch CROP entfernt werden sollen.
+        #
+        #----------------------------------------------------------------------#
+
+        CROPPING="Ja"
+
+        # x264                       (crop:left,top,right,bottom): --vf crop:12,72,4,76    (720x576 -> 704x428)
+        # mencoder / ffmpeg / avconv (crop=width:height:left:top):  -vf crop=704:428:12:72 (720x576 -> 704x428)
+
+        # "8,54,8,60"   (720x576 -> 704x462)
+        # "8,72,8,72"   (720x576 -> 704x432)
+        # "12,72,4,76"  (720x576 -> 704x428)
+        # "8,118,8,118" (720x576 -> 704x340)
+        # "8,70,8,70"   (720x480 -> 704x340)
+        # "0,96,0,96"   (640x480 -> 640x288)
+
+        #----------------------------------------------------------------------#
+
+        echo "# - 49: CROP
+        ISTVIDEOPixel='${ISTVIDEOPixel}'
+
+        CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+        CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+        CROPVIDEOPixel='${CROPVIDEOPixel}'
+        CROPVIDEOPixBr='${CROPVIDEOPixBr}'
+        CROPVIDEODispl='${CROPVIDEODispl}'
+        CROPVIDEODisBr='${CROPVIDEODisBr}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #----------------------------------------------------------------------#
+        # Berechnungen
+
+        # CROP_PARAMETER: -crop 202,200,0,2
+        # VF='yadif @BILDAUSSCH@ @FFMPEGPAD@'
+
+        CROPVIDEOPixel="${ISTVIDEOPixel}"
+        CROPVIDEOBREIT="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $1}')"
+        CROPVIDEO_HOCH="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $2}')"
+        CROP_LINKS="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $3}')"
+        CROP_OBEN="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $4}')"
+        CROP_OPTION="crop=${CROPVIDEOBREIT}:${CROPVIDEO_HOCH}:${CROP_LINKS}:${CROP_OBEN}"
+
+        #----------------------------------------------------------------------#
+        ### Seitenverhaeltnis des gecroppten Bildes ermitteln
+
+        # CROPVIDEOPixBr=?
+        # CROPVIDEODispl=?
+        # CROPVIDEODisBr=?
+
+        if [ -n "${ISTVIDEOPixBr}" ] ; then
+                PIXELSEITENVERH="${ISTVIDEOPixBr}"
+        elif [ -n "${ISTVIDEOPixel}" ] ; then
+                PIXELSEITENVERH="${ISTVIDEOPixel}/1"
+        fi
+
+        if [ -z "${CROPVIDEOPixBr}" ] ; then
+                echo "# - 87: CROP
+                CROPVIDEOPixBr aus CROPVIDEOPixel berechnen...
+                FLIESSKOMMA_ZU_BRUCH ${CROPVIDEODispl}
+                " | tee -a ${AUSGABEDATEI}.log
+                CROPVIDEOPixBr="$(FLIESSKOMMA_ZU_BRUCH ${CROPVIDEOPixel})"
+        fi
+
+        echo "# - 94: CROP
+        berechne CROPVIDEODispl aus ${CROPVIDEOBREIT} ${CROPVIDEO_HOCH} ${PIXELSEITENVERH} ...
+        " | tee -a ${AUSGABEDATEI}.log
+        CROPVIDEODispl="$(echo "${CROPVIDEOBREIT} ${CROPVIDEO_HOCH} ${PIXELSEITENVERH}" | awk '{gsub("/"," ");print ($1*$3)/($2*$4)}')"
+
+        echo "# - 100: CROP
+        CROPVIDEODisBr aus CROPVIDEODispl berechnen...
+        FLIESSKOMMA_ZU_BRUCH ${CROPVIDEODispl}
+        " | tee -a ${AUSGABEDATEI}.log
+        CROPVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${CROPVIDEODispl})"
+
+        #----------------------------------------------------------------------#
+        ### SOLL-Parameter neu setzen
+
+        if [ -z "${SOLLVIDEOBREIT}" ] ; then
+                SOLLVIDEOBREIT="${CROPVIDEOBREIT}"
+                SOLLVIDEO_HOCH="${CROPVIDEO_HOCH}"
+        fi
+
+        #----------------------------------------------------------------------#
+
+        echo "# - 116: CROP
+        ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+        ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+
+        CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+        CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+        CROP_LINKS='${CROP_LINKS}'
+        CROP_OBEN='${CROP_OBEN}'
+        CROP_OPTION='${CROP_OPTION}'
+
+        CROPVIDEOPixel='${CROPVIDEOPixel}'
+        CROPVIDEOPixBr='${CROPVIDEOPixBr}'
+
+        CROPVIDEODispl='${CROPVIDEODispl}'
+        CROPVIDEODisBr='${CROPVIDEODisBr}'
+
+        SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+        SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #----------------------------------------------------------------------#
+fi
+
+VF="$(echo "${VF}" | sed "s/@BILDAUSSCH@/${CROP_OPTION}/")"
+
+#==============================================================================#
+
+echo "# - 143: CROP
+#----------------------------------------------------------------------#
+VF='${VF}'
+
+ISTVIDEOPixel='${ISTVIDEOPixel}'
+
+CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+CROPVIDEOPixel='${CROPVIDEOPixel}'
+CROPVIDEOPixBr='${CROPVIDEOPixBr}'
+CROPVIDEODispl='${CROPVIDEODispl}'
+CROPVIDEODisBr='${CROPVIDEODisBr}'
+
+CROP_OPTION='${CROP_OPTION}'
+
+SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+#----------------------------------------------------------------------#
+Ende CROP
+" | tee -a ${AUSGABEDATEI}.log
