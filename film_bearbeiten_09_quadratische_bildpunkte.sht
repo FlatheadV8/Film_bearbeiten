@@ -1,0 +1,163 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2015092700"
+
+
+echo "
+==========================================================================
+${VERSION} | ${ABARBEITUNGSNUMMER} quadratische Bildpunkte
+
+
+#
+# Hier wird das Bild in ein Standardformat umgerechnet
+#
+" | tee -a ${AUSGABEDATEI}.log
+
+
+#==============================================================================#
+### hier wird das Bildformat fuer quadratische Pixel neu berechnet
+
+
+#------------------------------------------------------------------------------#
+# den aktuellen AVC-Level ermitteln
+ISTMAKROBLOECKE="$(AVC_MAKROBLOECKE ${ISTVIDEOBREIT} ${ISTVIDEO_HOCH})"
+ISTAVCLEVEL="$(AVC_LEVEL ${ISTMAKROBLOECKE} ${ISTVIDEOBilPS})"
+
+echo "# - 27: quadratische Bildpunkte
+ISTMAKROBLOECKE='${ISTMAKROBLOECKE}'
+ISTAVCLEVEL='${ISTAVCLEVEL}'
+QUADRATISCHEPUNKTE='${QUADRATISCHEPUNKTE}'
+" | tee -a ${AUSGABEDATEI}.log
+
+if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
+
+        #----------------------------------------------------------------------#
+        echo "# - 36: quadratische Bildpunkte
+        ISTVIDEOPixel='${ISTVIDEOPixel}'
+        ISTVIDEOPixBr='${ISTVIDEOPixBr}'
+
+        SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+        SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+        SOLLVIDEOPixel='${SOLLVIDEOPixel}'
+        SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
+        SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+
+        CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+        CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+        CROPVIDEOPixel='${CROPVIDEOPixel}'
+        CROPVIDEOPixBr='${CROPVIDEOPixBr}'
+        CROPVIDEODispl='${CROPVIDEODispl}'
+        CROPVIDEODisBr='${CROPVIDEODisBr}'
+
+        STDVIDEOBREIT='${STDVIDEOBREIT}'
+        STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+        STDVIDEOPixel='${STDVIDEOPixel}'
+        STDVIDEOPixBr='${STDVIDEOPixBr}'
+        STDVIDEODispl='${STDVIDEODispl}'
+        STDVIDEODisBr='${STDVIDEODisBr}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #----------------------------------------------------------------------#
+        ### Arbeits-Werte ermitteln
+
+        if [ -n "${CROPVIDEOBREIT}" ] ; then
+                ZBILDBREIT="${CROPVIDEOBREIT}"
+        fi
+        if [ -z "${ZBILDBREIT}" ] ; then
+                ZBILDBREIT="${ISTVIDEOBREIT}"
+        fi
+        if [ -n "${STDVIDEOBREIT}" ] ; then
+                ZBILDBREIT="${STDVIDEOBREIT}"
+        fi
+
+        if [ -n "${CROPVIDEO_HOCH}" ] ; then
+                ZBILD_HOCH="${CROPVIDEO_HOCH}"
+        fi
+        if [ -z "${ZBILD_HOCH}" ] ; then
+                ZBILD_HOCH="${ISTVIDEO_HOCH}"
+        fi
+        if [ -n "${STDVIDEO_HOCH}" ] ; then
+                ZBILD_HOCH="${STDVIDEO_HOCH}"
+        fi
+
+        if [ -n "${CROPVIDEODisBr}" ] ; then
+                ZBILDDisBr="${CROPVIDEODisBr}"
+        fi
+        if [ -z "${ZBILDDisBr}" ] ; then
+                ZBILDDisBr="${ISTVIDEODisBr}"
+        fi
+        if [ -n "${STDVIDEODisBr}" ] ; then
+                ZBILDDisBr="${STDVIDEODisBr}"
+        fi
+
+        echo "# - 94: quadratische Bildpunkte
+        ZBILDBREIT='${ZBILDBREIT}'
+        ZBILD_HOCH='${ZBILD_HOCH}'
+        ZBILDDisBr='${ZBILDDisBr}'
+        QUADRATPIXELBERECHNUNG ${ZBILDBREIT} ${ZBILD_HOCH} ${ZBILDDisBr}
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #======================================================================#
+        ### Berechnung der Aufloesung mit quadratischen Bildpunkten
+        #
+        # QUADRATPIXELBERECHNUNG Breite Hoehe  4/3
+        # QUADRATPIXELBERECHNUNG 704    576    4/3
+        # QUADRATPIXELBERECHNUNG 720    576   16/9
+        #  4/3-AUSGABE:  736 552
+        # 16/9-AUSGABE:  864 486
+        QUAD_BILD_AUFL="$(QUADRATPIXELBERECHNUNG ${ZBILDBREIT} ${ZBILD_HOCH} ${ZBILDDisBr})"
+
+        QUADVIDEOBREIT="$(echo "${QUAD_BILD_AUFL}"|awk '{print $1}')"
+        QUADVIDEO_HOCH="$(echo "${QUAD_BILD_AUFL}"|awk '{print $2}')"
+        QUADRATPIXELAUFLOESUNG="${QUADVIDEOBREIT} ${QUADVIDEO_HOCH}"
+        QUADVIDEODisBr="${ZBILDDisBr}"
+        QUADVIDEODispl="$(echo "${ZBILDDisBr}"|awk -F'[:/]' '{print $1 / $2}')"
+
+        echo "# - 117: quadratische Bildpunkte
+        QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+        QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
+        QUADVIDEODisBr='${QUADVIDEODisBr}'
+        QUADVIDEODispl='${QUADVIDEODispl}'
+
+        FBREIT='${FBREIT}'
+        FHOCH='${FHOCH}'
+        AFBREIT='${AFBREIT}'
+        AFHOCH='${AFHOCH}'
+
+        MAKROVIDEOBREIT='${MAKROVIDEOBREIT}'
+        MAKROVIDEO_HOCH='${MAKROVIDEO_HOCH}'
+        BMAKROFAKTOR='${BMAKROFAKTOR}'
+        HMAKROFAKTOR='${HMAKROFAKTOR}'
+        BILDVIDEOFAKTOR='${BILDVIDEOFAKTOR}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #----------------------------------------------------------------------#
+fi
+
+#==============================================================================#
+
+echo "# - 140 Ende: quadratische Bildpunkte
+STANDARDBILDFORMAT='${STANDARDBILDFORMAT}'
+
+QUADAVCLEVEL='${QUADAVCLEVEL}'
+ISTAVCLEVEL='${ISTAVCLEVEL}'
+SOLLAVCLEVEL='${SOLLAVCLEVEL}'
+
+CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+CROPVIDEO_HOCH='${CROPVIDEO_HOCH}'
+CROPVIDEOPixel='${CROPVIDEOPixel}'
+CROPVIDEOPixBr='${CROPVIDEOPixBr}'
+CROPVIDEODispl='${CROPVIDEODispl}'
+CROPVIDEODisBr='${CROPVIDEODisBr}'
+
+QUADRATPIXELAUFLOESUNG='${QUADRATPIXELAUFLOESUNG}'
+QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
+QUADVIDEODisBr='${QUADVIDEODisBr}'
+
+SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+#------------------------------------------------------------------------------#
+" | tee -a ${AUSGABEDATEI}.log
