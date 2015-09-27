@@ -1,0 +1,587 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2015092600"
+
+
+echo "
+--------------------------------------------------------------------------
+${VERSION} | ${ABARBEITUNGSNUMMER} Profile
+"
+
+
+#------------------------------------------------------------------------------#
+### Anzahl der nutzbaren Kerne überprüfen
+
+if [ -z "${NUTZKERNE}" ] ; then
+        # Standardwert (mögliche Werte für die nutzbaren Kerne: "0" für automatisch, und für feste Zuweisung "1"-"16")
+        NUTZKERNE="1"
+else
+        NUTZKERNE="$(echo "${NUTZKERNE} 16" | egrep -v '[^0-9 ]' | awk '{KERNE=$1; if ($1 > $2) KERNE=$2; print KERNE}')"
+fi
+
+#------------------------------------------------------------------------------#
+### auf Dezimaltrennzeichen kontrollieren
+
+DEZ_INVIDEOBREIT="$(echo "${INVIDEOBREIT}" | grep -E '[,.]')"
+DEZ_INVIDEO_HOCH="$(echo "${INVIDEO_HOCH}" | grep -E '[,.]')"
+DEZ_INVIDEOPixel="$(echo "${INVIDEOPixel}" | grep -E '[,.]')"
+INVIDEODispl="$(echo "${INVIDEODispl}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+INVIDEOBilPS="$(echo "${INVIDEOBilPS}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+
+DEZ_SOLLVIDEOBREIT="$(echo "${SOLLVIDEOBREIT}" | grep -E '[,.]')"
+DEZ_SOLLVIDEO_HOCH="$(echo "${SOLLVIDEO_HOCH}" | grep -E '[,.]')"
+DEZ_SOLLVIDEOPixel="$(echo "${SOLLVIDEOPixel}" | grep -E '[,.]')"
+SOLLVIDEODispl="$(echo "${SOLLVIDEODispl}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+SOLLVIDEOBilPS="$(echo "${SOLLVIDEOBilPS}" | tr -s '[,.]' "${AWKDEZTRENNZEICHEN}")"
+
+if [ -n "${DEZ_INVIDEOBREIT}${DEZ_INVIDEO_HOCH}${DEZ_INVIDEOPixel}${DEZ_SOLLVIDEOBREIT}${DEZ_SOLLVIDEO_HOCH}${DEZ_SOLLVIDEOPixel}" ] ; then
+        echo "${DEZ_INVIDEOBREIT} ${DEZ_INVIDEO_HOCH} ${DEZ_INVIDEOPixel} ${DEZ_SOLLVIDEOBREIT} ${DEZ_SOLLVIDEO_HOCH} ${DEZ_SOLLVIDEOPixel} darf kein Dezimalzeichen enthalten. Abbruch!"
+        exit 1
+fi
+
+#------------------------------------------------------------------------------#
+### Standard-Pixel-Format festlegen
+
+if [ -z "${SOLLVIDEOPixBr}" ] ; then
+        if [ -z "${SOLLVIDEOPixel}" ] ; then
+                if [ -z "${SOLLVIDEODisBr}" ] ; then
+                        if [ -z "${SOLLVIDEODispl}" ] ; then
+                                SOLLVIDEOPixBr="1/1"
+                                SOLLVIDEOPixel="1"
+                        fi
+                fi
+        fi
+fi
+
+#------------------------------------------------------------------------------#
+### nur für die CROP-Tests
+
+if [ "${CROPTEST}" = "JA" ] ; then
+        PPROFIL="dx50"
+        DIREKT_TRANS="direkt"
+
+        if [ -z "${SCHNITTZEITEN}" ] ; then
+                SCHNITTZEITEN="${TESTSZ}"
+        fi
+fi
+
+#------------------------------------------------------------------------------#
+### Profildaten festlegen
+
+echo "# - 72: Profil
+PPROFIL='${PPROFIL}'
+"
+ANPASSUNG=""
+if [ -n "${PPROFIL}" ] ; then
+    case "${PPROFIL}" in
+        3gp)
+                # MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
+                # optimal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b:v 200k -r 15 -c:a libfaac -ar 24k -ab 64k -ac 1 -y raus.3gp
+                # maximal: ffmpeg -i rein.mp4 -c:v h263 -s qcif -b:v 200k -r 25 -c:a libfaac -ar 24k -ab 64k -ac 2 -y raus.3gp
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="h263"	# max. Bit-Rate (Video): ~200k
+                VIDEOOPTION="-b:v 200k -s 176x144"
+                AUDIOCODEC="${P_AAC_CODEC}"	# max. Bit-Rate (Audio): 64k
+                AUDIOOPTION="-ar 24k -ab 64k"
+                AUDIOKANAELE="1"
+                CONTAINER="3gp"
+                PBILDBREITE="176"
+                PBILDHOEHE="144"
+                PBILDQUALIT="2"
+                PTONQUALIT="0"
+                PFPS="15"
+                ANPASSUNG="nein"
+                PASPECT="4/3"
+                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
+                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        sp3|sp3l3)
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video): 320k
+                VIDEOOPTION="-s 320x240"
+                AUDIOCODEC="mp2"        # max. Bit-Rate (Audio): 64k
+                AUDIOOPTION=""
+                CONTAINER="avi"
+                PBILDQUALIT="4"
+                PTONQUALIT="1"
+                PBILDBREITE="320"
+                PBILDHOEHE="240"
+                PFPS="15"
+                ANPASSUNG="nein"
+                PASPECT="4/3"
+                #VF="yadif@BILDAUSSCH@pad=in_h*4/3:in_h:\(in_h*4/3-in_w\)/2:0,scale=320:240"
+                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        em880)
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video): 320k
+                VIDEOOPTION="-s 320x240"
+                AUDIOCODEC="mp2"        # max. Bit-Rate (Audio): 64k
+                AUDIOOPTION=""
+                CONTAINER="avi"
+                PBILDQUALIT="4"
+                PTONQUALIT="1"
+                PBILDBREITE="320"
+                PBILDHOEHE="240"
+                PFPS="20"
+                ANPASSUNG="nein"
+                PASPECT="4/3"
+                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        ipad)
+                # optimal: ffmpeg -i rein.mkv -c:v libx264 -vf scale=1024:576 -c:a libfaac -b:a 128k -ar 44100 -y raus.mp4
+                # max. Aufloesung (iPad, iPad2, iPad mini): 1024:576
+                # max. Bit-Rate über alles:   2,5M
+                # max. Audio-Bit-Rate:   160k
+                # max. Audio-Sample-Rate: 48k
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="libx264"    # ASP (MPEG4p2), AVC (MPEGp10) / max. Video-Bit-Rate: ~1600k
+                VIDEOOPTION="-s 1024x576"
+                AUDIOCODEC="${P_AAC_CODEC}"    # "non-free"-Lizenz / max. Audio-Bit-Rate: 160k
+                AUDIOOPTION="-ar 44100"
+                AUDIOKANAELE="2"
+                CONTAINER="mp4"         # mp4 m4v mov
+                #VBITRTEILER="370"
+                PBILDBREITE="1024"      # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
+                PBILDHOEHE="576"        # 1024x576 ist das max. bei iPad, iPad 2 und iPad mini
+                PBILDQUALIT="3"         # bei "2" -> max. 1180k / bei "3" -> max. 1770k / bei "4" -> max. 2360k
+                PTONQUALIT="4"          # max. Audio-Bit-Rate: 160k (4: AACQUALI="130" / 5: AACQUALI="160")
+                PASPECT="16/9"
+                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        aspl3)
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 768k
+                VIDEOOPTION=""
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
+                CONTAINER="avi"
+                PBILDQUALIT="3"
+                PTONQUALIT="4"
+                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        aspl4)
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 3072k
+                VIDEOOPTION=""
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
+                CONTAINER="avi"
+                PBILDQUALIT="5"
+                PTONQUALIT="4"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        aspl5|dx50)
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="mpeg4"      # max. Bit-Rate (Video+Audio): 8192k
+                VIDEOOPTION="-tag:v DX50"
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
+                CONTAINER="avi"
+                PBILDQUALIT="4"
+                PTONQUALIT="5"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        avc|x264)
+                VPROG="ffmpeg x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
+                VIDEOOPTION=""
+                AUDIOCODEC="ac3"        # ac3 libfaac faac aac
+                AUDIOOPTION=""
+                CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
+                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        xmp3)
+                VPROG="ffmpeg x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
+                VIDEOOPTION=""
+                #AUDIOCODEC="mp3"        # lame
+                AUDIOCODEC="libmp3lame" # ffmpeg
+                AUDIOOPTION=""
+                AUDIOKANAELE="2"
+                CONTAINER="mkv"
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
+                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        xogg)
+                VPROG="ffmpeg x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
+                VIDEOOPTION=""
+                AUDIOCODEC="ogg"
+                AUDIOOPTION=""
+                CONTAINER="mkv"
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
+                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                ;;
+        *)
+                echo "# - 226: Profil
+                aus folgenden Profilen kann eines ausgewählt werden:
+                -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
+                -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
+                -profil xmp3         (Video-Codec: x264 / Audio-Codec: MP3)
+                -profil xogg         (Video-Codec: x264 / Audio-Codec: OGG)
+                -profil 3gp          (Video-Codec: x264 / Audio-Codec: AAC / Container: 3gp)
+                -profil ipad         (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4,m4v,mov)
+                -profil asp          (synonym für xvid)
+                -profil divx         (Video-Codec: DivX 4/5 / Audio-Codec: MP3)
+                -profil dx50         (Video-Codec: DivX 5 / Audio-Codec: MP3)
+                -profil sp3dx        (Video-Codec: DivX 5 / Audio-Codec: MP2)
+                -profil xvid         (Video-Codec: Xvid / Audio-Codec: MP3)
+                -profil sp3xv        (Video-Codec: Xvid / Audio-Codec: MP2)
+                -profil em880        (Video-Codec: Xvid / Audio-Codec: MP2; optimiert für den MiniPlayer 'entryx EM880RB')
+                -profil sp5dx        (Video-Codec: Xvid / Audio-Codec: MP3)
+                -profil sp5xv        (Video-Codec: Xvid / Audio-Codec: MP3)
+                ABBRUCH
+                "
+                exit 1
+                ;;
+    esac
+fi
+
+#------------------------------------------------------------------------------#
+### Bildformate festlegen
+
+echo "# - 253: Profil
+BILDFORMAT='${BILDFORMAT}'
+"
+if [ -n "${BILDFORMAT}" ] ; then
+    case "${BILDFORMAT}" in
+        sqcif)
+                PBILDBREITE="128"
+                PBILDHOEHE="96"
+                ;;
+        qcif)
+                PBILDBREITE="176"
+                PBILDHOEHE="144"
+                PAR="16/11"
+                DAR="16/9"
+                ;;
+        qvga)
+                PBILDBREITE="320"
+                PBILDHOEHE="240"
+                ;;
+        cif)
+                PBILDBREITE="352"
+                PBILDHOEHE="288"
+                ;;
+        vga)
+                PBILDBREITE="640"
+                PBILDHOEHE="480"
+                ;;
+        4cif)
+                PBILDBREITE="704"
+                PBILDHOEHE="576"
+                ;;
+        *)
+                echo "# - 285: Profil
+                aus folgenden Bildformaten kann eines ausgewählt werden:
+                -bildformat sqcif    entspricht    -skal 128x96
+                -bildformat qcif     entspricht    -skal 176x144
+                -bildformat qvga     entspricht    -skal 320x240
+                -bildformat cif      entspricht    -skal 352x288
+                -bildformat vga      entspricht    -skal 640x480
+                -bildformat 4cif     entspricht    -skal 704x576
+                ABBRUCH
+                "
+                exit 1
+                ;;
+    esac
+fi
+
+if [ "${AS}" == "JA" ] ; then
+        ASTRETCH="soundstretch"
+fi
+
+#------------------------------------------------------------------------------#
+# in Standard-Modus wird x264 verwendet
+
+VIDEOPROGR="$(echo "${VPROG}" | awk '{print $1}')"
+
+if [ -n "${VIDEOPROGR}" ] ; then
+        VIDEOPROGR="x264"
+fi
+
+#------------------------------------------------------------------------------#
+# gewünschte Soll-Parameter werden gesetzt
+
+if [ -n "${SOLLBILDQUALIT}" ] ; then
+        BILDQUALIT="${SOLLBILDQUALIT}"
+fi
+
+if [ -z "${BILDQUALIT}" ] ; then
+        BILDQUALIT="${PBILDQUALIT}"
+fi
+
+if [ -n "${SOLLTONQUALIT}" ] ; then
+        TONQUALIT="${SOLLTONQUALIT}"
+fi
+
+if [ -z "${TONQUALIT}" ] ; then
+        TONQUALIT="${PTONQUALIT}"
+fi
+
+if [ -z "${BILDBREITE}" ] ; then
+        BILDBREITE="${PBILDBREITE}"
+fi
+
+if [ -z "${BILDHOEHE}" ] ; then
+        BILDHOEHE="${PBILDHOEHE}"
+fi
+
+if [ -z "${FPS}" ] ; then
+        FPS="${PFPS}"
+fi
+
+#------------------------------------------------------------------------------#
+# Tonqualitaet entsprechend dem Audio-Encoder setzen
+
+case "${TONQUALIT}" in
+        0)
+                ABITR="64"
+                AC3QUALI="224k"
+                AACQUALI="10"
+                MP2QUALI="64k"
+                MP3QUALI="10"
+                OGGQUALI="0"
+                ;;
+        1)
+                ABITR="80"
+                AC3QUALI="224k"
+                AACQUALI="35"
+                MP2QUALI="80k"
+                MP3QUALI="9"
+                OGGQUALI="1"
+                ;;
+        2)
+                ABITR="96"
+                AC3QUALI="224k"
+                AACQUALI="70"
+                MP2QUALI="96k"
+                MP3QUALI="8"
+                OGGQUALI="2"
+                ;;
+        3)
+                ABITR="112"
+                AC3QUALI="320k"
+                AACQUALI="100"
+                MP2QUALI="112k"
+                MP3QUALI="7"
+                OGGQUALI="3"
+                ;;
+        4)
+                ABITR="128"
+                AC3QUALI="384k"
+                AACQUALI="130"
+                MP2QUALI="128k"
+                MP3QUALI="6"
+                OGGQUALI="4"
+                ;;
+        5)
+                ABITR="160"
+                AC3QUALI="448k"
+                AACQUALI="160"
+                MP2QUALI="160k"
+                MP3QUALI="5"
+                OGGQUALI="5"
+                ;;
+        6)
+                ABITR="192"
+                AC3QUALI="448k"
+                AACQUALI="200"
+                MP2QUALI="192k"
+                MP3QUALI="4"
+                OGGQUALI="6"
+                ;;
+        7)
+                ABITR="224"
+                AC3QUALI="448k"
+                AACQUALI="240"
+                MP2QUALI="224k"
+                MP3QUALI="3"
+                OGGQUALI="7"
+                ;;
+        8)
+                ABITR="256"
+                AC3QUALI="448k"
+                AACQUALI="300"
+                MP2QUALI="256k"
+                MP3QUALI="2"
+                OGGQUALI="8"
+                ;;
+        9)
+                ABITR="320"
+                AC3QUALI="448k"
+                AACQUALI="400"
+                MP2QUALI="320k"
+                MP3QUALI="1"
+                OGGQUALI="9"
+                ;;
+        10)
+                ABITR="448"
+                AC3QUALI="448k"
+                AACQUALI="500"
+                MP2QUALI="384k"
+                MP3QUALI="0"
+                OGGQUALI="10"
+                ;;
+esac
+
+#------------------------------------------------------------------------------#
+# Bildqualität entsprechend dem Video-Encoder setzen
+
+case "${BILDQUALIT}" in
+        0)
+                SOLLCRF="28"
+                PIXELBIT="1"
+                ;;
+        1)
+                SOLLCRF="27"
+                PIXELBIT="2"
+                ;;
+        2)
+                SOLLCRF="26"
+                PIXELBIT="3"
+                ;;
+        3)
+                SOLLCRF="25"
+                PIXELBIT="4"
+                ;;
+        4)
+                SOLLCRF="24"
+                PIXELBIT="5"
+                ;;
+        5)
+                SOLLCRF="23"
+                PIXELBIT="6"
+                ;;
+        6)
+                SOLLCRF="22"
+                PIXELBIT="7"
+                ;;
+        7)
+                SOLLCRF="21"
+                PIXELBIT="8"
+                ;;
+        8)
+                SOLLCRF="20"
+                PIXELBIT="9"
+                ;;
+        9)
+                SOLLCRF="19"
+                PIXELBIT="10"
+                ;;
+        10)
+                SOLLCRF="18"
+                PIXELBIT="11"
+                ;;
+esac
+
+#------------------------------------------------------------------------------#
+### ein extra gesetzter Audio-Codec überschreibt die Angabe im Profil
+
+if [ -n "${SOLLAUDIOCODEC}" ] ; then
+        AUDIOCODEC="${SOLLAUDIOCODEC}"
+        FFACODEC="${SOLLAUDIOCODEC}"
+fi
+
+if [ -n "${AUDIOCODEC}" ] ; then
+        case "${AUDIOCODEC}" in
+                wav)
+                        APROG="ffmpeg"
+                        FFACODEC="pcm_s16le"
+                        ;;
+                aac)
+                        APROG="ffmpeg"
+                        FFACODEC="aac"          # "free"-Lizenz / noch experimentell
+                        ;;
+                faac)
+                        APROG="faac"
+                        FFACODEC="aac"
+                        ;;
+                libfaac)
+                        APROG="ffmpeg"
+                        FFACODEC="libfaac"      # "non-free"-Lizenz
+                        ;;
+                mp2)
+                        APROG="ffmpeg"
+                        FFACODEC="mp2"
+                        ;;
+                mp3)
+                        APROG="lame"
+                        FFACODEC="libmp3lame"
+                        ;;
+                ogg)
+                        APROG="oggenc"
+                        FFACODEC="libvorbis"
+                        ;;
+                ac3)
+                        APROG="ffmpeg"
+                        FFACODEC="ac3"
+                        ;;
+        esac
+fi
+
+
+#------------------------------------------------------------------------------#
+### Tonkanäle pro Tonspur
+
+if [ -n "${SOLLAUDIOKANAELE}" ] ; then
+        AC="-ac ${SOLLAUDIOKANAELE}"
+elif [ -n "${AUDIOKANAELE}" ] ; then
+        AC="-ac ${AUDIOKANAELE}"
+fi
+
+#------------------------------------------------------------------------------#
+### Tabelle der Aspect-Formate (steht so codiert im MPEG2-Container)
+
+ASPTTAB="
+1 1:1
+2 4:3
+3 16:9
+4 2.21:1
+"
+
+echo "# - 546: Ende - Profile
+PPROFIL='${PPROFIL}'
+BILDFORMAT='${BILDFORMAT}'
+
+VIDEOPROGR='${VIDEOPROGR}'
+VPROG='${VPROG}'
+APROG='${APROG}'
+AUDIOCODEC='${AUDIOCODEC}'
+CONTAINER='${CONTAINER}'
+SOLLBILDQUALIT='${SOLLBILDQUALIT}'
+PBILDQUALIT='${PBILDQUALIT}'
+BILDQUALIT='${BILDQUALIT}'
+PTONQUALIT='${PTONQUALIT}'
+PBILDBREITE='${PBILDBREITE}'
+PBILDHOEHE='${PBILDHOEHE}'
+PFPS='${PFPS}'
+ANPASSUNG='${ANPASSUNG}'
+PASPECT='${PASPECT}'
+ABITR='${ABITR}'
+AACQUALI='${AACQUALI}'
+MP3QUALI='${MP3QUALI}'
+OGGQUALI='${OGGQUALI}'
+SOLLCRF='${SOLLCRF}'
+PIXELBIT='${PIXELBIT}'
+#------------------------------------------------------------------------------#
+" #| tee /tmp/Profile.txt
