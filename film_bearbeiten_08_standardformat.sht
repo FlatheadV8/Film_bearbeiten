@@ -1,0 +1,289 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2015092700"
+
+
+echo "
+================================================================================
+${VERSION} | ${ABARBEITUNGSNUMMER} standardformat
+
+
+#
+# Hier wird das Bild in ein Standardformat umgerechnet => 4/3 oder 16/9
+#
+" | tee -a ${AUSGABEDATEI}.log
+
+#------------------------------------------------------------------------------#
+### Testausgabe
+
+#
+# x264
+#     -padtop size
+#     -padbottom size
+#     -padleft size
+#     -padright size
+#     -padcolor hex_color
+# 
+# ffmpeg  -vf pad=width:height:x:y:color
+#     width:height - endgueltige Bildgroesse
+#     x:y          - Position des Bildes im endgueltigen Bild, linke obere Ecke
+#     color        - black
+#
+#     VIDEOOPTION="-vf ${ZEILENSPRUNG}pad='max(iw\\,ih*(16/9)):ow/(16/9):(ow-iw)/2:(oh-ih)/2',scale='1024:576',setsar='1/1'"
+#
+# mencoder
+#     expand=320:240:::1
+#
+
+#==============================================================================#
+### Standard-Format => 4/3 oder 16/9
+
+echo "# - 42: standardformat
+STANDARDBILDFORMAT='${STANDARDBILDFORMAT}'
+
+CROPVIDEOBREIT='${CROPVIDEOBREIT}'
+                Z_VIDEOBREIT='${CROPVIDEOBREIT}'
+                Z_VIDEO_HOCH='${CROPVIDEO_HOCH}'
+                Z_VIDEOPixel='${CROPVIDEOPixel}'
+                Z_VIDEOPixBr='${CROPVIDEOPixBr}'
+                Z_VIDEODispl='${CROPVIDEODispl}'
+                Z_VIDEODisBr='${CROPVIDEODisBr}'
+
+QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+                Z_VIDEOBREIT='${QUADVIDEOBREIT}'
+                Z_VIDEO_HOCH='${QUADVIDEO_HOCH}'
+                Z_VIDEOPixel='${QUADVIDEOPixel}'
+                Z_VIDEOPixBr='${QUADVIDEOPixBr}'
+                Z_VIDEODispl='${QUADVIDEODispl}'
+                Z_VIDEODisBr='${QUADVIDEODisBr}'
+
+ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+                Z_VIDEOBREIT='${ISTVIDEOBREIT}'
+                Z_VIDEO_HOCH='${ISTVIDEO_HOCH}'
+                Z_VIDEOPixel='${ISTVIDEOPixel}'
+                Z_VIDEOPixBr='${ISTVIDEOPixBr}'
+                Z_VIDEODispl='${ISTVIDEODispl}'
+                Z_VIDEODisBr='${ISTVIDEODisBr}'
+" | tee -a ${AUSGABEDATEI}.log
+
+if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
+
+        #----------------------------------------------------------------------#
+        if [ -n "${CROPVIDEOBREIT}" ] ; then
+                Z_VIDEOBREIT="${CROPVIDEOBREIT}"
+                Z_VIDEO_HOCH="${CROPVIDEO_HOCH}"
+                Z_VIDEOPixel="${CROPVIDEOPixel}"
+                Z_VIDEOPixBr="${CROPVIDEOPixBr}"
+                Z_VIDEODispl="${CROPVIDEODispl}"
+                Z_VIDEODisBr="${CROPVIDEODisBr}"
+        elif [ -n "${QUADVIDEOBREIT}" ] ; then
+                Z_VIDEOBREIT="${QUADVIDEOBREIT}"
+                Z_VIDEO_HOCH="${QUADVIDEO_HOCH}"
+                Z_VIDEOPixel="${QUADVIDEOPixel}"
+                Z_VIDEOPixBr="${QUADVIDEOPixBr}"
+                Z_VIDEODispl="${QUADVIDEODispl}"
+                Z_VIDEODisBr="${QUADVIDEODisBr}"
+        else
+                Z_VIDEOBREIT="${ISTVIDEOBREIT}"
+                Z_VIDEO_HOCH="${ISTVIDEO_HOCH}"
+                Z_VIDEOPixel="${ISTVIDEOPixel}"
+                Z_VIDEOPixBr="${ISTVIDEOPixBr}"
+                Z_VIDEODispl="${ISTVIDEODispl}"
+                Z_VIDEODisBr="${ISTVIDEODisBr}"
+        fi
+
+        #----------------------------------------------------------------------#
+        # wenn erforderlich, dann Aufloesung reduzieren
+
+        Z_PIXELANZAHL="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH}" | awk '{print $1 * $2}')"
+        PPIXELANZAHL="$(echo "${PBILDBREITE} ${PBILDHOEHE}" | awk '{print $1 * $2}')"
+
+	if [ -z "${SOLLVIDEOBREIT}" ] ; then
+		if [ -z "${SOLLVIDEO_HOCH}" ] ; then
+			if [ -n "${Z_PIXELANZAHL}" ] ; then
+				if [ -n "${PPIXELANZAHL}" ] ; then
+					if [ "${Z_PIXELANZAHL}" -gt "${PPIXELANZAHL}" ] ; then
+						SOLLVIDEOBREIT="${PBILDBREITE}"
+						SOLLVIDEO_HOCH="${PBILDHOEHE}"
+						SOLLVIDEOPixel=""
+						SOLLVIDEOPixBr=""
+						SOLLVIDEODispl=""
+						SOLLVIDEODisBr="${PASPECT}"
+					fi
+				fi
+			fi
+		fi
+	fi
+
+        echo "
+        # - 120: standardformat
+        Z_PIXELANZAHL='${Z_PIXELANZAHL}'
+        PPIXELANZAHL='${PPIXELANZAHL}'
+
+        SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+        SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+        SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #----------------------------------------------------------------------#
+        ### Berechnung - Anfang
+        ### wenn es bereits ein Standardformat ist,
+        ### dann braucht hier nicht gerechnet werden
+
+        if [ "${Z_VIDEODisBr}" != "4/3" ] ; then
+
+            if [ "${Z_VIDEODisBr}" != "16/9" ] ; then
+
+                #--------------------------------------------------------------#
+        	#
+        	# STD_FORMAT 1.4
+        	# Ausgabe:  4/3
+        	#
+        	# Wenn Breit/Hoch <  1,49333, dann  4/3
+        	#       wenn Breit/Hoch <  4/3, dann oben+unten schwarze Balken ergaenzen   -> auf Basis der Bildbreite berechnen
+        	#       wenn Breit/Hoch >  4/3, dann links+rechts schwarze Balken ergaenzen -> auf Basis der Bildhoehe berechnen
+        	# Wenn Breit/Hoch >= 1,49333, dann 16/9
+        	#       wenn Breit/Hoch < 16/9, dann oben+unten schwarze Balken ergaenzen   -> auf Basis der Bildbreite berechnen
+        	#       wenn Breit/Hoch > 16/9, dann links+rechts schwarze Balken ergaenzen -> auf Basis der Bildhoehe berechnen
+        	#
+
+        	echo "
+        	# - 152: standardformat
+        	Z_VIDEODisBr='${Z_VIDEODisBr}'
+        	SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+        	" | tee -a ${AUSGABEDATEI}.log
+
+        	FORMATPOSITION="$(echo "${Z_VIDEODisBr}"|awk '{printf "%u\n", $1 * 100000}')"
+
+		if [ "${PPROFIL}" = ipad ] ; then
+        		FORMATPOSITION="150000"
+        	fi
+
+        	if [ "${FORMATPOSITION}" -lt "149333" ] ; then
+                	FFMPEGPAD="pad='max(iw\,ih*(4/3)):ow/(4/3):(ow-iw)/2:(oh-ih)/2'"
+                	SOLLVIDEODisBr="4/3"
+                	Links="4"	# 4/3 = 12/9
+                	Oben="3"	# 4/3 = 12/9
+                	Verh="1.33333"	# 4/3 = 12/9
+
+        		if [ "${FORMATPOSITION}" -gt "133333" ] ; then
+                		# B = sqr( ( b * h ) * b / h )
+                		# H = B * 3 / 4
+                		SCHWARZ="oben"
+        		else
+                		# B = H * 4 / 3
+                		# H = sqr( ( b * h ) * h / b )
+                		SCHWARZ="links"
+        		fi
+        	else
+                	FFMPEGPAD="pad='max(iw\,ih*(16/9)):ow/(16/9):(ow-iw)/2:(oh-ih)/2'"
+                	SOLLVIDEODisBr="16/9"
+                	Links="16"	# 16/9
+                	Oben="9"	# 16/9
+                	Verh="1.77778"	# 16/9
+
+        		if [ "${FORMATPOSITION}" -lt "177778" ] ; then
+                		# B = H * 16 / 9
+                		# B = H * $4 / $5
+                		# H = sqr( ( b * h ) * h / b )
+                		# H = sqr( ( $1 * $2 * $2 ) / $1 )
+                		SCHWARZ="links"
+        		else
+                		# B = sqr( ( b * h ) * b / h )
+                		# B = sqr( ( $1 * $2 * $1 ) / $2 )
+                		# H = B * 9 / 16
+                		# H = B * $5 / $4
+                		SCHWARZ="oben"
+        		fi
+        	fi
+
+        	echo "
+		# - 198: standardformat
+		SCHWARZ='${SCHWARZ}'
+		Z_VIDEOBREIT='${Z_VIDEOBREIT}'
+		Z_VIDEO_HOCH='${Z_VIDEO_HOCH}'
+		Z_VIDEOPixel='${Z_VIDEOPixel}'
+		Links='${Links}'
+		Oben='${Oben}'
+        	" | tee -a ${AUSGABEDATEI}.log
+
+        	if [ "${SCHWARZ}" = links ] ; then
+        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$2*$3)/$1) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        	elif [ "${SCHWARZ}" = oben ] ; then
+        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$1*$3)/$2) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        	fi
+
+        	STDVIDEOBREIT="$(echo "${SOLLAUFLOESUNG}" | awk -F'x' '{print $1}')"
+        	STDVIDEO_HOCH="$(echo "${SOLLAUFLOESUNG}" | awk -F'x' '{print $2}')"
+		STDVIDEOPixel="1"
+		STDVIDEOPixBr="1/1"
+		STDVIDEODispl="${Verh}"
+		STDVIDEODisBr="${Links}/${Oben}"
+
+        	echo "
+        	# - 221: standardformat
+        	SOLLAUFLOESUNG='${SOLLAUFLOESUNG}'
+
+        	FORMATPOSITION='${FORMATPOSITION}'
+        	FFMPEGPAD='${FFMPEGPAD}'
+        	Z_VIDEODisBr='${Z_VIDEODisBr}'
+        	SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+        	" | tee -a ${AUSGABEDATEI}.log
+
+                #--------------------------------------------------------------#
+                ### Berechnung - Ende
+
+            fi
+
+        fi
+
+        #----------------------------------------------------------------------#
+
+        echo "
+        # - 240: standardformat
+        SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        if [ -z "${SOLLVIDEODispl}" ] ; then
+        	SOLLVIDEODispl="$(echo "${SOLLVIDEODisBr}"|awk -F'/' '{print $1 / $2}')"
+        fi
+
+        echo "
+        # - 249: standardformat
+        SOLLVIDEODispl='${SOLLVIDEODispl}'
+        PPROFIL='${PPROFIL}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+#==============================================================================#
+
+fi
+
+
+
+echo "# - 260 VF/FFMPEGPAD: Standardformat
+FFMPEGPAD='${FFMPEGPAD}'
+VF=${VF}
+" | tee -a ${AUSGABEDATEI}.log
+
+ESC_FFMPEGPAD="$(echo "${FFMPEGPAD}" | sed 's/[/,:()]/\\&/g;s/[,]/\\&/g')"
+VF="$(echo "${VF}" | sed "s/@FFMPEGPAD@/${ESC_FFMPEGPAD}/")"
+
+echo "# - 268 VF/FFMPEGPAD: Standardformat
+ESC_FFMPEGPAD='${ESC_FFMPEGPAD}'
+VF=${VF}
+
+QUADVIDEOBREIT='${QUADVIDEOBREIT}'
+QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
+QUADVIDEODispl='${QUADVIDEODispl}'
+QUADVIDEODisBr='${QUADVIDEODisBr}'
+
+STDVIDEOBREIT='${STDVIDEOBREIT}'
+STDVIDEO_HOCH='${STDVIDEO_HOCH}'
+STDVIDEODispl='${STDVIDEODispl}'
+STDVIDEODisBr='${STDVIDEODisBr}'
+
+SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+#------------------------------------------------------------------------------#
+" | tee -a ${AUSGABEDATEI}.log
