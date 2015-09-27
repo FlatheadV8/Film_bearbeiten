@@ -1,0 +1,142 @@
+
+ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
+
+VERSION="v2015092600"
+
+
+echo "
+==========================================================================
+${VERSION} | ${ABARBEITUNGSNUMMER} Bluray-kompatible Parameter ermitteln
+
+
+#------------------------------------------------------------------------------#
+# Blu-ray-kompatible Parameter ermitteln
+VIDEOPROGR='${VIDEOPROGR}'
+" | tee -a ${AUSGABEDATEI}.log
+
+
+if [ "${VIDEOPROGR}" == "x264" ] ; then
+
+        #======================================================================#
+        ### den neuen AVC-Level ermitteln
+
+        echo "# - 23: Bluray-kompatible Parameter ermitteln
+        SOLL - AVC_MAKROBLOECKE ${SOLLVIDEOBREIT} ${SOLLVIDEO_HOCH}
+        " | tee -a ${AUSGABEDATEI}.log
+        SOLLMAKROBLOECKE="$(AVC_MAKROBLOECKE ${SOLLVIDEOBREIT} ${SOLLVIDEO_HOCH})"
+
+        echo "# - 28: Bluray-kompatible Parameter ermitteln
+        SOLL - AVC_LEVEL ${SOLLVIDEOBilPS} ${SOLLMAKROBLOECKE}
+        " | tee -a ${AUSGABEDATEI}.log
+        SOLLAVCLEVEL="$(AVC_LEVEL ${SOLLVIDEOBilPS} ${SOLLMAKROBLOECKE})"
+
+        #----------------------------------------------------------------------#
+        ### aktuellen AVC-Level ermitteln
+
+        echo "# - 36: Bluray-kompatible Parameter ermitteln
+        SOLL - BLURAY_PARAMETER ${SOLLAVCLEVEL}
+        " | tee -a ${AUSGABEDATEI}.log
+        BLURAY_PARAMETER ${SOLLAVCLEVEL}
+
+        echo "# - 41: Bluray-kompatible Parameter ermitteln
+        ISTVIDEOBREIT='${ISTVIDEOBREIT}'
+        ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
+        ISTVIDEOBilPS='${ISTVIDEOBilPS}'
+
+        SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
+        SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
+        SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
+        SOLLAVCLEVEL='${SOLLAVCLEVEL}'
+
+        ### /home/bin/film_bearbeiten_standardformat
+        QUADRBILDAUFLOESUNG='${QUADRBILDAUFLOESUNG}'
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #======================================================================#
+        # Bildqualitaet wird nach Benutzerwunsch gesetzt
+
+        if [ -n "${SOLLCRF}" ] ; then
+                CRF="${SOLLCRF}"
+        fi
+
+        #----------------------------------------------------------------------#
+
+        if [ "${MLEVEL}" == "41" ] ; then
+                SLICES="4"
+        else
+                SLICES="1"
+        fi
+
+        # if(pyramid)
+        #     MaxDPB >= (bytes in a frame) * min(16, ref + 2)
+        # else if(bframes)
+        #     MaxDPB >= (bytes in a frame) * min(16, ref + 1)
+        # else
+        #     MaxDPB >= (bytes in a frame) * ref
+
+        #----------------------------------------------------------------------#
+        ### NTSC-, PAL- oder Blu-ray-Farbraum
+
+        #if [ "${PAR}" == "ntsc" -o "${PAR}" == "NTSC" ] ; then
+        #        # DVD (NTSC): 4/3 - 720x480
+        #        FARBCOD="smpte170m"
+        #elif [ "${PAR}" == "pal" -o "${PAR}" == "PAL" ] ; then
+        #        # DVD (PAL): 4/3 - 720x576
+        #        FARBCOD="bt470bg"
+        #else
+        #        # Standard ist Blu-ray mit quadratischen Pixeln
+        #        FARBCOD="bt470"
+        #fi
+
+        # HDTV-Standard
+        FARBCOD="bt709"
+
+        #----------------------------------------------------------------------#
+        ### RAUSCHW
+
+        if [ -n "${RAUSCHW}" ] ; then
+        	RAUSCHO="--nr ${RAUSCHW}"
+        fi
+
+        #----------------------------------------------------------------------#
+        ### SAR entspricht dem Seitenverhaeltnis eines einzelnen Bildpunktes
+
+        if [ -n "${SOLLVIDEOPixBr}" ] ; then
+                SAR="--sar ${SOLLVIDEOPixBr}"
+        fi
+
+        #----------------------------------------------------------------------#
+
+        # MPEG-4 Part 10 (AVC) / x264
+        ### funktioniert erst mit dem x264 ab Version vom 2010-04-25 (Bluray-kompatibel)
+
+        OPTIMIERUNGEN=" --profile ${PROFILE} --threads ${NUTZKERNE} --b-adapt 2 --direct auto --slow-firstpass --no-fast-pskip --me tesa --merange 24 --partitions all --rc-lookahead 60 ${MREFF} --subme 10 --trellis 2 "
+
+        BLURAY=" --weightp 0 --bframes 3 --nal-hrd vbr --vbv-maxrate ${MaxBR} --vbv-bufsize ${MaxCPB} --level ${LEVEL} --keyint 24 --min-keyint 2 --b-pyramid strict --slices ${SLICES} --aud --colorprim ${FARBCOD} --transfer ${FARBCOD} --colormatrix ${FARBCOD} "
+
+        #----------------------------------------------------------------------#
+
+        X264OPTS="${OPTIMIERUNGEN} ${RAUSCHO} ${BLURAY} ${SAR}"
+
+        ########################################################################
+fi
+
+
+echo "# - 125 Ende: Bluray-kompatible Parameter ermitteln
+#------------------------------------------------------------------------------#
+VIDEOPROGR='${VIDEOPROGR}'
+
+OPTIMIERUNGEN='${OPTIMIERUNGEN}'
+
+RAUSCHW='${RAUSCHW}'
+RAUSCHO='${RAUSCHO}'
+
+QUADAVCLEVEL='${QUADAVCLEVEL}'
+ISTAVCLEVEL='${ISTAVCLEVEL}'
+SOLLAVCLEVEL='${SOLLAVCLEVEL}'
+
+BLURAY='${BLURAY}'
+
+X264OPTS='${X264OPTS}'
+#------------------------------------------------------------------------------#
+" | tee -a ${AUSGABEDATEI}.log
