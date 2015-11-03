@@ -209,9 +209,11 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         	" | tee -a ${AUSGABEDATEI}.log
 
         	if [ "${SCHWARZ}" = links ] ; then
-        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        		#SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
         	elif [ "${SCHWARZ}" = oben ] ; then
-        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        		#SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
         	fi
 
         	STDVIDEOBREIT="$(echo "${SOLLAUFLOESUNG}" | awk -F'x' '{print $1}')"
