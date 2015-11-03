@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092700"
+VERSION="v2015100300"
 
 
 echo "
@@ -199,7 +199,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         	fi
 
         	echo "
-		# - 198: standardformat
+		# - 202: standardformat
 		SCHWARZ='${SCHWARZ}'
 		Z_VIDEOBREIT='${Z_VIDEOBREIT}'
 		Z_VIDEO_HOCH='${Z_VIDEO_HOCH}'
@@ -209,9 +209,9 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         	" | tee -a ${AUSGABEDATEI}.log
 
         	if [ "${SCHWARZ}" = links ] ; then
-        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$2*$3)/$1) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($3*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
         	elif [ "${SCHWARZ}" = oben ] ; then
-        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$1*$3)/$2) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($3*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
         	fi
 
         	STDVIDEOBREIT="$(echo "${SOLLAUFLOESUNG}" | awk -F'x' '{print $1}')"
@@ -222,7 +222,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
 		STDVIDEODisBr="${Links}/${Oben}"
 
         	echo "
-        	# - 221: standardformat
+        	# - 225: standardformat
         	SOLLAUFLOESUNG='${SOLLAUFLOESUNG}'
 
         	FORMATPOSITION='${FORMATPOSITION}'
@@ -241,7 +241,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         #----------------------------------------------------------------------#
 
         echo "
-        # - 240: standardformat
+        # - 244: standardformat
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
         " | tee -a ${AUSGABEDATEI}.log
 
@@ -250,7 +250,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         fi
 
         echo "
-        # - 249: standardformat
+        # - 253: standardformat
         SOLLVIDEODispl='${SOLLVIDEODispl}'
         PPROFIL='${PPROFIL}'
         " | tee -a ${AUSGABEDATEI}.log
@@ -261,7 +261,7 @@ fi
 
 
 
-echo "# - 260 VF/FFMPEGPAD: Standardformat
+echo "# - 264 VF/FFMPEGPAD: Standardformat
 FFMPEGPAD='${FFMPEGPAD}'
 VF=${VF}
 " | tee -a ${AUSGABEDATEI}.log
@@ -269,7 +269,7 @@ VF=${VF}
 ESC_FFMPEGPAD="$(echo "${FFMPEGPAD}" | sed 's/[/,:()]/\\&/g;s/[,]/\\&/g')"
 VF="$(echo "${VF}" | sed "s/@FFMPEGPAD@/${ESC_FFMPEGPAD}/")"
 
-echo "# - 268 VF/FFMPEGPAD: Standardformat
+echo "# - 272 VF/FFMPEGPAD: Standardformat
 ESC_FFMPEGPAD='${ESC_FFMPEGPAD}'
 VF=${VF}
 
