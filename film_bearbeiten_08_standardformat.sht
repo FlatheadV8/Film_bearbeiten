@@ -208,13 +208,15 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
 		Oben='${Oben}'
         	" | tee -a ${AUSGABEDATEI}.log
 
-        	if [ "${SCHWARZ}" = links ] ; then
-        		#SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
-        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
-        	elif [ "${SCHWARZ}" = oben ] ; then
-        		#SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
-        		SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
-        	fi
+                if [ "${SCHWARZ}" = links ] ; then
+                        #SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+                        #SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$5)/$4) ; printf "%u %u\n", (h*$4)/$5/2,h/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+                        SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{vb=$5; vh=$4; p=$1*$2; for(i=1; ab*ah<p; i++) { ab=i*vb; ah=i*vh} printf "%ux%u\n", ab, ah}')"
+                elif [ "${SCHWARZ}" = oben ] ; then
+                        #SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$3*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+                        #SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{ h=sqrt(($1*$2*$4)/$5) ; printf "%u %u\n", h/2,(h*$5)/$4/2}' | awk '{printf "%ux%u\n", $1*2,$2*2}')"
+                        SOLLAUFLOESUNG="$(echo "${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEOPixel} ${Links} ${Oben}" | awk '{vb=$4; vh=$5; p=$1*$2; for(i=1; ab*ah<p; i++) { ab=i*vb; ah=i*vh} printf "%ux%u\n", ab, ah}')"
+                fi
 
         	STDVIDEOBREIT="$(echo "${SOLLAUFLOESUNG}" | awk -F'x' '{print $1}')"
         	STDVIDEO_HOCH="$(echo "${SOLLAUFLOESUNG}" | awk -F'x' '{print $2}')"
