@@ -68,7 +68,7 @@ if [ -n "${CROP_PARAMETER}" ] ; then
         CROPVIDEO_HOCH="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $2}')"
         CROP_LINKS="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $3}')"
         CROP_OBEN="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $4}')"
-        CROP_OPTION="crop=${CROPVIDEOBREIT}:${CROPVIDEO_HOCH}:${CROP_LINKS}:${CROP_OBEN}"
+        CROP_OPTION=",crop=${CROPVIDEOBREIT}:${CROPVIDEO_HOCH}:${CROP_LINKS}:${CROP_OBEN}"
 
         #----------------------------------------------------------------------#
         ### Seitenverhaeltnis des gecroppten Bildes ermitteln
