@@ -103,10 +103,12 @@ if [ -n "${CROP_PARAMETER}" ] ; then
         CROPVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${CROPVIDEODispl})"
 
         #----------------------------------------------------------------------#
-        ### SOLL-Parameter neu setzen
+        ### IST-Parameter neu setzen
 
-        ISTVIDEOBREIT="${CROPVIDEOBREIT}"
-        ISTVIDEO_HOCH="${CROPVIDEO_HOCH}"
+        if [ ! -z "${CROPVIDEOBREIT}" ] ; then
+                ISTVIDEOBREIT="${CROPVIDEOBREIT}"
+                ISTVIDEO_HOCH="${CROPVIDEO_HOCH}"
+        fi
 
         #----------------------------------------------------------------------#
 
