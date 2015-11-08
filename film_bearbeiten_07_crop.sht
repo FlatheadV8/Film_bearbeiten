@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015110700"
+VERSION="v2015110800"
 
 
 echo "
@@ -105,10 +105,8 @@ if [ -n "${CROP_PARAMETER}" ] ; then
         #----------------------------------------------------------------------#
         ### SOLL-Parameter neu setzen
 
-        if [ -z "${SOLLVIDEOBREIT}" ] ; then
-                SOLLVIDEOBREIT="${CROPVIDEOBREIT}"
-                SOLLVIDEO_HOCH="${CROPVIDEO_HOCH}"
-        fi
+        ISTVIDEOBREIT="${CROPVIDEOBREIT}"
+        ISTVIDEO_HOCH="${CROPVIDEO_HOCH}"
 
         #----------------------------------------------------------------------#
 
