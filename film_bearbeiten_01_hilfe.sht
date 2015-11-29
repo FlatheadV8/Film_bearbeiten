@@ -1,5 +1,5 @@
 
-Stand: 2015-09-27 00
+Stand: 2015-11-29 00
 
 HILFE:
     -hilfe
@@ -67,7 +67,7 @@ CROP_PARAMETER-Werte:
 
 Crop-Test:
     -testcrop       (ist nur zum schnelleren manuellen ermitteln der Crop-Werte, optimierende Parameter werden ignoriert)
-                (macht nur zusammen mit '-crop' Sinn, z.B. so: -rein Film.mpg -raus test01 -crop 75,2,75,2 -testcrop)
+                (macht nur zusammen mit '-crop' Sinn, z.B. so: -rein Film.mpg -raus test01 -crop 720:432:0:72 -testcrop)
 
 Deinterlacing:
     -progress 
@@ -142,10 +142,10 @@ z.B.:
 Es muss mindestens dieser Parameter gesetzt werden:
     film_bearbeiten.sh -rein film03.mpg
 
-    film_bearbeiten.sh -rein film02.mpg -crop 75,2,75,2 -raus test01 -testcrop
-    film_bearbeiten.sh -rein film02.mpg -crop 75,2,75,2
-    film_bearbeiten.sh -rein film01.mpg -crop 72,0,72,0 -skal 320x288 -idar 16/9 -ofps 20
-    film_bearbeiten.sh -rein film01.mpg -crop 72:0:72,0 -skal 320x240 -progress -ipar pal
+    film_bearbeiten.sh -rein film02.mpg -crop 720:432:0:72 -raus test01 -testcrop
+    film_bearbeiten.sh -rein film02.mpg -crop 720:432:0:72
+    film_bearbeiten.sh -rein film01.mpg -crop 720:432:0:72 -skal 320x288 -idar 16/9 -ofps 20
+    film_bearbeiten.sh -rein film01.mpg -crop 720:432:0:72 -skal 320x240 -progress -ipar pal
 
 MPEG 4 Part 10 (x264 / AAC); es muss kein Profil angegeben werden:
     film_bearbeiten.sh -rein film02.mpg
