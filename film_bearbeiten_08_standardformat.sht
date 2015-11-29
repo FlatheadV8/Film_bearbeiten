@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015110800"
+VERSION="v2015112900"
 
 
 echo "
@@ -250,7 +250,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
 		STDVIDEODisBr="${Links}/${Oben}"
 
         	echo "
-        	# - 225: standardformat
+        	# - 253: standardformat
         	SOLLAUFLOESUNG='${SOLLAUFLOESUNG}'
 
         	FORMATPOSITION='${FORMATPOSITION}'
@@ -269,7 +269,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         #----------------------------------------------------------------------#
 
         echo "
-        # - 244: standardformat
+        # - 272: standardformat
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
         " | tee -a ${AUSGABEDATEI}.log
 
@@ -278,7 +278,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         fi
 
         echo "
-        # - 253: standardformat
+        # - 281: standardformat
         SOLLVIDEODispl='${SOLLVIDEODispl}'
         PPROFIL='${PPROFIL}'
         " | tee -a ${AUSGABEDATEI}.log
@@ -289,7 +289,7 @@ fi
 
 
 
-echo "# - 264 VF/FFMPEGPAD: Standardformat
+echo "# - 292 VF/FFMPEGPAD: Standardformat
 FFMPEGPAD='${FFMPEGPAD}'
 VF=${VF}
 " | tee -a ${AUSGABEDATEI}.log
@@ -297,7 +297,7 @@ VF=${VF}
 ESC_FFMPEGPAD="$(echo "${FFMPEGPAD}" | sed 's/[/,:()]/\\&/g;s/[,]/\\&/g')"
 VF="$(echo "${VF}" | sed "s/@FFMPEGPAD@/${ESC_FFMPEGPAD}/")"
 
-echo "# - 272 VF/FFMPEGPAD: Standardformat
+echo "# - 300 VF/FFMPEGPAD: Standardformat
 ESC_FFMPEGPAD='${ESC_FFMPEGPAD}'
 VF=${VF}
 
