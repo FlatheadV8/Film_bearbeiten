@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092700"
+VERSION="v2015101900"
 
 
 echo "
@@ -333,7 +333,7 @@ fi
 if [ "${IN_SKALIEREN}" == "Ja" ] ; then
         echo "# - 330: Breit und Hoch
         Das Eingabe-Bildformat skalieren.
-        " | tee -a ${AUSGABEDATEI}.log
+        "
 
         ### Filter-Syntax (-vf), als Eingabefilter muss er am Anfang der Filterschlange stehen
         IN_SKALIERFORMAT=",scale='${ENTZERR_VIDEOBREIT}:${ENTZERR_VIDEO_HOCH}'"
@@ -344,4 +344,4 @@ fi
 echo "# - 344: Parameter
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
-" | tee -a ${AUSGABEDATEI}.log
+"
