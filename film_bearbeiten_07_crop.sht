@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015110800"
+VERSION="v2015112900"
 
 
 echo "
@@ -105,14 +105,12 @@ if [ -n "${CROP_PARAMETER}" ] ; then
         #----------------------------------------------------------------------#
         ### IST-Parameter neu setzen
 
-        if [ ! -z "${CROPVIDEOBREIT}" ] ; then
-                ISTVIDEOBREIT="${CROPVIDEOBREIT}"
-                ISTVIDEO_HOCH="${CROPVIDEO_HOCH}"
-        fi
+        ISTVIDEOBREIT="${CROPVIDEOBREIT}"
+        ISTVIDEO_HOCH="${CROPVIDEO_HOCH}"
 
         #----------------------------------------------------------------------#
 
-        echo "# - 116: CROP
+        echo "# - 113: CROP
         ISTVIDEOBREIT='${ISTVIDEOBREIT}'
         ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 
@@ -139,7 +137,7 @@ VF="$(echo "${VF}" | sed "s/@BILDAUSSCH@/${CROP_OPTION}/")"
 
 #==============================================================================#
 
-echo "# - 143: CROP
+echo "# - 140: CROP
 #----------------------------------------------------------------------#
 VF='${VF}'
 
