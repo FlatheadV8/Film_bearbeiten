@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014112700"
+VERSION="v2015112900"
 
 
 echo "
@@ -82,7 +82,7 @@ fi
 
 
 echo "
-# - 83: bearbeiten
+# - 85: bearbeiten
 ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} ${AUSGABESKALIEREN} -r ${SOLLVIDEOBilPS} ${TONSPUREN} ${AC} -async 0 -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
 " | tee -a ${AUSGABEDATEI}.log
 
@@ -90,7 +90,7 @@ ffmpeg ${INFPS} -i "${ORIGINAL}" -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILT
 
 
 echo "
-# - 91: bearbeiten
+# - 93: bearbeiten
 ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v mpeg1video -vf scale=176x144 -q:v 31 -r ${SOLLVIDEOBilPS} ${TONSPUREN} -async 0 -c:a copy -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_zwischenformat_originalton_.mkv
 " | tee -a ${AUSGABEDATEI}.log
 
@@ -101,7 +101,7 @@ if [ ! -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
         TONSPUREN="-map 0:a"
 
         echo "
-        # - 102: bearbeiten
+        # - 104: bearbeiten
         ffmpeg ${INFPS} -i '${ORIGINAL}' -vsync 0 -g 4 ${FILMSPUR} -c:v ffv1 ${VIDEOFILTER_OPTION} ${AUSGABESKALIEREN} -r ${SOLLVIDEOBilPS} -async 0 ${TONSPUREN} ${AC} -c:a pcm_s16le -f matroska ${WENNGESETZTBILDFORMAT} -y ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
         " | tee -a ${AUSGABEDATEI}.log
 
@@ -110,7 +110,7 @@ fi
 
 if [ ! -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
         echo "
-        # - 111: bearbeiten
+        # - 113: bearbeiten
         Der Film im Zwischenformat '${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv' konnte nicht erstellt werden...
         ABBRUCH
         " | tee -a ${AUSGABEDATEI}.log
@@ -123,14 +123,14 @@ fi
 # ${SCHNITTZEITEN}
 
 echo "
-# - 124: bearbeiten
+# - 126: bearbeiten
 SCHNITTZEITEN='${SCHNITTZEITEN}'
 " | tee -a ${AUSGABEDATEI}.log
 
 if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
         if [ -z "${SCHNITTZEITEN}" ] ; then
                 echo "
-                # - 131: bearbeiten
+                # - 133: bearbeiten
                 ln -s ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv
                 ln -s ${NEUERFILMNAME}_zwischenformat_originalton.mkv ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv
                 " | tee -a ${AUSGABEDATEI}.log
@@ -146,14 +146,35 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
                 # split-002.mkv  -  von Minute 3:33 bis 6:27
                 # split-003.mkv  -  von 6:27 bis Filmende
                 #
-                ZERLEGTEZEITEN="$(echo "${SCHNITTZEITEN}" | sed 's/[-]/ /g;s/.*/& /;s/[,.]/:/g')"
+                ZERLEGTEZEITEN="$(echo "${SCHNITTZEITEN}" | sed 's/[-]/ /g;s/.*/& /;')"
                 TIMECODES="$( for TOTALSEK in ${ZERLEGTEZEITEN}
                 do
+			echo "
+			# - 153: bearbeiten
+			--------------------------------------------------------
+			TOTALSEK='${TOTALSEK}'
+			" >> ${AUSGABEDATEI}.log
                         SEKZ="$(echo "${TOTALSEK}" | awk -F':' '{print $1}')"
-                        if [ "${SEKZ}" -le "60" ] ; then
+                        TEST_ZEIT_1="$(echo "${SEKZ}" | sed 's/[,.]//g')"
+                        TEST_ZEIT_2="$(echo "${SEKZ}" | awk -F'[,.]' '{print $1}')"
+                        if [ "${TEST_ZEIT_1}" -gt "0" ] ; then
+                            if [ "${TEST_ZEIT_2}" -lt "60" ] ; then
+				echo "
+				# - 163: bearbeiten
+				1. UHRZEIT='0:0:${TOTALSEK}'
+				" >> ${AUSGABEDATEI}.log
                                 UHRZEIT="$(echo "0:0:${TOTALSEK}")"
-                        else
+                            else
+				echo "
+				# - 169: bearbeiten
+				2. UHRZEIT='${SEKZ}'
+				" >> ${AUSGABEDATEI}.log
                                 UHRZEIT="$(echo "${SEKZ}" | awk '{printf("%u %u\n",$1,($1/60))}' | awk '{printf("%u %u\n",$2,$1-$2*60)}' | awk '{printf("%u %u %u\n",$1,$1/60,$2)}' | awk '{printf("%u:%u:%u\n",$2,$1-($2*60),$3)}')"
+				echo "
+				# - 174: bearbeiten
+				3. UHRZEIT='${UHRZEIT}'
+				" >> ${AUSGABEDATEI}.log
+                            fi
                         fi
 
                         MSEK="$(echo "${TOTALSEK}" | awk -F':' '{print $2}')"
@@ -171,14 +192,14 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
                 ANFANG="$(echo "${SCHNITTZEITEN}" | sed 's/[-]/ /g;s/.*/& /;s/[,.]//g' | awk '{print $1}')"
                 if [ "${ANFANG}" -eq "0" ] ; then
                         echo "
-                        # - 172: bearbeiten
+                        # - 195: bearbeiten
                         Der Film beginnt am Anfang, Teile mit ungeraden Nummern verwenden.
                         " | tee -a ${AUSGABEDATEI}.log
                         FN=1
                         FM=1
                 else
                         echo "
-                        # - 179: bearbeiten
+                        # - 202: bearbeiten
                         Der Film beginnt spaeter, Teile mit geraden Nummern verwenden.
                         " | tee -a ${AUSGABEDATEI}.log
                         FN=2
@@ -189,7 +210,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
                 ### Schnitt des Films im verlustfreien Zwischenformates mit Tonspur im WAVE-Format
 
                 echo "
-                # - 190: bearbeiten
+                # - 213: bearbeiten
                 mkvmerge ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv -o ${ZUFALLSNR}_${NEUERFILMNAME}.mkv --split timecodes:${TIMECODES}
                 " | tee -a ${AUSGABEDATEI}.log
 
@@ -207,7 +228,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
 
                 if [ -z "${MKVTEILETT}" ] ; then
                         echo "
-                        # - 208: bearbeiten... Fehler
+                        # - 231: bearbeiten... Fehler
                         Es wurden keine geschnittenen Filmteile gefunden.
                         Abbruch!
                         Bitte überprüfen Sie die übergebenen Werte der Option '-schnitt'...
@@ -218,7 +239,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
 
                 #
                 echo "
-                # - 219: bearbeiten
+                # - 242: bearbeiten
                 MKVTEILETT='${MKVTEILETT}'
                 mkvmerge -o ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${MKVTEILETT}
                 " | tee -a ${AUSGABEDATEI}.log
@@ -226,7 +247,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
 
                 if [ ! -r ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ] ; then
                         echo "
-                        # - 227: bearbeiten... Fehler
+                        # - 250: bearbeiten... Fehler
                         Das Filmstueck '${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv' konnte nicht gefunden werden.
                         Abbruch!
                         " | tee -a ${AUSGABEDATEI}.log
@@ -237,7 +258,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
                 ### Schnitt des Films im schnellen Zwischenformates mit unbearbeiteter, originaler Tonspur
 
                 echo "
-                # - 238: bearbeiten
+                # - 261: bearbeiten
                 mkvmerge ${NEUERFILMNAME}_zwischenformat_originalton.mkv -o ${ZUFALLSNR}_${NEUERFILMNAME}_originalton.mkv --split timecodes:${TIMECODES}
                 " | tee -a ${AUSGABEDATEI}.log
 
@@ -255,7 +276,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
 
                 #
                 echo "
-                # - 256: bearbeiten
+                # - 279: bearbeiten
                 MKVTEILEOT='${MKVTEILEOT}'
                 mkvmerge -o ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv ${MKVTEILEOT}
                 " | tee -a ${AUSGABEDATEI}.log
@@ -263,7 +284,7 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
 
                 if [ ! -r ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv ] ; then
                         echo "
-                        # - 264: bearbeiten... Fehler
+                        # - 287: bearbeiten... Fehler
                         Das Filmstueck '${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv' konnte nicht gefunden werden.
                         Abbruch!
                         " | tee -a ${AUSGABEDATEI}.log
@@ -272,14 +293,14 @@ if [ -r ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv ] ; then
                 fi
         fi
 else
-        echo "# - 273: bearbeiten - Fehler
+        echo "# - 296: bearbeiten - Fehler
         Der Film im Zwischenformat '${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv' konnte nicht gelesen werden.
         " | tee -a ${AUSGABEDATEI}.log
         exit 1
 fi
 
 echo "
-# - 280: bearbeiten - Ende
+# - 303: bearbeiten - Ende
 
 ### VideoSpur transkodieren + AudioSpur auslesen
 # 1. Eingabe-Film : ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv => ${1}
