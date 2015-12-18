@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092700"
+VERSION="v2015121900"
 
 
 echo "--------------------------------------------------------------------------
@@ -285,7 +285,7 @@ if [ -n "${INVIDEO_HOCH}" ] ; then
 fi
 
 if [ -n "${INVIDEOPixel}" ] ; then
-        PxBruch="$(echo "${INVIDEOPixel}" | awk -F'[:/]' '/[:/]/{print $1"/"$2}')"
+        PxBruch="$(echo "${INVIDEOPixel}" | grep -E '[:/]' | awk -F'[:/]' '{print $1"/"$2}')"
 
 	echo "# - 290: Eigenschaften lesen
 	INVIDEOPixel='${INVIDEOPixel}'
