@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015121900"
+VERSION="v2015121901"
 
 
 echo "--------------------------------------------------------------------------
@@ -118,37 +118,40 @@ SCAN_TYPE='${SCAN_TYPE}'
 
 #------------------------------------------------------------------------------#
 ### Original-DAR
-ISTVIDEODispl="$(echo "${FILMDATEN}" | sed -n '/^Video$/,/^$/p' | egrep '^Original display aspect ratio[ ]+' | sed 's/^Original display aspect ratio[ ][ ]*[:][ ][ ]*//' | rev | sed 's#[:/]#/#' | rev | head -n1 | awk '{print $NF}')"
+ISTDAR="$(echo "${FILMDATEN}" | sed -n '/^Video$/,/^$/p' | egrep '^Original display aspect ratio[ ]+' | sed 's/^Original display aspect ratio[ ][ ]*[:][ ][ ]*//' | rev | sed 's#[:/]#/#' | rev | head -n1 | awk '{print $NF}')"
 
-if [ -z "${ISTVIDEODispl}" ] ; then
+if [ -z "${ISTDAR}" ] ; then
 	### DAR
-	ISTVIDEODispl="$(echo "${FILMDATEN}" | sed -n '/^Video$/,/^$/p' | egrep '^Display aspect ratio[ ]+' | sed 's/^Original display aspect ratio[ ][ ]*[:][ ][ ]*//' | rev | sed 's#[:/]#/#' | rev | head -n1 | awk '{print $NF}')"
+	ISTDAR="$(echo "${FILMDATEN}" | sed -n '/^Video$/,/^$/p' | egrep '^Display aspect ratio[ ]+' | sed 's/^Original display aspect ratio[ ][ ]*[:][ ][ ]*//' | rev | sed 's#[:/]#/#' | rev | head -n1 | awk '{print $NF}')"
 fi
 
 echo "# - 128: Eigenschaften lesen
-ISTVIDEODispl='${ISTVIDEODispl}'
+ISTDAR='${ISTDAR}'
 " | tee -a ${AUSGABEDATEI}.log
 
-if [ -z "${ISTVIDEODispl}" ] ; then
+if [ -z "${ISTDAR}" ] ; then
 	echo "# - 133: Eigenschaften lesen
         Es konnte nicht ermittelt werden, welches Bildformat der Film hat.
         " | tee -a ${AUSGABEDATEI}.log
 	ENDE="Ja"
 fi
 
-echo "# - 139: Eigenschaften lesen
+ISTVIDEODisBr="$(echo "${ISTDAR}" | grep -E '[:/]')"
+
+echo "# - 141: Eigenschaften lesen
 ISTVIDEODisBr='${ISTVIDEODisBr}'
-ISTVIDEODispl='${ISTVIDEODispl}'
 " | tee -a ${AUSGABEDATEI}.log
 
 if [ -z "${ISTVIDEODisBr}" ] ; then
+	ISTVIDEODispl='${ISTDAR}'
 	ISTVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${ISTVIDEODispl})"
 fi
+
 if [ -z "${ISTVIDEODispl}" ] ; then
 	ISTVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${ISTVIDEODisBr})"
 fi
 
-echo "# - 151: Eigenschaften lesen
+echo "# - 154: Eigenschaften lesen
 ISTVIDEODisBr='${ISTVIDEODisBr}'
 ISTVIDEODispl='${ISTVIDEODispl}'
 " | tee -a ${AUSGABEDATEI}.log
@@ -158,7 +161,7 @@ ISTVIDEODispl='${ISTVIDEODispl}'
 ISTVIDEOBREIT="$(echo "${FILMDATEN}" | egrep '^Width[ ]+' | sed 's/^Width[ ][ ]*[:][ ][ ]*//;s/[ ]*//g;s/[a-zA-Z]*//g' | head -n1)"
 ISTVIDEO_HOCH="$(echo "${FILMDATEN}" | egrep '^Height[ ]+' | sed 's/^Height[ ][ ]*[:][ ][ ]*//;s/[ ]*//g;s/[a-zA-Z]*//g' | head -n1)"
 
-echo "# - 161: Eigenschaften lesen
+echo "# - 164: Eigenschaften lesen
 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 " | tee -a ${AUSGABEDATEI}.log
@@ -170,7 +173,7 @@ ISTAUDIOID="$(echo "${FILMDATEN}" | sed -n '/^Audio/,/^$/p' | egrep '^ID[ ]+' | 
 ISTAUDIOMENUID="$(echo "${FILMDATEN}" | sed -n '/^Audio/,/^$/p' | egrep '^Menu ID[ ]+' | sed 's/^Menu ID[ ][ ]*[:][ ][ ]*//;s/[ ]*//g;s/[(].*$//g' | head -n1)"
 ISTAUDIOCODECID="$(echo "${FILMDATEN}" | sed -n '/^Audio/,/^$/p' | egrep '^Codec ID[ ]+' | sed 's/^Codec ID[ ][ ]*[:][ ][ ]*//;s/[ ]*//g;s/[(].*$//g' | head -n1)"
 
-echo "# - 173: Eigenschaften lesen
+echo "# - 176: Eigenschaften lesen
 ISTAUDIOID='${ISTAUDIOID}'
 ISTAUDIOMENUID='${ISTAUDIOMENUID}'
 ISTAUDIOCODECID='${ISTAUDIOCODECID}'
@@ -184,7 +187,7 @@ if [ "${ISTVIDEO_HOCH}" == "1088" ] ; then
         SCAN_TYPE="interlaced"
 fi
 
-echo "# - 187: Eigenschaften lesen
+echo "# - 190: Eigenschaften lesen
 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 " | tee -a ${AUSGABEDATEI}.log
@@ -193,7 +196,7 @@ if [ -n "${ISTVIDEO_HOCH}" ] ; then
         ISTVIDEO_HOCH="$(echo "${ISTVIDEO_HOCH}"|awk '{print $1*1}')"
 else
         if [ "${ISTVIDEO_HOCH}" == "1088" ] ; then
-                echo "# - 196: Eigenschaften lesen
+                echo "# - 199: Eigenschaften lesen
 ################################################################################
 # Es wurde aus dem Video die Bildhoehe von 1088 Pixeln gelesen,
 # moeglicherweise ist das ein 1080i-Video im MPEG2-Kontainer (.mts/.m2ts).
@@ -214,7 +217,7 @@ else
         fi
 fi
 
-echo "# - 217: Eigenschaften lesen
+echo "# - 220: Eigenschaften lesen
 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 
@@ -233,7 +236,7 @@ else
         ### wenn in den Metadaten des Filmes 1000 fps steht,
         ### dann sind es in wirklichkeit 15 fps
         if [ "${ISTVIDEOBilPS}" == "1000" ] ; then
-                echo "# - 236: Eigenschaften lesen
+                echo "# - 239: Eigenschaften lesen
 ################################################################################
 # Es wurde aus dem Video die Bildwiederholrate von 1000 Bildern pro Sekunde
 # gelesen, moeglicherweise ist das ein Fehler.
@@ -248,7 +251,7 @@ else
         fi
 fi
 
-echo "# - 251: Eigenschaften lesen
+echo "# - 254: Eigenschaften lesen
 SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
 " | tee -a ${AUSGABEDATEI}.log
 
@@ -266,7 +269,7 @@ fi
 #------------------------------------------------------------------------------#
 ### gelsene Werte werden mit Eingabewerten ueberschrieben
 
-echo "# - 269: Eigenschaften lesen
+echo "# - 272: Eigenschaften lesen
 INVIDEOBREIT='${INVIDEOBREIT}'
 INVIDEO_HOCH='${INVIDEO_HOCH}'
 INVIDEOPixBr='${INVIDEOPixBr}'
@@ -287,7 +290,7 @@ fi
 if [ -n "${INVIDEOPixel}" ] ; then
         PxBruch="$(echo "${INVIDEOPixel}" | grep -E '[:/]' | awk -F'[:/]' '{print $1"/"$2}')"
 
-	echo "# - 290: Eigenschaften lesen
+	echo "# - 293: Eigenschaften lesen
 	INVIDEOPixel='${INVIDEOPixel}'
 	DxBruch='${DxBruch}'
 	" | tee -a ${AUSGABEDATEI}.log
@@ -304,7 +307,7 @@ fi
 if [ -n "${INVIDEODispl}" ] ; then
         DiBruch="$(echo "${INVIDEODispl}" | grep -E '[:/]' | awk -F'[:/]' '{print $1"/"$2}')"
 
-	echo "# - 307: Eigenschaften lesen
+	echo "# - 310: Eigenschaften lesen
 	INVIDEODispl='${INVIDEODispl}'
 	DiBruch='${DiBruch}'
 	" | tee -a ${AUSGABEDATEI}.log
@@ -322,7 +325,7 @@ if [ -n "${INVIDEOBilPS}" ] ; then
         ISTVIDEOBilPS="${INVIDEOBilPS}"
 fi
 
-echo "# - 325: Eigenschaften lesen
+echo "# - 328: Eigenschaften lesen
 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 ISTVIDEOPixBr='${ISTVIDEOPixBr}'
@@ -359,17 +362,22 @@ ISTVIDEODispl='${ISTVIDEODispl}'
 
 if [ -z "${ISTVIDEOBREIT}" ] ; then
         # jetzt brauchen wir ${ISTVIDEO_HOCH} und (${ISTVIDEOPixel} und ${ISTVIDEODispl})
-        echo "# - 362: Eigenschaften lesen
-        Bildbreite interpolieren..." | tee -a ${AUSGABEDATEI}.log
+
+        echo "# - 366: Eigenschaften lesen
+        Bildbreite interpolieren...
+	" | tee -a ${AUSGABEDATEI}.log
+
         # echo "576 1,3333333 1,0666667" | awk '{print f("%.0f\n",$1*$2/$3)}' = 720
         ISTVIDEOBREIT="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEODispl} ${ISTVIDEOPixel}" | awk '{printf("%.0f\n",$1*$2/$3)}')"
 fi
 
 if [ -z "${ISTVIDEO_HOCH}" ] ; then
         # jetzt brauchen wir ${ISTVIDEOBREIT} und (${ISTVIDEOPixel} und ${ISTVIDEODispl})
-        echo "# - 370: Eigenschaften lesen
+
+        echo "# - 377: Eigenschaften lesen
         Bildhoehe interpolieren...
         " | tee -a ${AUSGABEDATEI}.log
+
         # echo "720 1,06667 1,3333333" | awk '{printf("%.0f\n",$1*$2/$3)}' = 576
         ISTVIDEO_HOCH="$(echo "${ISTVIDEOBREIT} ${ISTVIDEOPixel} ${ISTVIDEODispl}" | awk '{printf("%.0f\n",$1*$2/$3)}')"
 fi
@@ -377,13 +385,16 @@ fi
 # evtl. lohnt es sich, hier die Genauigkeit zu erhöhen
 if [ -z "${ISTVIDEOPixel}" ] ; then
         # jetzt brauchen wir ${ISTVIDEOBREIT} und  ${ISTVIDEO_HOCH} und ${ISTVIDEODispl}
-        echo "# - 380: Eigenschaften lesen
+
+        echo "# - 389: Eigenschaften lesen
         ISTVIDEOPixel (PAR) interpolieren...
         " | tee -a ${AUSGABEDATEI}.log
+
         # echo "720 576 4 3"  |  awk '{print ($2*$3)/($1*$4)}'      = 1,0666667
         # echo "720 576 1,3333333" | awk '{print $3/($1/$2)}'       = 1,0666667
         ISTVIDEOPixel="$(echo "${ISTVIDEOBREIT} ${ISTVIDEO_HOCH} ${ISTVIDEODispl}" | awk '{printf("%.16f\n",$3/($1/$2))}')"
-        echo "# - 386: Eigenschaften lesen
+
+        echo "# - 397: Eigenschaften lesen
         ${ISTVIDEOBREIT}|${ISTVIDEO_HOCH}|${ISTVIDEODispl}
         ISTVIDEOPixel='${ISTVIDEOPixel}'
         " | tee -a ${AUSGABEDATEI}.log
@@ -391,7 +402,8 @@ fi
 
 if [ -z "${ISTVIDEOPixBr}" ] ; then
 	if [ -n "${ISTVIDEOPixel}" ] ; then
-                echo "# - 394: Eigenschaften lesen
+
+                echo "# - 406: Eigenschaften lesen
                 ISTVIDEOPixel in ISTVIDEOPixBr umrechnen...
                 " | tee -a ${AUSGABEDATEI}.log
 		ISTVIDEOPixBr="$(FLIESSKOMMA_ZU_BRUCH ${ISTVIDEOPixel})"
@@ -407,11 +419,13 @@ if [ -z "${ISTVIDEODispl}" ] ; then
         # jetzt brauchen wir ${ISTVIDEOBREIT} und  ${ISTVIDEO_HOCH} und ${ISTVIDEOPixel}
         # echo "576 720 64 60"      | awk '{print ($2*$3)/($1*$4)}' = 1,3333333
         # echo "576 720 1,0666667" | awk '{print $3/($1/$2)}'       = 1,3333333
-        echo "# - 410: Eigenschaften lesen
+
+        echo "# - 423: Eigenschaften lesen
         ISTVIDEODispl (DAR) aus ISTVIDEOBREIT und ISTVIDEOPixel berechnen...
         " | tee -a ${AUSGABEDATEI}.log
         ISTVIDEODispl="$(echo "${ISTVIDEO_HOCH} ${ISTVIDEOBREIT} ${ISTVIDEOPixel}" | awk '{printf("%.16f\n",$3/($1/$2))}')"
-        echo "# - 414: Eigenschaften lesen
+
+        echo "# - 428: Eigenschaften lesen
         ISTVIDEODispl='${ISTVIDEODispl}'
         " | tee -a ${AUSGABEDATEI}.log
 fi
@@ -419,36 +433,48 @@ fi
 
 if [ -z "${ISTVIDEODisBr}" ] ; then
         if [ -n "${ISTVIDEOPixel}" ] ; then
-                echo "# - 422: Eigenschaften lesen
+
+                echo "# - 437: Eigenschaften lesen
                 ISTVIDEODisBr aus ISTVIDEOBREIT, ISTVIDEO_HOCH und ISTVIDEOPixel berechnen...
                 " | tee -a ${AUSGABEDATEI}.log
+
                 ISTVIDEODisBr="$(BILD_ASPECT ${ISTVIDEOBREIT} ${ISTVIDEO_HOCH} ${ISTVIDEOPixel})"
+
                 echo "
                 ISTVIDEODisBr='${ISTVIDEODisBr}'
                 " | tee -a ${AUSGABEDATEI}.log
+
         elif [ -n "${ISTVIDEODispl}" ] ; then
-                echo "# - 430: Eigenschaften lesen
+
+                echo "# - 449: Eigenschaften lesen
                 ISTVIDEODisBr aus ISTVIDEODispl berechnen...
                 " | tee -a ${AUSGABEDATEI}.log
+
                 ISTVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${ISTVIDEODispl})"
+
                 echo "
                 ISTVIDEODisBr='${ISTVIDEODisBr}'
                 " | tee -a ${AUSGABEDATEI}.log
+
         else
-                echo "# - 438: Eigenschaften lesen
+
+                echo "# - 461: Eigenschaften lesen
                 ISTVIDEODisBr aus ISTVIDEOBREIT und ISTVIDEO_HOCH berechnen...
                 " | tee -a ${AUSGABEDATEI}.log
+
                 ISTVIDEODisBr="$(BILD_ASPECT ${ISTVIDEOBREIT} ${ISTVIDEO_HOCH})"
+
                 echo "
                 ISTVIDEODisBr='${ISTVIDEODisBr}'
                 " | tee -a ${AUSGABEDATEI}.log
+
         fi
 fi
 
 #------------------------------------------------------------------------------#
 ### Kontrolle, ob das aufarbeiten geklappt hat
 
-echo "# - 451: Eigenschaften lesen
+echo "# - 477: Eigenschaften lesen
 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 ISTVIDEOPixBr='${ISTVIDEOPixBr}'
@@ -462,7 +488,7 @@ SOLLVIDEOBilPS='${SOLLVIDEOBilPS}'
 " | tee -a ${AUSGABEDATEI}.log
 
 if [ -z "${ISTVIDEOBREIT}" ] ; then
-	echo "# - 465: Eigenschaften lesen
+	echo "# - 491: Eigenschaften lesen
 	Es konnte nicht ermittelt werden, wie breit das Bild des Filmes ist.
 	Sie koennen den Fehler beheben, in dem Sie die Bildbreite
 	mit dem folgenden Parameter angeben:
@@ -472,7 +498,7 @@ if [ -z "${ISTVIDEOBREIT}" ] ; then
 fi
 
 if [ -z "${ISTVIDEO_HOCH}" ] ; then
-	echo "# - 475: Eigenschaften lesen
+	echo "# - 501: Eigenschaften lesen
 	Es konnte nicht ermittelt werden, wie hoch das Bild des Filmes ist.
 	Sie koennen den Fehler beheben, in dem Sie die Bildhoehe
 	mit dem folgenden Parameter angeben:
@@ -511,22 +537,24 @@ case "${SOLLVIDEOPixel}" in
 esac
 #------------------------------------------------------------------------------#
 
-  echo "# - 514: Eigenschaften lesen
-  SOLLVIDEOPixel="${SOLLVIDEOPixel}"
-  SOLLVIDEOPixBr="${SOLLVIDEOPixBr}"
-  " | tee -a ${AUSGABEDATEI}.log
+echo "# - 540: Eigenschaften lesen
+SOLLVIDEOPixel="${SOLLVIDEOPixel}"
+SOLLVIDEOPixBr="${SOLLVIDEOPixBr}"
+" | tee -a ${AUSGABEDATEI}.log
+
 if [ -z "${SOLLVIDEOPixBr}" ] ; then
 	SOLLVIDEOPixBr="$(FLIESSKOMMA_ZU_BRUCH ${SOLLVIDEOPixel})"
 fi
-  echo "# - 521: Eigenschaften lesen
-  SOLLVIDEOPixel="${SOLLVIDEOPixel}"
-  SOLLVIDEOPixBr="${SOLLVIDEOPixBr}"
-  " | tee -a ${AUSGABEDATEI}.log
+
+echo "# - 549: Eigenschaften lesen
+SOLLVIDEOPixel="${SOLLVIDEOPixel}"
+SOLLVIDEOPixBr="${SOLLVIDEOPixBr}"
+" | tee -a ${AUSGABEDATEI}.log
 
 #------------------------------------------------------------------------------#
 ### Display-Verhaeltnis
 
-echo "# - 529: Eigenschaften lesen
+echo "# - 557: Eigenschaften lesen
 SOLLVIDEODisBr='${SOLLVIDEODisBr}'
 SOLLVIDEODispl='${SOLLVIDEODispl}'
 " | tee -a ${AUSGABEDATEI}.log
@@ -539,7 +567,7 @@ case "${SOLLVIDEODispl}" in
                 ;;
 esac
 
-echo "# - 542: Eigenschaften lesen
+echo "# - 570: Eigenschaften lesen
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
 SOLLVIDEODisBr='${SOLLVIDEODisBr}'
@@ -551,7 +579,7 @@ SOLLVIDEODispl='${SOLLVIDEODispl}'
 (
 # Bildbreite
 if [ -z "${ISTVIDEOBREIT}" ] ; then
-        echo "# - 554: Eigenschaften lesen
+        echo "# - 582: Eigenschaften lesen
         Die Bildbreite konnte nicht ermittelt werden.
         " | tee -a ${AUSGABEDATEI}.log
         ENDE="Ja"
@@ -559,7 +587,7 @@ fi
 
 # Bildhoehe
 if [ -z "${ISTVIDEO_HOCH}" ] ; then
-        echo "# - 562: Eigenschaften lesen
+        echo "# - 590: Eigenschaften lesen
         Die Bildhoehe konnte nicht ermittelt werden.
         " | tee -a ${AUSGABEDATEI}.log
         ENDE="Ja"
@@ -567,7 +595,7 @@ fi
 
 # PAR
 if [ -z "${ISTVIDEOPixel}" ] ; then
-        echo "# - 570: Eigenschaften lesen
+        echo "# - 598: Eigenschaften lesen
         Das Seitenverhaeltnis der Bildpunkte konnte nicht ermittelt werden.
         " | tee -a ${AUSGABEDATEI}.log
         ENDE="Ja"
@@ -575,7 +603,7 @@ fi
 
 # PAR, als Bruch
 if [ -z "${ISTVIDEOPixBr}" ] ; then
-        echo "# - 578: Eigenschaften lesen
+        echo "# - 606: Eigenschaften lesen
         Das Seitenverhaeltnis der Bildpunkte konnte als Bruch nicht ermittelt werden.
         " | tee -a ${AUSGABEDATEI}.log
         ENDE="Ja"
@@ -583,7 +611,7 @@ fi
 
 # DAR
 if [ -z "${ISTVIDEODispl}" ] ; then
-        echo "# - 586: Eigenschaften lesen
+        echo "# - 614: Eigenschaften lesen
         Das Seitenverhaeltnis des Bildschirmes konnte nicht ermittelt werden.
         " | tee -a ${AUSGABEDATEI}.log
         ENDE="Ja"
@@ -591,7 +619,7 @@ fi
 
 # DAR, als Bruch
 if [ -z "${ISTVIDEODisBr}" ] ; then
-        echo "# - 594: Eigenschaften lesen
+        echo "# - 622: Eigenschaften lesen
         Das Seitenverhaeltnis des Bildschirmes konnte als Bruch nicht ermittelt werden.
         " | tee -a ${AUSGABEDATEI}.log
         ENDE="Ja"
@@ -599,7 +627,7 @@ fi
 
 # FPS
 if [ -z "${ISTVIDEOBilPS}" ] ; then
-        echo "# - 602: Eigenschaften lesen
+        echo "# - 630: Eigenschaften lesen
         Die Bildwiederholrate konnte nicht ermittelt werden.
         "
         ENDE="Ja"
@@ -610,7 +638,7 @@ fi
 #==============================================================================#
 
 if [ "${ENDE}" == "Ja" ] ; then
-	echo "# - 613: Eigenschaften lesen
+	echo "# - 641: Eigenschaften lesen
 	# 5 - Ende
 	ENDE='${ENDE}'
         ABBRUCH
@@ -619,7 +647,7 @@ if [ "${ENDE}" == "Ja" ] ; then
 fi
 
 
-echo "# - 622: Eigenschaften lesen
+echo "# - 650: Eigenschaften lesen
 ISTVIDEOBREIT='${ISTVIDEOBREIT}'
 ISTVIDEO_HOCH='${ISTVIDEO_HOCH}'
 ISTVIDEOPixBr='${ISTVIDEOPixBr}'
