@@ -302,7 +302,7 @@ if [ -n "${INVIDEOPixel}" ] ; then
 fi
 
 if [ -n "${INVIDEODispl}" ] ; then
-        DiBruch="$(echo "${INVIDEODispl}" | awk -F'[:/]' '/[:/]/{print $1"/"$2}')"
+        DiBruch="$(echo "${INVIDEODispl}" | grep -E '[:/]' | awk -F'[:/]' '{print $1"/"$2}')"
 
 	echo "# - 307: Eigenschaften lesen
 	INVIDEODispl='${INVIDEODispl}'
