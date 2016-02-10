@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092600"
+VERSION="v2016020900"
 
 
 echo "
@@ -142,7 +142,7 @@ if [ -n "${PPROFIL}" ] ; then
                 VPROG="ffmpeg"
                 VIDEOCODEC="libx264"    # ASP (MPEG4p2), AVC (MPEGp10) / max. Video-Bit-Rate: ~1600k
                 VIDEOOPTION="-s 1024x576"
-                AUDIOCODEC="${P_AAC_CODEC}"    # "non-free"-Lizenz / max. Audio-Bit-Rate: 160k
+                AUDIOCODEC="${P_AAC_CODEC}"    # libfaac "non-free"-Lizenz / max. Audio-Bit-Rate: 160k
                 AUDIOOPTION="-ar 44100"
                 AUDIOKANAELE="2"
                 CONTAINER="mp4"         # mp4 m4v mov
@@ -197,7 +197,8 @@ if [ -n "${PPROFIL}" ] ; then
                 VPROG="ffmpeg x264 mkvmerge"
                 VIDEOCODEC="libx264"    # AVC (MPEGp10)
                 VIDEOOPTION=""
-                AUDIOCODEC="ac3"        # ac3 libfaac faac aac
+                #AUDIOCODEC="ac3"        # ac3 libfaac faac aac
+                AUDIOCODEC="libfaac"    # ac3 libfaac faac aac
                 AUDIOOPTION=""
                 CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
                 PBILDQUALIT="5"
