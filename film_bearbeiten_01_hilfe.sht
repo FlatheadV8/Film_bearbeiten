@@ -1,5 +1,5 @@
 
-Stand: 2015-11-29 00
+VERSION="v2016020900"
 
 HILFE:
     -hilfe
@@ -52,9 +52,11 @@ Videoqualität (Std.: 7; mögliche Werte: 0-10):
 CROP_PARAMETER-Werte:
     -crop 720:432:0:72
 
-(nur für AVC/x264) Audio-Codec: wave aac mp2 mp3 ogg
+(nur für AVC/x264) Audio-Codec: wave faac aac libfaac mp2 mp3 ogg
     -acodec wave
+    -acodec faac
     -acodec aac
+    -acodec libfaac
     -acodec mp2
     -acodec mp3
     -acodec ogg
