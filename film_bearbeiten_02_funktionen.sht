@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092700"
+VERSION="v2016020900"
 
 
 echo "
@@ -387,7 +387,7 @@ TON_TRANS()
                         " | tee -a ${AUSGABEDATEI}.log
 
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3 && mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
-                elif [ "${AUDIOCODEC}" = "aac" ] ; then
+                elif [ "${AUDIOCODEC}" = "aac" -o "${AUDIOCODEC}" = "faac" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-5: TON_TRANS
 
@@ -399,7 +399,7 @@ TON_TRANS()
                         faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.wav && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "libfaac" ] ; then
                         echo "#------------------------------------------------------------------------------#
-                        # - 7-6: TON_TRANS
+                        # - 7-6: TON_TRANS (libfaac -> "non-free"-Lizenz / max. Audio-Bit-Rate: 160k)
 
                         ### Audiospur transcodieren
                         ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
