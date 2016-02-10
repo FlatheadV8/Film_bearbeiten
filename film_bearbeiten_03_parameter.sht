@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015101900"
+VERSION="v2016020900"
 
 
 echo "
@@ -216,7 +216,7 @@ while [ "${#}" -ne "0" ] ; do
                                         SOLLAUDIOCODEC="faac"
                                         ;;
                                 [Ll][Ii][Bb][Ff][Aa][Aa][Cc])
-                                        SOLLAUDIOCODEC="libfaac"
+                                        SOLLAUDIOCODEC="libfaac"	# "non-free"-Lizenz / max. Audio-Bit-Rate: 160k
                                         ;;
                                 [Oo][Gg][Gg])
                                         SOLLAUDIOCODEC="ogg"
