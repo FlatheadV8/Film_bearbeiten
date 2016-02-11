@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016020900"
+VERSION="v2016021000"
 
 
 echo "
@@ -863,7 +863,19 @@ BLURAY_PARAMETER()
         echo "# - 12-4: Ende BLURAY_PARAMETER" >> ${AUSGABEDATEI}.log
 }
 
+#------------------------------------------------------------------------------#
+### MKV auch als MP4-Kopie ablegen
 
+MKVzuMP4()
+{
+echo "# - 871: MKV auch als MP4-Kopie ablegen
+ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4
+" | tee -a ${AUSGABEDATEI}.log
+
+ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4 2>&1 | tee -a ${AUSGABEDATEI}.log
+}
+
+#------------------------------------------------------------------------------#
 # Ende
 ### Funktionen um das AVC-Format zu berechnen
 #==============================================================================#
