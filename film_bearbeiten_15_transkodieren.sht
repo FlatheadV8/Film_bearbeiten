@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015122200"
+VERSION="v2016021000"
 
 
 echo "
@@ -137,11 +137,13 @@ fi
 #------------------------------------------------------------------------------#
 ### MKV auch als MP4-Kopie ablegen
 
-echo "# - 140: Film transkodieren
-ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4
-" | tee -a ${AUSGABEDATEI}.log
-
-ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4 2>&1 | tee -a ${AUSGABEDATEI}.log
+#if [ "${PPROFIL}" = "avc" -o "${PPROFIL}" = "x264" ] ; then
+	if [ "${VIDEOCODEC}" = "libx264" ] ; then
+		if [ "${AUDIOCODEC}" = "aac" -o "${AUDIOCODEC}" = "faac" -o "${AUDIOCODEC}" = "libfaac" ] ; then
+			MKVzuMP4
+		fi
+	fi
+#fi
 
 #------------------------------------------------------------------------------#
 ### aufräumen
