@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015112900"
+VERSION="v2016021600"
 
 
 echo "
@@ -288,16 +288,41 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
 fi
 
 
+#------------------------------------------------------------------------------#
+### VOLLBILDKONVERTIERER / Zeilenentflechtung / Deinterlacing
 
-echo "# - 292 VF/FFMPEGPAD: Standardformat
+echo "
+# - 295: standardformat
+VOLLBILDKONVERTIERER='${VOLLBILDKONVERTIERER}'
+PROGRESSIV='${PROGRESSIV}'
+SCAN_TYPE='${SCAN_TYPE}'
+DEINTERLACING='${DEINTERLACING}'
+" | tee -a ${AUSGABEDATEI}.log
+
+if [ "${PROGRESSIV}" = "Ja" -o "${SCAN_TYPE}" != "Progressive" ] ; then
+	DEINTERLACING="${VOLLBILDKONVERTIERER}"
+fi
+
+echo "
+# - 311: standardformat
+VOLLBILDKONVERTIERER='${VOLLBILDKONVERTIERER}'
+PROGRESSIV='${PROGRESSIV}'
+SCAN_TYPE='${SCAN_TYPE}'
+DEINTERLACING='${DEINTERLACING}'
+" | tee -a ${AUSGABEDATEI}.log
+
+#------------------------------------------------------------------------------#
+
+
+echo "# - 321 VF/FFMPEGPAD: Standardformat
 FFMPEGPAD='${FFMPEGPAD}'
 VF=${VF}
 " | tee -a ${AUSGABEDATEI}.log
 
 ESC_FFMPEGPAD="$(echo "${FFMPEGPAD}" | sed 's/[/,:()]/\\&/g;s/[,]/\\&/g')"
-VF="$(echo "${VF}" | sed "s/@FFMPEGPAD@/${ESC_FFMPEGPAD}/")"
+VF="$(echo "${DEINTERLACING} ${VF}" | sed "s/@FFMPEGPAD@/${ESC_FFMPEGPAD}/")"
 
-echo "# - 300 VF/FFMPEGPAD: Standardformat
+echo "# - 329 VF/FFMPEGPAD: Standardformat
 ESC_FFMPEGPAD='${ESC_FFMPEGPAD}'
 VF=${VF}
 
