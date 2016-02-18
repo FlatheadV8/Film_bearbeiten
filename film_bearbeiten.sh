@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #set -x
-VERSION="v2015092700"
+VERSION="v2016021600"
 
 #------------------------------------------------------------------------------#
 ### Arbeitsweise
@@ -44,6 +44,7 @@ MKVSYNC="JA"                            # im Standard Synchronisation durch den 
 PPROFIL="avc"                           # im Standard wird ein AVC-Film erzeugt, zu ändern mit z.B.: "-profil asp"
 RAUSCHW="0"                             # im Standard wird keine Rauschunterdrückung aktiviert, zu aktivieren mit z.B.: "-entrauschen 100"
 ANPASSUNG="JA"                          # wichtig fuer die Simple-Profile
+VOLLBILDKONVERTIERER="yadif"		# Zeilenentflechtung / Deinterlacing
 
 AUFRUF="${0} ${@}"
 
