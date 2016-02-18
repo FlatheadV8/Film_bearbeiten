@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016020900"
+VERSION="v2016021600"
 
 
 echo "
@@ -95,7 +95,7 @@ if [ -n "${PPROFIL}" ] ; then
                 ANPASSUNG="nein"
                 PASPECT="4/3"
                 #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
-                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
                 ;;
         sp3|sp3l3)
                 DIREKT_TRANS="direkt"
@@ -112,8 +112,8 @@ if [ -n "${PPROFIL}" ] ; then
                 PFPS="15"
                 ANPASSUNG="nein"
                 PASPECT="4/3"
-                #VF="yadif@BILDAUSSCH@pad=in_h*4/3:in_h:\(in_h*4/3-in_w\)/2:0,scale=320:240"
-                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                #VF="@BILDAUSSCH@pad=in_h*4/3:in_h:\(in_h*4/3-in_w\)/2:0,scale=320:240"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
                 ;;
         em880)
                 DIREKT_TRANS="direkt"
@@ -130,7 +130,7 @@ if [ -n "${PPROFIL}" ] ; then
                 PFPS="20"
                 ANPASSUNG="nein"
                 PASPECT="4/3"
-                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
                 ;;
         ipad)
                 # optimal: ffmpeg -i rein.mkv -c:v libx264 -vf scale=1024:576 -c:a libfaac -b:a 128k -ar 44100 -y raus.mp4
@@ -152,7 +152,7 @@ if [ -n "${PPROFIL}" ] ; then
                 PBILDQUALIT="3"         # bei "2" -> max. 1180k / bei "3" -> max. 1770k / bei "4" -> max. 2360k
                 PTONQUALIT="4"          # max. Audio-Bit-Rate: 160k (4: AACQUALI="130" / 5: AACQUALI="160")
                 PASPECT="16/9"
-                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
                 ;;
         aspl3)
                 DIREKT_TRANS="direkt"
@@ -165,7 +165,7 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="avi"
                 PBILDQUALIT="3"
                 PTONQUALIT="4"
-                VF="yadif @BILDAUSSCH@ @FFMPEGPAD@"
+                VF="@BILDAUSSCH@ @FFMPEGPAD@"
                 ;;
         aspl4)
                 DIREKT_TRANS="direkt"
