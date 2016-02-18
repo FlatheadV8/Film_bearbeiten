@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015112900"
+VERSION="v2016021600"
 
 
 echo "
@@ -61,7 +61,7 @@ if [ -n "${CROP_PARAMETER}" ] ; then
         # Berechnungen
 
         # CROP_PARAMETER: -crop 202,200,0,2
-        # VF='yadif @BILDAUSSCH@ @FFMPEGPAD@'
+        # VF='@BILDAUSSCH@ @FFMPEGPAD@'
 
         CROPVIDEOPixel="${ISTVIDEOPixel}"
         CROPVIDEOBREIT="$(echo "${CROP_PARAMETER}" | awk '{gsub("[,.:]"," ");print $1}')"
