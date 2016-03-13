@@ -114,11 +114,20 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         QUADVIDEODisBr="${ZBILDDisBr}"
         QUADVIDEODispl="$(echo "${ZBILDDisBr}"|awk -F'[:/]' '{print $1 / $2}')"
 
-        echo "# - 117: quadratische Bildpunkte
+        ### wenn dieser Zweig durchlaufen wird,
+        ### dann sollte die Ausgabeaufloesung hier berechnet werden
+        ### darum werden hier die SOLL-Variablen bedingungslos ueberschrieben
+        SOLLVIDEOBREIT="${QUADVIDEOBREIT}"
+        SOLLVIDEO_HOCH="${QUADVIDEO_HOCH}"
+
+        echo "# - 123: quadratische Bildpunkte
         QUADVIDEOBREIT='${QUADVIDEOBREIT}'
         QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
         QUADVIDEODisBr='${QUADVIDEODisBr}'
         QUADVIDEODispl='${QUADVIDEODispl}'
+
+        SOLLVIDEOBREIT="${SOLLVIDEOBREIT}"
+        SOLLVIDEO_HOCH="${SOLLVIDEO_HOCH}"
 
         FBREIT='${FBREIT}'
         FHOCH='${FHOCH}'
@@ -137,7 +146,7 @@ fi
 
 #==============================================================================#
 
-echo "# - 140 Ende: quadratische Bildpunkte
+echo "# - 149 Ende: quadratische Bildpunkte
 STANDARDBILDFORMAT='${STANDARDBILDFORMAT}'
 
 QUADAVCLEVEL='${QUADAVCLEVEL}'
