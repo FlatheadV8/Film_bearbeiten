@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016021000"
+VERSION="v2016031200"
 
 
 echo "
@@ -732,7 +732,7 @@ QUADRATPIXELBERECHNUNG()
         # Standardformat weniger schwarze Flaeche hinzugefuehgt werden muss.
         #
 
-        VERSION="v2014112800"
+        VERSION="v2016031200"
 
         if [ -z "${3}" ] ; then
                 echo "# - QUADRATPIXELBERECHNUNG - Abbruch"
@@ -741,17 +741,51 @@ QUADRATPIXELBERECHNUNG()
         fi
 
         echo "# - 12-1: Beginn QUADRATPIXELBERECHNUNG" >> ${AUSGABEDATEI}.log
-        #------------------------------------------------------------------------------#
+	#======================================================================#
+	### Plan "A" - genaue Berechnung
+        echo "# - 12-3: QUADRATPIXELBERECHNUNG - Plan "A" - genaue Berechnung" >> ${AUSGABEDATEI}.log
 
         # QUADRATPIXELBERECHNUNG Breite Hoehe  4/3
         # QUADRATPIXELBERECHNUNG 704    576    4/3
         # QUADRATPIXELBERECHNUNG 720    576   16/9
-        echo "${1} ${2} ${3}"|awk '{sub("[/:]"," "); f=1; p=$1*$2; b=$3; h=$4; n=b*f*h*f; while ( p > n ) {e=f; m=n; ++f; n=b*f*h*f}} END {printf "%.0u %.0u %.0u %.0u %.0u %.0u\n", $1, $2, (b*e)/2, (h*e)/2, (b*f)/2, (h*f)/2}' | awk '{print $1, $2, $3*2, $4*2, $5*2, $6*2}' | awk '{p=$1 * $2; a=$3 * $4; b=$5 * $6; if (p > a) e=p-a; if (p <= a) e=a-p; if (p > b) f=p-b; if (p <= b) f=b-p; if (e > f) {w=$5; h=$6}; if (e <= f) {w=$3; h=$4}; print w, h}'
+        # QUADRATPIXELBERECHNUNG 714    464 1219/557
+        AUSGABE_0="$(echo "${1} ${2} ${3}" | awk '{sub("[/:]"," "); f=1; p=$1*$2; b=$3; h=$4; n=b*f*h*f; while ( p > n ) {e=f; m=n; ++f; n=b*f*h*f}} END {printf "%.0u %.0u %.0u %.0u %.0u %.0u\n", $1, $2, (b*e)/2, (h*e)/2, (b*f)/2, (h*f)/2}' | awk '{print $1, $2, $3*2, $4*2, $5*2, $6*2}' | awk '{p=$1 * $2; a=$3 * $4; b=$5 * $6; if (p > a) e=p-a; if (p <= a) e=a-p; if (p > b) f=p-b; if (p <= b) f=b-p; if (e > f) {w=$5; h=$6}; if (e <= f) {w=$3; h=$4}; print w, h}')"
+        AUSGABE_1="$(echo "${AUSGABE_0}" | awk '{print $1}')"
+        AUSGABE_2="$(echo "${AUSGABE_0}" | awk '{print $2}')"
+
         #  4/3-AUSGABE:  736 552
         # 16/9-AUSGABE:  864 486
 
-        #------------------------------------------------------------------------------#
-        echo "# - 12-2: Ende QUADRATPIXELBERECHNUNG" >> ${AUSGABEDATEI}.log
+	PLAN="A"
+        if [ "${AUSGABE_1}" = "0" ] ; then
+		PLAN="B"
+        fi
+        if [ "${AUSGABE_2}" = "0" ] ; then
+		PLAN="B"
+        fi
+
+        if [ "${PLAN}" = "A" ] ; then
+        	echo "# - 12-4: QUADRATPIXELBERECHNUNG - Plan A hat funktioniert" >> ${AUSGABEDATEI}.log
+        	echo "${AUSGABE_0}"
+        else
+        	echo "# - 12-5: QUADRATPIXELBERECHNUNG - Plan A hat versagt" >> ${AUSGABEDATEI}.log
+        	#==============================================================#
+		### Plan "B" - schnelle Berechnung
+
+        	# QUADRATPIXELBERECHNUNG ${BILDVIDEOFAKTOR} ${FBREIT} ${FHOCH}
+        	#  4/3: QUADRATPIXELBERECHNUNG 277  4  3
+        	# 16/9: QUADRATPIXELBERECHNUNG  40 32 18
+
+        	echo "# - 12-6: QUADRATPIXELBERECHNUNG - Plan "B" - schnelle Berechnung" >> ${AUSGABEDATEI}.log
+        	#--------------------------------------------------------------#
+
+        	echo "${1} ${2} ${3}" | awk '{sub("[/:]"," "); p=$1*$2; printf "%.0f %.0f\n", sqrt(p*$3/$4)/2, sqrt(p*$4/$3)/2}' | awk '{print $1*2, $2*2, ($1*2)/($2*2)}'
+
+        	#==============================================================#
+        fi
+
+	#======================================================================#
+        echo "# - 12-7: Ende QUADRATPIXELBERECHNUNG" >> ${AUSGABEDATEI}.log
 }
 
 
