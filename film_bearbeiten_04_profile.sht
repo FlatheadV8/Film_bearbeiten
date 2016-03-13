@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016021600"
+VERSION="v2016031200"
 
 
 echo "
@@ -94,8 +94,9 @@ if [ -n "${PPROFIL}" ] ; then
                 PFPS="15"
                 ANPASSUNG="nein"
                 PASPECT="4/3"
-                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #SKIP_DUP="softskip harddup"
+                #SKALIERFORMAT="scale='176:144'"
                 ;;
         sp3|sp3l3)
                 DIREKT_TRANS="direkt"
@@ -112,8 +113,9 @@ if [ -n "${PPROFIL}" ] ; then
                 PFPS="15"
                 ANPASSUNG="nein"
                 PASPECT="4/3"
-                #VF="@BILDAUSSCH@pad=in_h*4/3:in_h:\(in_h*4/3-in_w\)/2:0,scale=320:240"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #FFMPEGPAD="pad=in_h*4/3:in_h:\(in_h*4/3-in_w\)/2:0"
+                #SKALIERFORMAT="scale='320:240'"
                 ;;
         em880)
                 DIREKT_TRANS="direkt"
@@ -130,7 +132,8 @@ if [ -n "${PPROFIL}" ] ; then
                 PFPS="20"
                 ANPASSUNG="nein"
                 PASPECT="4/3"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #SKALIERFORMAT="scale='320:240'"
                 ;;
         ipad)
                 # optimal: ffmpeg -i rein.mkv -c:v libx264 -vf scale=1024:576 -c:a libfaac -b:a 128k -ar 44100 -y raus.mp4
@@ -152,7 +155,9 @@ if [ -n "${PPROFIL}" ] ; then
                 PBILDQUALIT="3"         # bei "2" -> max. 1180k / bei "3" -> max. 1770k / bei "4" -> max. 2360k
                 PTONQUALIT="4"          # max. Audio-Bit-Rate: 160k (4: AACQUALI="130" / 5: AACQUALI="160")
                 PASPECT="16/9"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #FFMPEGPAD="pad='max\(iw\\,ih*\(16/9\)\):ow/\(16/9\):\(ow-iw\)/2:\(oh-ih\)/2'"
+                #SKALIERFORMAT="scale='1024:576'"
                 ;;
         aspl3)
                 DIREKT_TRANS="direkt"
@@ -165,7 +170,7 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="avi"
                 PBILDQUALIT="3"
                 PTONQUALIT="4"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
                 ;;
         aspl4)
                 DIREKT_TRANS="direkt"
@@ -178,7 +183,7 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="avi"
                 PBILDQUALIT="5"
                 PTONQUALIT="4"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
                 ;;
         aspl5|dx50)
                 DIREKT_TRANS="direkt"
@@ -191,7 +196,7 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="avi"
                 PBILDQUALIT="4"
                 PTONQUALIT="5"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
                 ;;
         avc|x264)
                 VPROG="ffmpeg x264 mkvmerge"
@@ -203,8 +208,8 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
-                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #SKIP_DUP="softskip harddup"
                 ;;
         xmp3)
                 VPROG="ffmpeg x264 mkvmerge"
@@ -217,8 +222,8 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
-                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #SKIP_DUP="softskip harddup"
                 ;;
         xogg)
                 VPROG="ffmpeg x264 mkvmerge"
@@ -229,8 +234,8 @@ if [ -n "${PPROFIL}" ] ; then
                 CONTAINER="mkv"
                 PBILDQUALIT="5"
                 PTONQUALIT="5"
-                #VF="@BILDAUSSCH@ @FFMPEGPAD@ @BILDSKALIEREN@ softskip harddup"
-                VF="@BILDAUSSCH@ @FFMPEGPAD@"
+                #DEINTERLACING="${VOLLBILDKONVERTIERER}"
+                #SKIP_DUP="softskip harddup"
                 ;;
         *)
                 echo "# - 226: Profil
