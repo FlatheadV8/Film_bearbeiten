@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016021600"
+VERSION="v2016031300"
 
 
 echo "
@@ -30,7 +30,7 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} standardformat
 #     x:y          - Position des Bildes im endgueltigen Bild, linke obere Ecke
 #     color        - black
 #
-#     VIDEOOPTION="-vf ${ZEILENSPRUNG}pad='max(iw\\,ih*(16/9)):ow/(16/9):(ow-iw)/2:(oh-ih)/2',scale='1024:576',setsar='1/1'"
+#     VIDEOOPTION="-vf yadif,pad='max(iw\\,ih*(16/9)):ow/(16/9):(ow-iw)/2:(oh-ih)/2',scale='1024:576',setsar='1/1'"
 #
 # mencoder
 #     expand=320:240:::1
@@ -150,34 +150,64 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
 
         	echo "
         	# - 152: standardformat
+        	Z_VIDEODispl='${Z_VIDEODispl}'
         	Z_VIDEODisBr='${Z_VIDEODisBr}'
         	SOLLVIDEODisBr='${SOLLVIDEODisBr}'
         	" | tee -a ${AUSGABEDATEI}.log
 
-        	FORMATPOSITION="$(echo "${Z_VIDEODisBr}"|awk '{printf "%u\n", $1 * 100000}')"
+        	FORMATPOSITION="$(echo "${Z_VIDEODispl}"|awk '{printf "%u\n", $1 * 100000}')"
+
+        	echo "
+		# - 161: standardformat
+		FORMATPOSITION='${FORMATPOSITION}'
+        	" | tee -a ${AUSGABEDATEI}.log
 
 		if [ "${PPROFIL}" = ipad ] ; then
         		FORMATPOSITION="150000"
         	fi
 
+        	echo "
+		# - 170: standardformat
+		FORMATPOSITION='${FORMATPOSITION}'
+        	" | tee -a ${AUSGABEDATEI}.log
+
         	if [ "${FORMATPOSITION}" -lt "149333" ] ; then
-                	FFMPEGPAD="pad='max(iw\,ih*(4/3)):ow/(4/3):(ow-iw)/2:(oh-ih)/2'"
+                	### ffmpeg rechnet falsch, wenn SAR nicht gleich 1 ist
+                	#FFMPEGPAD="pad='max(iw\,ih*(4/3)):ow/(4/3):(ow-iw)/2:(oh-ih)/2'"
                 	SOLLVIDEODisBr="4/3"
                 	Links="4"	# 4/3 = 12/9
                 	Oben="3"	# 4/3 = 12/9
                 	Verh="1.33333"	# 4/3 = 12/9
 
+                	# iB = in  Breite (IST-Bildbreite)
+                	# oB = out Breite (SOLL-Bildbreite)
+                	# iH = in  Hoehe  (IST-Bildhoehe)
+                	# oH = out Hoehe  (SOLL-Bildhoehe)
+                	# iA = in  Aspect (IST-Format)
+                	# oA = out Aspect (SOLL-Format)
+
         		if [ "${FORMATPOSITION}" -gt "133333" ] ; then
                 		# B = sqr( ( b * h ) * b / h )
                 		# H = B * 3 / 4
+                		# oB = iB * oA / iA
                 		SCHWARZ="oben"
+        			echo "# - 194 standardformat: 3 / 4 ${SCHWARZ}" | tee -a ${AUSGABEDATEI}.log
+                		oH="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr}" | awk -F'[x/: ]' '{printf "%.0f\n", ($2 * $4 * $5) / $1 / $6 / 2 }' | awk '{print $1 * 2}')"
+                		S_OBEN="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr} ${oH}" | awk -F'[x/: ]' '{printf "%.0f\n", ($7 - $4) / 2}')"
+                		FFMPEGPAD="pad='${Z_VIDEOBREIT}:${oH}:0:${S_OBEN}'"
         		else
                 		# B = H * 4 / 3
                 		# H = sqr( ( b * h ) * h / b )
+                		# oH = iH * iA / oA
                 		SCHWARZ="links"
+        			echo "# - 203 standardformat: 3 / 4 ${SCHWARZ}" | tee -a ${AUSGABEDATEI}.log
+                		oB="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr}" | awk -F'[x/: ]' '{printf "%.0f\n", ($1 * $3 * $6) / $2 / $5 / 2 }' | awk '{print $1 * 2}')"
+                		S_LINKS="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr} ${oB}" | awk -F'[x/: ]' '{printf "%.0f\n", ($7 - $3) / 2}')"
+                		FFMPEGPAD="pad='${oB}:${Z_VIDEO_HOCH}:${S_LINKS}:0'"
         		fi
         	else
-                	FFMPEGPAD="pad='max(iw\,ih*(16/9)):ow/(16/9):(ow-iw)/2:(oh-ih)/2'"
+                	### ffmpeg rechnet falsch, wenn SAR nicht gleich 1 ist
+                	#FFMPEGPAD="pad='max(iw\,ih*(16/9)):ow/(16/9):(ow-iw)/2:(oh-ih)/2'"
                 	SOLLVIDEODisBr="16/9"
                 	Links="16"	# 16/9
                 	Oben="9"	# 16/9
@@ -188,19 +218,35 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
                 		# B = H * $4 / $5
                 		# H = sqr( ( b * h ) * h / b )
                 		# H = sqr( ( $1 * $2 * $2 ) / $1 )
+                		# oB = iB * oA / iA
                 		SCHWARZ="links"
+        			echo "# - 223 standardformat: 16 / 9 ${SCHWARZ}" | tee -a ${AUSGABEDATEI}.log
+                		oB="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr}" | awk -F'[x/: ]' '{printf "%.0f\n", ($1 * $3 * $6) / $2 / $5 / 2 }' | awk '{print $1 * 2}')"
+                		S_LINKS="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr} ${oB}" | awk -F'[x/: ]' '{printf "%.0f\n", ($7 - $3) / 2}')"
+                		FFMPEGPAD="pad='${oB}:${Z_VIDEO_HOCH}:${S_LINKS}:0'"
         		else
                 		# B = sqr( ( b * h ) * b / h )
                 		# B = sqr( ( $1 * $2 * $1 ) / $2 )
                 		# H = B * 9 / 16
                 		# H = B * $5 / $4
+                		# oH = iH * iA / oA
                 		SCHWARZ="oben"
+        			echo "# - 234 standardformat: 16 / 9 ${SCHWARZ}" | tee -a ${AUSGABEDATEI}.log
+                		oH="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr}" | awk -F'[x/: ]' '{printf "%.0f\n", ($2 * $4 * $5) / $1 / $6 / 2 }' | awk '{print $1 * 2}')"
+                		S_OBEN="$(echo "${Links} ${Oben} ${Z_VIDEOBREIT} ${Z_VIDEO_HOCH} ${Z_VIDEODisBr} ${oH}" | awk -F'[x/: ]' '{printf "%.0f\n", ($7 - $4) / 2}')"
+                		FFMPEGPAD="pad='${Z_VIDEOBREIT}:${oH}:0:${S_OBEN}'"
         		fi
         	fi
 
         	echo "
-		# - 202: standardformat
+		# - 242: standardformat
+		FORMATPOSITION='${FORMATPOSITION}'
 		SCHWARZ='${SCHWARZ}'
+		oB='${oB}'
+		oH='${oH}'
+		S_OBEN='${S_OBEN}'
+		S_LINKS='${S_LINKS}'
+		FFMPEGPAD='${FFMPEGPAD}'
 		Z_VIDEOBREIT='${Z_VIDEOBREIT}'
 		Z_VIDEO_HOCH='${Z_VIDEO_HOCH}'
 		Z_VIDEOPixel='${Z_VIDEOPixel}'
@@ -250,7 +296,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
 		STDVIDEODisBr="${Links}/${Oben}"
 
         	echo "
-        	# - 253: standardformat
+        	# - 299: standardformat
         	SOLLAUFLOESUNG='${SOLLAUFLOESUNG}'
 
         	FORMATPOSITION='${FORMATPOSITION}'
@@ -269,7 +315,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         #----------------------------------------------------------------------#
 
         echo "
-        # - 272: standardformat
+        # - 318: standardformat
         SOLLVIDEODisBr='${SOLLVIDEODisBr}'
         " | tee -a ${AUSGABEDATEI}.log
 
@@ -278,7 +324,7 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         fi
 
         echo "
-        # - 281: standardformat
+        # - 327: standardformat
         SOLLVIDEODispl='${SOLLVIDEODispl}'
         PPROFIL='${PPROFIL}'
         " | tee -a ${AUSGABEDATEI}.log
@@ -292,7 +338,7 @@ fi
 ### VOLLBILDKONVERTIERER / Zeilenentflechtung / Deinterlacing
 
 echo "
-# - 295: standardformat
+# - 341: standardformat
 VOLLBILDKONVERTIERER='${VOLLBILDKONVERTIERER}'
 PROGRESSIV='${PROGRESSIV}'
 SCAN_TYPE='${SCAN_TYPE}'
@@ -304,8 +350,9 @@ if [ "${PROGRESSIV}" = "Ja" -o "${SCAN_TYPE}" != "Progressive" ] ; then
 fi
 
 echo "
-# - 311: standardformat
+# - 353: standardformat
 VOLLBILDKONVERTIERER='${VOLLBILDKONVERTIERER}'
+DEINTERLACING='${DEINTERLACING}'
 PROGRESSIV='${PROGRESSIV}'
 SCAN_TYPE='${SCAN_TYPE}'
 DEINTERLACING='${DEINTERLACING}'
@@ -314,17 +361,14 @@ DEINTERLACING='${DEINTERLACING}'
 #------------------------------------------------------------------------------#
 
 
-echo "# - 321 VF/FFMPEGPAD: Standardformat
+echo "# - 364 FFMPEGPAD: Standardformat
 FFMPEGPAD='${FFMPEGPAD}'
-VF=${VF}
 " | tee -a ${AUSGABEDATEI}.log
 
 ESC_FFMPEGPAD="$(echo "${FFMPEGPAD}" | sed 's/[/,:()]/\\&/g;s/[,]/\\&/g')"
-VF="$(echo "${DEINTERLACING} ${VF}" | sed "s/@FFMPEGPAD@/${ESC_FFMPEGPAD}/")"
 
-echo "# - 329 VF/FFMPEGPAD: Standardformat
+echo "# - 370 FFMPEGPAD: Standardformat
 ESC_FFMPEGPAD='${ESC_FFMPEGPAD}'
-VF=${VF}
 
 QUADVIDEOBREIT='${QUADVIDEOBREIT}'
 QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
