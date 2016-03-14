@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092700"
+VERSION="v2016031400"
 
 
 echo "
@@ -50,12 +50,12 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         CROPVIDEODispl='${CROPVIDEODispl}'
         CROPVIDEODisBr='${CROPVIDEODisBr}'
 
-        STDVIDEOBREIT='${STDVIDEOBREIT}'
-        STDVIDEO_HOCH='${STDVIDEO_HOCH}'
-        STDVIDEOPixel='${STDVIDEOPixel}'
-        STDVIDEOPixBr='${STDVIDEOPixBr}'
-        STDVIDEODispl='${STDVIDEODispl}'
-        STDVIDEODisBr='${STDVIDEODisBr}'
+        STD_VIDEOBREIT='${STD_VIDEOBREIT}'
+        STD_VIDEO_HOCH='${STD_VIDEO_HOCH}'
+        STD_VIDEOPixel='${STD_VIDEOPixel}'
+        STD_VIDEOPixBr='${STD_VIDEOPixBr}'
+        STD_VIDEODispl='${STD_VIDEODispl}'
+        STD_VIDEODisBr='${STD_VIDEODisBr}'
         " | tee -a ${AUSGABEDATEI}.log
 
         #----------------------------------------------------------------------#
@@ -67,8 +67,8 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         if [ -z "${ZBILDBREIT}" ] ; then
                 ZBILDBREIT="${ISTVIDEOBREIT}"
         fi
-        if [ -n "${STDVIDEOBREIT}" ] ; then
-                ZBILDBREIT="${STDVIDEOBREIT}"
+        if [ -n "${STD_VIDEOBREIT}" ] ; then
+                ZBILDBREIT="${STD_VIDEOBREIT}"
         fi
 
         if [ -n "${CROPVIDEO_HOCH}" ] ; then
@@ -77,8 +77,8 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         if [ -z "${ZBILD_HOCH}" ] ; then
                 ZBILD_HOCH="${ISTVIDEO_HOCH}"
         fi
-        if [ -n "${STDVIDEO_HOCH}" ] ; then
-                ZBILD_HOCH="${STDVIDEO_HOCH}"
+        if [ -n "${STD_VIDEO_HOCH}" ] ; then
+                ZBILD_HOCH="${STD_VIDEO_HOCH}"
         fi
 
         if [ -n "${CROPVIDEODisBr}" ] ; then
@@ -87,8 +87,8 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         if [ -z "${ZBILDDisBr}" ] ; then
                 ZBILDDisBr="${ISTVIDEODisBr}"
         fi
-        if [ -n "${STDVIDEODisBr}" ] ; then
-                ZBILDDisBr="${STDVIDEODisBr}"
+        if [ -n "${STD_VIDEODisBr}" ] ; then
+                ZBILDDisBr="${STD_VIDEODisBr}"
         fi
 
         echo "# - 94: quadratische Bildpunkte
