@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2014113000"
+VERSION="v2016031400"
 
 
 echo "
@@ -59,8 +59,8 @@ ISTVIDEODisBr='${ISTVIDEODisBr}'
 CROPVIDEODispl='${CROPVIDEODispl}'
 CROPVIDEODisBr='${CROPVIDEODisBr}'
 
-STDVIDEODispl='${STDVIDEODispl}'
-STDVIDEODisBr='${STDVIDEODisBr}'
+STD_VIDEODispl='${STD_VIDEODispl}'
+STD_VIDEODisBr='${STD_VIDEODisBr}'
 
 SOLLVIDEODispl='${SOLLVIDEODispl}'
 SOLLVIDEODisBr='${SOLLVIDEODisBr}'
@@ -69,16 +69,16 @@ SOLLVIDEODisBr='${SOLLVIDEODisBr}'
 #------------------------------------------------------------------------------#
 ### Standard-Format
 if [ -z "${SOLLVIDEODispl}" ] ; then
-    if [ -n "${STDVIDEODispl}" ] ; then
-        SOLLVIDEODispl="${STDVIDEODispl}"
-        SOLLVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${STDVIDEODispl})"
+    if [ -n "${STD_VIDEODispl}" ] ; then
+        SOLLVIDEODispl="${STD_VIDEODispl}"
+        SOLLVIDEODisBr="$(FLIESSKOMMA_ZU_BRUCH ${STD_VIDEODispl})"
     fi
 fi
 
 if [ -z "${SOLLVIDEODisBr}" ] ; then
-    if [ -n "${STDVIDEODisBr}" ] ; then
-        SOLLVIDEODisBr="${STDVIDEODisBr}"
-        SOLLVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${STDVIDEODisBr})"
+    if [ -n "${STD_VIDEODisBr}" ] ; then
+        SOLLVIDEODisBr="${STD_VIDEODisBr}"
+        SOLLVIDEODispl="$(BRUCH_IN_FLIESSKOMMAZAHL ${STD_VIDEODisBr})"
     fi
 fi
 
@@ -123,8 +123,8 @@ ISTVIDEODisBr='${ISTVIDEODisBr}'
 CROPVIDEODispl='${CROPVIDEODispl}'
 CROPVIDEODisBr='${CROPVIDEODisBr}'
 
-STDVIDEODispl='${STDVIDEODispl}'
-STDVIDEODisBr='${STDVIDEODisBr}'
+STD_VIDEODispl='${STD_VIDEODispl}'
+STD_VIDEODisBr='${STD_VIDEODisBr}'
 
 SOLLVIDEOPixel='${SOLLVIDEOPixel}'
 SOLLVIDEOPixBr='${SOLLVIDEOPixBr}'
