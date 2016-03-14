@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016031400"
+VERSION="v2016031401"
 
 
 echo "
@@ -114,11 +114,15 @@ if [ "${QUADRATISCHEPUNKTE}" = "Ja" ] ; then
         QUADVIDEODisBr="${ZBILDDisBr}"
         QUADVIDEODispl="$(echo "${ZBILDDisBr}"|awk -F'[:/]' '{print $1 / $2}')"
 
-        ### wenn dieser Zweig durchlaufen wird,
-        ### dann sollte die Ausgabeaufloesung hier berechnet werden
-        ### darum werden hier die SOLL-Variablen bedingungslos ueberschrieben
-        SOLLVIDEOBREIT="${QUADVIDEOBREIT}"
-        SOLLVIDEO_HOCH="${QUADVIDEO_HOCH}"
+        ### wenn der SOLL-Wert nicht gesetzt ist,
+        ### dann sollte die hier berechnete Auflösung
+        ### final verwendet werden
+        if [ -z "${SOLLVIDEOBREIT}" ] ; then
+                SOLLVIDEOBREIT="${QUADVIDEOBREIT}"
+        fi
+        if [ -z "${SOLLVIDEO_HOCH}" ] ; then
+                SOLLVIDEO_HOCH="${QUADVIDEO_HOCH}"
+        fi
 
         echo "# - 123: quadratische Bildpunkte
         QUADVIDEOBREIT='${QUADVIDEOBREIT}'
