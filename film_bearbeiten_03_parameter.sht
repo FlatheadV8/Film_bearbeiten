@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016020900"
+VERSION="v2016031500"
 
 
 echo "
@@ -97,15 +97,11 @@ while [ "${#}" -ne "0" ] ; do
                         ;;
                 -odar)
                         odar="${2}"
-                        opar=""
                         SOLLVIDEODispl="${2}"                   # Seitenverhaeltnis des gesamten Bildes: -odar 4/3 | -odar 16/9
-                        SOLLVIDEOPixel=""                       # Seitenverhaeltnis des einzelnen Bildpunktes wird ignoriert
                         shift
                         ;;
                 -opar)
                         opar="${2}"
-                        odar=""
-                        SOLLVIDEODispl=""                       # Seitenverhaeltnis des gesamten Bildes wird ignoriert
                         SOLLVIDEOPixel="${2}"                   # Seitenverhaeltnis des einzelnen Bildpunktes: NTSC, PAL oder DVB
                         shift
                         ;;
@@ -134,7 +130,6 @@ while [ "${#}" -ne "0" ] ; do
                         QUADRATISCHEPUNKTE="Ja"                 # die Ausgabe wird quadratische Bildpunkte haben
                         PROGRESSIV="Ja"                         # progressives Bild interpolieren, nur bei Zeilensprungverfahren benutzen!
                         INVIDEOPixel="pal"                      # Seitenverhaeltnis des einzelnen Bildpunktes des Quellvideos: PAL
-                        INVIDEODispl=""
                         shift
                         ;;
                 -anr)
@@ -159,10 +154,10 @@ while [ "${#}" -ne "0" ] ; do
                         ;;
                 -test)
                         echo "
-                        Der Parameter '-test' wird nicht unterstützt,
+                        Der Parameter '-test' wird nicht unterstÃŒtzt,
                         probieren Sie den Parameter '-testcrop' aus.
                         "
-                        exit 1
+                        ABBRUCH="Ja"
                         ;;
                 -crop)
                         ### MEncoder- und x264-Beispiel für das CROPen: 720x576 -> 704x428
@@ -301,11 +296,11 @@ while [ "${#}" -ne "0" ] ; do
                         ;;
                 -hilfe)
                         HILFE
-                        exit 0
+                        ABBRUCH="Ja"
                         ;;
                 -h)
                         HILFE
-                        exit 0
+                        ABBRUCH="Ja"
                         ;;
                 *)
                         if [ "$(echo "${1}"|egrep '^-')" ] ; then
@@ -320,7 +315,62 @@ while [ "${#}" -ne "0" ] ; do
 done
 
 #------------------------------------------------------------------------------#
+### wenn Fehler bei den Parametern gemacht wurden
+
+### -ipar, -idar, -stdtv
+if [ -n "${INVIDEOPixel}" ] ; then
+        if [ -n "${INVIDEODispl}" ] ; then
+                echo "Die beiden Parameter '-ipar' und '-idar' schlieÃen sich gegenseitig aus!"
+                echo "Die beiden Parameter '-stdtv' und '-idar' schlieÃen sich gegenseitig aus!"
+                ABBRUCH="Ja"
+        fi
+fi
+
+### -odar, -opar
+if [ -n "${SOLLVIDEODispl}" ] ; then
+        if [ -n "${SOLLVIDEOPixel}" ] ; then
+                echo "Die beiden Parameter '-odar' und '-opar' schlieÃen sich gegenseitig aus!"
+                ABBRUCH="Ja"
+        fi
+fi
+
+### -iskal
+if [ -z "${ENTZERR_VIDEOBREIT}" ] ; then
+        if [ -n "${ENTZERR_VIDEO_HOCH}" ] ; then
+                echo "Der Wert fÃŒr den Parameter '-iskal' muss als Trennzeichen ein 'x' enthalten!"
+                ABBRUCH="Ja"
+        fi
+fi
+if [ -n "${ENTZERR_VIDEOBREIT}" ] ; then
+        if [ -z "${ENTZERR_VIDEO_HOCH}" ] ; then
+                echo "Der Wert fÃŒr den Parameter '-iskal' muss als Trennzeichen ein 'x' enthalten!"
+                ABBRUCH="Ja"
+        fi
+fi
+
+### -skal
+if [ -z "${SOLLVIDEOBREIT}" ] ; then
+        if [ -n "${SOLLVIDEO_HOCH}" ] ; then
+                echo "Der Wert fÃŒr den Parameter '-skal' muss als Trennzeichen ein 'x' enthalten!"
+                ABBRUCH="Ja"
+        fi
+fi
+if [ -n "${SOLLVIDEOBREIT}" ] ; then
+        if [ -z "${SOLLVIDEO_HOCH}" ] ; then
+                echo "Der Wert fÃŒr den Parameter '-skal' muss als Trennzeichen ein 'x' enthalten!"
+                ABBRUCH="Ja"
+        fi
+fi
+
+#------------------------------------------------------------------------------#
 ### es geht nicht weiter
+
+if [ -n "${SOLLVIDEODispl}" ] ; then
+        if [ -n "${SOLLVIDEOPixel}" ] ; then
+                echo "Die beiden Parameter '-odar' und '-opar' schlieÃen sich gegenseitig aus!"
+                ABBRUCH="Ja"
+        fi
+fi
 
 if [ -n "${ABBRUCH}" ] ; then
         echo "ABBRUCH!"
@@ -330,8 +380,8 @@ fi
 #------------------------------------------------------------------------------#
 ### Bildformat vor der Verarbeitung skalieren bzw. entzerren
 
-if [ "${IN_SKALIEREN}" == "Ja" ] ; then
-        echo "# - 330: Breit und Hoch
+if [ "${IN_SKALIEREN}" = "Ja" ] ; then
+        echo "# - 384: Breit und Hoch
         Das Eingabe-Bildformat skalieren.
         "
 
@@ -341,7 +391,7 @@ fi
 
 #------------------------------------------------------------------------------#
 
-echo "# - 344: Parameter
+echo "# - 394: Parameter
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
 "
