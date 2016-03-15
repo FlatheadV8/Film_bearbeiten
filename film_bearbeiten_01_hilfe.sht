@@ -1,149 +1,202 @@
 
-VERSION="v2016020900"
+VERSION="v2016031400"
 
 HILFE:
-    -hilfe
+        -h
+        -hilfe
 
+hiermit kann die INPUT-Bildbreite (i -> in), die im Video steht überschrieben werden
+        -ibreit
+
+hiermit kann die INPUT-Bildhöhe (i -> in), die im Video steht überschrieben werden
+        -ihoch
+
+hiermit kann das INPUT-Seitenverhaeltnis eines Bildpunktes überschrieben werden;
 INPUT-Parameter; die sind erforderlich, wenn die Filme falsche Meta-Daten enthalten
-  das Seitenformat der Bildpunkte der Quelle (PAR/SAR) - VIDEOPixel:
-    -ipar 1         (die Quelldatei enthaelt quadratische Bildpunkte)
-    -ipar ntsc      (720x480 wird so dargestellt wie 640x480 - 8/9)
-    -ipar pal       (720x576 wird so dargestellt wie 768x576 - 16/15)
-    -ipar dvb       (720x576 wird so dargestellt wie 1024x576 - 64/45)
-    -ipar 8/9       (als Bruch angeben - NTSC-Pixel)
-    -ipar 16/15     (als Bruch angeben - PAL-Pixel)
-    -ipar 64/45     (als Bruch angeben - DVD-Pixel)
-    -ipar 0.8888889 (als Fliesskommazahl angeben - NTSC-Pixel)
-    -ipar 1.0666667 (als Fliesskommazahl angeben - PAL-Pixel)
-    -ipar 1.4222222 (als Fliesskommazahl angeben - DVD-Pixel)
+    das Seitenformat der Bildpunkte der Quelle (PAR/SAR) - VIDEOPixel:
+        -ipar 1         (die Quelldatei enthaelt quadratische Bildpunkte)
+        -ipar ntsc      (720x480 wird so dargestellt wie 640x480 - 8/9)
+        -ipar pal       (720x576 wird so dargestellt wie 768x576 - 16/15)
+        -ipar dvb       (720x576 wird so dargestellt wie 1024x576 - 64/45)
+        -ipar 8/9       (als Bruch angeben - NTSC-Pixel)
+        -ipar 16/15     (als Bruch angeben - PAL-Pixel)
+        -ipar 64/45     (als Bruch angeben - DVD-Pixel)
+        -ipar 0.8888889 (als Fliesskommazahl angeben - NTSC-Pixel)
+        -ipar 1.0666667 (als Fliesskommazahl angeben - PAL-Pixel)
+        -ipar 1.4222222 (als Fliesskommazahl angeben - DVD-Pixel)
 
-OUTPUT-Parameter; die sind erforderlich, wenn die Geometrie des Bildes verändert werden soll
-  das Seitenformat der Bildpunkte der Ausgabe (PAR/SAR) - VIDEOPixel:
-    -opar 1         (die Ausgabe wird quadratische Bildpunkte haben)
-    -opar ntsc      (720x480 wird so dargestellt wie 640x480 - 8/9)
-    -opar pal       (720x576 wird so dargestellt wie 768x576 - 16/15)
-    -opar dvb       (720x576 wird so dargestellt wie 1024x576 - 64/45)
-    -opar 8/9       (als Bruch angeben - NTSC-Pixel)
-    -opar 16/15     (als Bruch angeben - PAL-Pixel)
-    -opar 64/45     (als Bruch angeben - DVD-Pixel)
-    -opar 0.8888889 (als Fliesskommazahl angeben - NTSC-Pixel)
-    -opar 1.0666666 (als Fliesskommazahl angeben - PAL-Pixel)
-    -opar 1.4222222 (als Fliesskommazahl angeben - DVD-Pixel)
+hiermit kann das INPUT-Seitenverhaeltnis des Bildes ueberschrieben werden
+        -idar
 
-ASPECT:
-    -odar 4/3
-    -odar 16/9
+hiermit kann die INPUT-Bildwiederholrate, die im Video steht ueberschrieben werden
+        -ifps
 
-Nummer der gewünschten Untertitel-Spur:
-    -unter 2
+INPUT-Bildformat vor der Verarbeitung skalieren, das kann sehr gut zum entzerren verwendet werden
+        -iskal 736x552
 
-Nummer der gewünschten Ton-Spur:
-    -anr 3
+Ausgabe-Bild auf diesen Wert scalieren
+        -skal 640x512
 
-gewuenschte Anzahl der Ausgabe-Ton-Kanäle:
-    -akanal 2
+die beiden Parameter -odar und -opar schließen sich gegenseitig aus
+Ausgabe-Aspect;
+OUTPUT-Seitenverhaeltnis des gesamten Bildes für den Ausgabefilm (o -> out) festlegen
+        -odar 4/3
+        -odar 16/9
 
-Audioqualität (Std.: 5; mögliche Werte: 0-10):
-    -aqual 5
+OUTPUT-Seitenverhaeltnis des gesamten Bildes vom Ausgabefilm (o -> out) festlegen
+die beiden Parameter -odar und -opar schließen sich gegenseitig aus;
+die sind erforderlich, wenn die Geometrie des Bildes verändert werden soll
+    das Seitenformat der Bildpunkte der Ausgabe (PAR/SAR) - VIDEOPixel:
+        -opar 1         (die Ausgabe wird quadratische Bildpunkte haben)
+        -opar ntsc      (720x480 wird so dargestellt wie 640x480 - 8/9)
+        -opar pal       (720x576 wird so dargestellt wie 768x576 - 16/15)
+        -opar dvb       (720x576 wird so dargestellt wie 1024x576 - 64/45)
+        -opar 8/9       (als Bruch angeben - NTSC-Pixel)
+        -opar 16/15     (als Bruch angeben - PAL-Pixel)
+        -opar 64/45     (als Bruch angeben - DVD-Pixel)
+        -opar 0.8888889 (als Fliesskommazahl angeben - NTSC-Pixel)
+        -opar 1.0666666 (als Fliesskommazahl angeben - PAL-Pixel)
+        -opar 1.4222222 (als Fliesskommazahl angeben - DVD-Pixel)
 
-Videoqualität (Std.: 7; mögliche Werte: 0-10):
-    -vqual 5
+diese OUTPUT-Anzahl von Bildern pro Sekunde soll das Ergebnis haben
+        -ofps 25
 
-CROP_PARAMETER-Werte:
-    -crop 720:432:0:72
+mit schwarzen Balken zu einem Standardformat von 4/3 oder 16/9 erweitern (nur fuer AVC/x264)
+        -autoformat
 
-(nur für AVC/x264) Audio-Codec: wave faac aac libfaac mp2 mp3 ogg
-    -acodec wave
-    -acodec faac
-    -acodec aac
-    -acodec libfaac
-    -acodec mp2
-    -acodec mp3
-    -acodec ogg
+die Ausgabe wird quadratische Bildpunkte haben
+        -quad
 
-(nur für AVC/x264) ein um 1300ms (1,3 Sekunden) verzögertes einsätzen der transcodierten Tonspur:
-    -dtton 1300
+Sammlung der Parameter: -autoformat -progress -quad
+        -std
 
-(nur für AVC/x264) ein um 300ms (0,3 Sekunden) verzögertes einsätzen der Video-Spur:
-    -dvideo 300
+Sammlung der Parameter: -autoformat -progress -quad -ipar pal
+        -stdtv
 
-Crop-Test:
-    -testcrop       (ist nur zum schnelleren manuellen ermitteln der Crop-Werte, optimierende Parameter werden ignoriert)
-                (macht nur zusammen mit '-crop' Sinn, z.B. so: -rein Film.mpg -raus test01 -crop 720:432:0:72 -testcrop)
+die Audio-Spur-Nummer: 1 fuer die erste Spur (auch mehrere kommasepariert möglich)
+        -anr 3
 
-Deinterlacing:
-    -progress 
+Anzahl der Audio-Kanäle: "2" fuer Stereo
+        -akanal 2
 
-mit schwarzen Balken zu einem Standardformat von 4/3 oder 16/9 erweitern (nur für AVC/x264):
-    -autoformat
+Nummer der gewünschten Untertitel-Spur (1 fuer die erste Spur)
+        -unter 2
 
-Bilder pro Sekunde im Zielvideo/Ausgabe:
-    -ofps 20
+automatische Längenanpassung durch Audio-stretch aktivieren (nur für AVC/x264)
+        -syncstretch
 
-CPU-Kerne:
-    -kerne 1
+Tonqualität manuell setzen: 0-10 (Standard ist 5, nur für AVC/x264)
+        -aqual 7
 
-(nur für AVC/x264) automatische Längenanpassung durch Audio-stretch aktivieren:
-    -syncstretch
+hiermit kann man die schwarzen Balken aus dem Bild entfernen
+    z.B. links und rechts keine und jeweils oben und unten 72 Bildpunkte entfernen: 720x576 -> 720x432
+        -crop 720:432:0:72
+    z.B. links und rechts jeweils 8 Bildpunkte, oben 54 und unten 60 Bildpunkte entfernen: 720x576 -> 704x462
+        -crop 704:462:8:72
+    z.B. links und rechts jeweils 8 Bildpunkte und jeweils oben und unten 72 Bildpunkte entfernen: 720x576 -> 704x432
+        -crop 704:432:8:72
+    z.B. links und rechts jeweils 12 Bildpunkte, oben 72 und unten 76 Bildpunkte entfernen: 720x576 -> 704x428
+        -crop 704:428:4:76
+    z.B. links und rechts jeweils 8 Bildpunkte und jeweils oben und unten 118 Bildpunkte entfernen: 720x576 -> 704x340
+        -crop 704:340:8:118
+    z.B. links und rechts jeweils 8 Bildpunkte und jeweils oben und unten 70 Bildpunkte entfernen: 720x480 -> 704x340
+        -crop 704:340:8:70
+    z.B. links und rechts keine und jeweils oben und unten 96 Bildpunkte entfernen: 640x480 -> 640x288
+        -crop 640:288:0:96
 
-(nur für AVC/x264) automatische Laufzeitsyncronisation zw. Audio- und Video-Spur durch MKV-Container-Parameter deaktivieren:
-    -syncmkv
+Deinterlacing; hiermit wird ein Bild mit Zeilensprungverfahren in ein progressives Bild interpoliert
+        -progress
 
-diese Abschnitte aus dem Film sollen erhalten bleiben, Angaben in Sekunden der Spielzeit des Originals
-    -schnitt '105-1250 1578.5-2498.3'
+hiermit wird der Codec für die Tonspur festgelegt
+        -acodec orig
+        -acodec original
+        -acodec cp
+        -acodec copy
+        -acodec kopie
+        -acodec wave
+        -acodec wav
+        -acodec mp2
+        -acodec mp3
+        -acodec ac3
+        -acodec aac
+        -acodec faac
+        -acodec libfaac
+        -acodec ogg
 
-die Ausgabe soll quadratische Bildpunkte haben
-    -quad
+Verzögerung der transcodierten Tonspur(en) in ms (nur für AVC/x264)
+ein um 1300ms (1,3 Sekunden) verzögertes einsätzen der transcodierten Tonspur:
+        -dtton 1300
 
-es wird direkt in einem Arbeitsschritt (mit FFmpeg) transkodiert, ohne erweiterte Funktionen wie z.B. die Schnittfunktion
-  (es kann nur ein einziges zusammenhängendes Stück rausgeschnitten werden), mit dieser Option ist nur das möglich,
-  was FFmpeg in einem einzigen Durchlauf kann
-    -direkt
+verzögertes einsetzen der Video-Spur (nur für AVC/x264)
+ein um 300ms (0,3 Sekunden) verzögertes einsätzen der Video-Spur:
+        -dvideo 300
 
-Profil:
-    -profil 3gp          MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
-    -profil sp3          (Video-Codec: DivX 4 / Audio-Codec: MP2)
-    -profil sp3l3        (Video-Codec: DivX 4 / Audio-Codec: MP2)
-    -profil em880        (Video-Codec: DivX 4 / Audio-Codec: MP2)
-    -profil ipad         (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4)
-    -profil aspl3        (Video-Codec: DivX 4 / Audio-Codec: MP3)
-    -profil aspl4        (Video-Codec: DivX 4 / Audio-Codec: MP3)
-    -profil aspl5        (Video-Codec: DivX 5 / Audio-Codec: MP3)
-    -profil dx50         (Video-Codec: DivX 5 / Audio-Codec: MP3)
-    -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
-    -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
-    -profil xmp3         (Video-Codec: x264 / Audio-Codec: MP3)
-    -profil xogg         (Video-Codec: x264 / Audio-Codec: OGG)
+hiermit wird aus einem Farbfilm ein Schwarz-Weiß-Film
+        -sw
 
-Bildformat:
-    -bildformat sqcif        (-skal 128x96)
-    -bildformat qcif         (-skal 176x144) / 176x144 [PAR 16:11 DAR 16:9]
-    -bildformat qvga         (-skal 320x240)
-    -bildformat cif          (-skal 352x288)
-    -bildformat vga          (-skal 640x480)
-    -bildformat 4cif         (-skal 704x576)
+diese Abschnitte aus dem Film sollen erhalten bleiben, Angaben in Sekunden Spielzeit des Originals
+        -schnitt '105-1250 1578.5-2498.3'
 
-Name der Quell-Video-Datei:
-    -rein Alf.mpg
+die Einzelabschnitte aus dem Film sollen erhalten bleiben, Angaben in Sekunden Spielzeit des Originals
+        -testschnitt
 
-Rauschunterdrückungswert:
-    -entrauschen 100
+CPU-Kerne zum berechnen; mehr -> schneller; weniger -> bessere Qualität (mögliche Werte: 1-16)
+        -kerne 4
 
-Bild auf diesen Wert scalieren:
-    -skal 640x512
+automatische Laufzeitsyncronisation zw. Audio- und Video-Spur durch MKV-Container-Parameter aktivieren (nur für AVC/x264)
+        -syncmkv
 
-Name des Zielvideos (ohne Endung):
-    -raus Alf_avc
+der Film wird direkt in einem Arbeitsschritt transkodiert, ohne Schnittfunktion;
+es ist schnell, und die Ausgabe ist nicht AVCHD- bzw. BluRay-konform;
+es kann nur ein einziges zusammenhängendes Stück rausgeschnitten werden, mit dieser Option ist nur das möglich, was FFmpeg in einem einzigen Durchlauf kann
+        -direkt
 
-Parametersammlungen:
-    -std   -> '-autoformat'
-    -stdtv -> '-autoformat -progress -ipar pal'
+mögliche Werte: 3gp sp3 sp3l3 em880 ipad aspl3 aspl4 aspl5 dx50 avc x264 xmp3 xogg
+        -profil 3gp          MPEG-4 / 3GPP Media Release 4 (3gp4) / BaseLine@1.0 (H.263, qcif) / Advanced Audio Codec (AAC, 24KHz, 64Kbps)
+        -profil sp3              (Video-Codec: DivX 4 / Audio-Codec: MP2)
+        -profil sp3l3            (Video-Codec: DivX 4 / Audio-Codec: MP2)
+        -profil em880            (Video-Codec: DivX 4 / Audio-Codec: MP2)
+        -profil ipad             (Video-Codec: x264 / Audio-Codec: AAC / Container: mp4)
+        -profil aspl3            (Video-Codec: DivX 4 / Audio-Codec: MP3)
+        -profil aspl4            (Video-Codec: DivX 4 / Audio-Codec: MP3)
+        -profil aspl5            (Video-Codec: DivX 5 / Audio-Codec: MP3)
+        -profil dx50             (Video-Codec: DivX 5 / Audio-Codec: MP3)
+        -profil avc              (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
+        -profil x264             (Video-Codec: x264 / Audio-Codec: AAC)
+        -profil xmp3             (Video-Codec: x264 / Audio-Codec: MP3)
+        -profil xogg             (Video-Codec: x264 / Audio-Codec: OGG)
 
-z.B.:
+mögliche Werte: sqcif qcif qvga cif vga 4cif
+        -bildformat sqcif        (-skal 128x96)
+        -bildformat qcif         (-skal 176x144) / 176x144 [PAR 16:11 DAR 16:9]
+        -bildformat qvga         (-skal 320x240)
+        -bildformat cif          (-skal 352x288)
+        -bildformat vga          (-skal 640x480)
+        -bildformat 4cif         (-skal 704x576)
+
+Wert für die Rauschunterdrückung
+        -entrauschen 100
+
+Test-Modus zum schnelleren ermitteln der CROP_PARAMETER-Werte;
+ist nur zum schnelleren manuellen ermitteln der Crop-Werte, optimierende Parameter werden ignoriert;
+macht nur zusammen mit '-crop' Sinn!
+        -testcrop -crop 720:432:0:72
+
+Bildqualität manuell setzen: 0-10 (Standard ist 7, nur für AVC/x264)
+        -vqual 5
+
+Name der Quell-Video-Datei
+        -rein Alf.mpg
+
+Name des Ausgabefilm bzw. Zielvideos (ohne Endung)
+        -raus Alf_der_Ausserirdische
+
+#------------------------------------------------------------------------------#
 
 Es muss mindestens dieser Parameter gesetzt werden:
     film_bearbeiten.sh -rein film03.mpg
 
+weitere Beispiele:
     film_bearbeiten.sh -rein film02.mpg -crop 720:432:0:72 -raus test01 -testcrop
     film_bearbeiten.sh -rein film02.mpg -crop 720:432:0:72
     film_bearbeiten.sh -rein film01.mpg -crop 720:432:0:72 -skal 320x288 -idar 16/9 -ofps 20
