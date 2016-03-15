@@ -22,6 +22,8 @@ Die Option „-std“ formt die Bildpunkte in ein quadratischen Format um, das i
 Beispiele:
 ----------
 
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus Test.mpeg
+    /home/bin/film_bearbeiten.sh -rein Test.mkv -raus Test.mpeg -std
     /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC0 -std -skal 640x480
     /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC1 -std -skal 720x512
     /home/bin/film_bearbeiten.sh -rein Test.mkv -raus CCC2 -std -odar 4/3 -crop 202,200,0,2
