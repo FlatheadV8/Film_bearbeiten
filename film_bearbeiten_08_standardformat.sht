@@ -312,11 +312,13 @@ if [ "${STANDARDBILDFORMAT}" = "Ja" ] ; then
         " | tee -a ${AUSGABEDATEI}.log
 
         if [ -z "${SOLLVIDEODispl}" ] ; then
-        	SOLLVIDEODispl="$(echo "${SOLLVIDEODisBr}"|awk -F'/' '{print $1 / $2}')"
+        	if [ -n "${SOLLVIDEODisBr}" ] ; then
+        		SOLLVIDEODispl="$(echo "${SOLLVIDEODisBr}"|awk -F'/' '{print $1 / $2}')"
+        	fi
         fi
 
         echo "
-        # - 319: standardformat
+        # - 321: standardformat
         SOLLVIDEODispl='${SOLLVIDEODispl}'
         PPROFIL='${PPROFIL}'
         " | tee -a ${AUSGABEDATEI}.log
@@ -330,7 +332,7 @@ fi
 ### VOLLBILDKONVERTIERER / Zeilenentflechtung / Deinterlacing
 
 echo "
-# - 333: standardformat
+# - 335: standardformat
 VOLLBILDKONVERTIERER='${VOLLBILDKONVERTIERER}'
 PROGRESSIV='${PROGRESSIV}'
 SCAN_TYPE='${SCAN_TYPE}'
@@ -342,7 +344,7 @@ if [ "${PROGRESSIV}" = "Ja" -o "${SCAN_TYPE}" != "Progressive" ] ; then
 fi
 
 echo "
-# - 345: standardformat
+# - 347: standardformat
 VOLLBILDKONVERTIERER='${VOLLBILDKONVERTIERER}'
 DEINTERLACING='${DEINTERLACING}'
 PROGRESSIV='${PROGRESSIV}'
@@ -353,11 +355,11 @@ DEINTERLACING='${DEINTERLACING}'
 #------------------------------------------------------------------------------#
 
 
-echo "# - 356 FFMPEGPAD: Standardformat
+echo "# - 358 FFMPEGPAD: Standardformat
 FFMPEGPAD='${FFMPEGPAD}'
 " | tee -a ${AUSGABEDATEI}.log
 
-echo "# - 360 FFMPEGPAD: Standardformat
+echo "# - 362 FFMPEGPAD: Standardformat
 QUADVIDEOBREIT='${QUADVIDEOBREIT}'
 QUADVIDEO_HOCH='${QUADVIDEO_HOCH}'
 QUADVIDEODispl='${QUADVIDEODispl}'
