@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092700"
+VERSION="v2016032800"
 
 
 echo "
@@ -18,13 +18,13 @@ for BEFEHL in bash echo rev test tr rm mv tee fgrep egrep sed awk ${CONVERTER} $
 do
         if [ -z "$(which ${BEFEHL})" ] ; then
                 echo "${BEFEHL} ist nicht installiert!"
-                if [ "${BEFEHL}" == mkvmerge ] ; then
+                if [ "${BEFEHL}" = mkvmerge ] ; then
                         BEFEHL="mkvmerge aus den mkvtoolnix"
                 fi
-                if [ "${BEFEHL}" == oggenc ] ; then
+                if [ "${BEFEHL}" = oggenc ] ; then
                         BEFEHL="oggenc aus den vorbis-tools"
                 fi
-                if [ "${BEFEHL}" == soundstretch ] ; then
+                if [ "${BEFEHL}" = soundstretch ] ; then
                         BEFEHL="soundstretch aus soundtouch"
                 fi
                 DAFEHLTWAS="${BEFEHL}"
@@ -35,7 +35,7 @@ do
 done
 
 if [ -n "${DAFEHLTWAS}" ] ; then
-        echo "# 38 - Programme
+        echo "# - 38: Programme
         DA FEHLT NOCH DAS:
         ${DASFEHLT}
         ABBRUCH
@@ -44,7 +44,7 @@ if [ -n "${DAFEHLTWAS}" ] ; then
 fi
 
 if [ -z "$(x264 --fullhelp 2>/dev/null | fgrep nal-hrd)" ] ; then
-        echo " 47 - Programme
+        echo "# - 47: Programme
         Der installierte 'x264'-Encoder ist zu alt!
         Der 'x264'-Encoder-Code muss mindestens vom 2010-04-25 sein (r1480).
         Man kann es daran erkennen ob der 'x264'-Encoder den Parameter '--nal-hrd' versteht.
@@ -54,7 +54,7 @@ if [ -z "$(x264 --fullhelp 2>/dev/null | fgrep nal-hrd)" ] ; then
 fi
 
 if [ ! -r "${ORIGINAL}" -o -z "${ORIGINAL}" ] ; then
-        echo " 57 - Programme
+        echo "# - 57: Programme
         HILFE:
         ${0} -h
 
