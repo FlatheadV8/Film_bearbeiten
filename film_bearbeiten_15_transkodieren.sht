@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016021000"
+VERSION="v2016032800"
 
 
 echo "
@@ -89,61 +89,61 @@ ${VERSION} | ${ABARBEITUNGSNUMMER} transkodieren
 # 4. Ausgabe-Film : ${NEUERFILMNAME}.mkv                               => ${2}.mkv
 
 
-if [ -r "${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv" ] ; then
+if [ -r "${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG}" ] ; then
         #----------------------------------------------------------------------#
         echo "# - 094: Film transkodieren
-        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
         " | tee -a ${AUSGABEDATEI}.log
 
-        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        TON_EXTRAHIEREN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 101: Film transkodieren
-        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
         " | tee -a ${AUSGABEDATEI}.log
 
-        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        TON_TRANS ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 108: Film transkodieren
-        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
         " | tee -a ${AUSGABEDATEI}.log
 
-        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        FILM_TRANS_AVC ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
         echo "# - 115: Film transkodieren
-        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
         " | tee -a ${AUSGABEDATEI}.log
 
-        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        FILM_LAUFZEIT ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
 
         #----------------------------------------------------------------------#
-        echo "# - 122: Film transkodieren
-        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
-        " | tee -a ${AUSGABEDATEI}.log
+        ### Film transkodieren
+	if [ "${CONTAINER}" = "mkv" ] ; then
+                echo "# - 124: Film transkodieren
+        	mit mkvmerge muxen
+        	FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
+        	" | tee -a ${AUSGABEDATEI}.log
 
-        FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv ${NEUERFILMNAME}
+        	FILM_MKV ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
+	else
+                echo "# - 131: Film transkodieren
+        	mit ffmpeg muxen
+        	FILM_MUXEN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
+        	" | tee -a ${AUSGABEDATEI}.log
+
+        	FILM_MUXEN ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG} ${NEUERFILMNAME}
+	fi
 else
         #----------------------------------------------------------------------#
-        echo "# - 129: Film transkodieren
-        '${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv' konnte nicht gefunden werden.
+        echo "# - 140: Film transkodieren
+        '${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG}' konnte nicht gefunden werden.
         ABBRUCH!
         " | tee -a ${AUSGABEDATEI}.log
 
         exit 1
 fi
-
-#------------------------------------------------------------------------------#
-### MKV auch als MP4-Kopie ablegen
-
-#if [ "${PPROFIL}" = "avc" -o "${PPROFIL}" = "x264" ] ; then
-	if [ "${VIDEOCODEC}" = "libx264" ] ; then
-		if [ "${AUDIOCODEC}" = "aac" -o "${AUDIOCODEC}" = "faac" -o "${AUDIOCODEC}" = "libfaac" ] ; then
-			MKVzuMP4
-		fi
-	fi
-#fi
 
 #------------------------------------------------------------------------------#
 ### aufräumen
@@ -152,9 +152,10 @@ date +'%F %T' | tee -a ${AUSGABEDATEI}.log
 
 #exit
 rm -fv *${ZUFALLSNR}*
-rm -fv ${FILMSTUECK}_videospur.mkv
-rm -fv ${NEUERFILMNAME}_verlustfreies_zwischenformat.mkv
-rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat.mkv
+rm -fv ${FILMSTUECK}_videospur.${ZWISCHENFORMAT_ENDUNG}
+rm -fv ${NEUERFILMNAME}_verlustfreies_zwischenformat.${ZWISCHENFORMAT_ENDUNG}
+rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat.${ZWISCHENFORMAT_ENDUNG}
 rm -fv ${NEUERFILMNAME}_audiospur_*
-rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv
-rm -fv ${NEUERFILMNAME}_zwischenformat_originalton.mkv
+rm -fv ${NEUERFILMNAME}_videospur*
+rm -fv ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.${ZWISCHENFORMAT_ENDUNG}
+rm -fv ${NEUERFILMNAME}_zwischenformat_originalton.${ZWISCHENFORMAT_ENDUNG}
