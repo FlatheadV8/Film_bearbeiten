@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016031200"
+VERSION="v2016032900"
 
 
 echo "
@@ -284,30 +284,30 @@ TON_EXTRAHIEREN()
 
                 echo "# - 6-2: TON_EXTRAHIEREN
                 # AudioSpur aus der Datei im Zwischenformat extrahieren
-                ffmpeg -i ${1} -vn -map 0:a:${TS} ${AC} -async 0 -c:a pcm_s16le -y ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
+                ffmpeg -i ${1} -vn -map 0:a:${TS} ${AC} -async 0 -c:a ${ZWISCHENFORMAT_AUDIO_CODEC} -f ${ZWISCHENFORMAT_FORMAT} -y ${2}_audiospur_${i}_.${ZWISCHENFORMAT_AUDIO_ENDUNG} && mv -v ${2}_audiospur_${i}_.${ZWISCHENFORMAT_AUDIO_ENDUNG} ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}
                 " | tee -a ${AUSGABEDATEI}.log
 
-                ffmpeg -i ${1} -vn -map 0:a:${TS} ${AC} -async 0 -c:a pcm_s16le -y ${2}_audiospur_${i}_.wav && mkvmerge -o ${2}_audiospur_${i}.wav ${2}_audiospur_${i}_.wav && rm -f ${2}_audiospur_${i}_.wav
+                ffmpeg -i ${1} -vn -map 0:a:${TS} ${AC} -async 0 -c:a ${ZWISCHENFORMAT_AUDIO_CODEC} -f ${ZWISCHENFORMAT_FORMAT} -y ${2}_audiospur_${i}_.${ZWISCHENFORMAT_AUDIO_ENDUNG} && mv -v ${2}_audiospur_${i}_.${ZWISCHENFORMAT_AUDIO_ENDUNG} ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}
 
-                if [ ! -s ${2}_audiospur_${i}.wav ] ; then
+                if [ ! -s ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} ] ; then
                         echo "# - 6-3: TON_EXTRAHIEREN
-                        Die AudioSpur '${2}_audiospur_${i}.wav' konnte nicht erstellt werden.
+                        Die AudioSpur '${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}' konnte nicht erstellt werden.
                         Abbruch!
                         " | tee -a ${AUSGABEDATEI}.log
 
                         exit 1
                 fi
 
-                ls -l ${2}_audiospur_${i}.wav
+                ls -l ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}
 
                 #------------------------------------------------------#
                 ### Laufzeit der Ton-Spuren ermitteln
 
                 AUDIOLAENGE=""
-                AUDIOLAENGE="$(mediainfo --BOM ${2}_audiospur_${i}.wav | sed -ne '/^Audio/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
+                AUDIOLAENGE="$(mediainfo --BOM ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} | sed -ne '/^Audio/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
                 if [ -z "${AUDIOLAENGE}" ] ; then
                         echo "# - 6-4: TON_EXTRAHIEREN
-                        AUDIOLAENGE='${AUDIOLAENGE}' von '${2}_audiospur_${i}.wav' konnte nicht emittelt werden
+                        AUDIOLAENGE='${AUDIOLAENGE}' von '${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}' konnte nicht emittelt werden
                         " | tee -a ${AUSGABEDATEI}.log
                         exit 1
                 fi
@@ -324,7 +324,7 @@ TON_EXTRAHIEREN()
         TONFEHLER="$(ls ${2}_audiospur_*)"
         if [ -z "${TONFEHLER}" ] ; then
                 echo "# - 6-6: TON_EXTRAHIEREN
-                Die AudioSpur '${2}_audiospur_*.wav' konnte nicht gefunden werden.
+                Die AudioSpur '${2}_audiospur_*.${ZWISCHENFORMAT_AUDIO_ENDUNG}' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${AUSGABEDATEI}.log
 
@@ -341,10 +341,10 @@ TON_TRANS()
                 #--------------------------------------------------------------#
                 ### Anzahl der Tonkanäle ermitteln
 
-                TONKANAELE="$(mediainfo ${2}_audiospur_${i}.wav 2>&1 | grep -E '^Channel' | awk -F':' '/ channel/{print $2}' | awk '{print $1}')"
+                TONKANAELE="$(mediainfo ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} 2>&1 | grep -E '^Channel' | awk -F':' '/ channel/{print $2}' | awk '{print $1}')"
                 if [ "${TONKANAELE}" -gt "2" ] ; then
                         if [ "${AUDIOCODEC}" = "mp3" -o "${AUDIOCODEC}" = "MP3" ] ; then
-                                echo "# - 7-1: TON_TRANS
+                                echo "# - 7-0: TON_TRANS
 
                                 ### Audiospur transcodieren
                                 MP3 unterstützt keine '${TONKANAELE}' Kanäle sondern nur maximal '2' Kanäle...
@@ -355,6 +355,10 @@ TON_TRANS()
                         fi
                 fi
 
+                echo "# - 7-1: TON_TRANS
+                AUDIOCODEC='${AUDIOCODEC}'
+                " | tee -a ${AUSGABEDATEI}.log
+
                 #--------------------------------------------------------------#
                 ### Tonspur uebersetzen
 
@@ -364,89 +368,89 @@ TON_TRANS()
                         # - 7-2: TON_TRANS
 
                         ### Audiospur nicht transcodieren
-                        ffmpeg -y -i ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv -vn -c:a copy ${2}_audiospur_${i}_original_.mkv && mv -v ${2}_audiospur_${i}_original_.mkv ${2}_audiospur_${i}
+                        ffmpeg -y -i ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.${CONTAINER} -vn -c:a copy ${2}_audiospur_${i}_original_.${CONTAINER} && mv -v ${2}_audiospur_${i}_original_.${CONTAINER} ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -y -i ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.mkv -vn -c:a copy ${2}_audiospur_${i}_original_.mkv && mv -v ${2}_audiospur_${i}_original_.mkv ${2}_audiospur_${i}
-                elif [ "${AUDIOCODEC}" = "wav" ] ; then
+                        ffmpeg -y -i ${NEUERFILMNAME}_geschnitten_im_zwischenformat_originalton.${CONTAINER} -vn -c:a copy ${2}_audiospur_${i}_original_.${CONTAINER} && mv -v ${2}_audiospur_${i}_original_.${CONTAINER} ${2}_audiospur_${i}
+                elif [ "${AUDIOCODEC}" = "${ZWISCHENFORMAT_AUDIO_ENDUNG}" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-3: TON_TRANS
 
                         ### Audiospur nicht transcodieren
-                        mv -vf ${2}_audiospur_${i}.wav ${2}_audiospur_${i}
+                        mv -vf ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        mv -vf ${2}_audiospur_${i}.wav ${2}_audiospur_${i}
+                        mv -vf ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "ac3" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-4: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3
                         mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3 && mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a ac3 -b:a ${AC3QUALI} ${AC} ${2}_audiospur_${i}.ac3 && mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "aac" -o "${AUDIOCODEC}" = "faac" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-5: TON_TRANS
 
                         ### Audiospur transcodieren
-                        faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.wav
+                        faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}
                         mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.wav && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        faac --tns --title '${TITELNAME}' -q ${AACQUALI} -X -C ${TONKANAELE} -w -o ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "libfaac" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-6: TON_TRANS (libfaac -> "non-free"-Lizenz / max. Audio-Bit-Rate: 160k)
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                         mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a ${AUDIOCODEC} -b:a ${ABITR}k ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.m4a && mv -vf ${2}_audiospur_${i}.m4a ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp2" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-7: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${AC} ${2}_audiospur_${i}.mp2
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a mp2 -b:a ${MP2QUALI} ${AC} ${2}_audiospur_${i}.mp2
                         mv -vf ${2}_audiospur_${i}.ac3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a mp2 -b:a ${MP2QUALI} ${AC} ${2}_audiospur_${i}.mp2 && mv -vf ${2}_audiospur_${i}.mp2 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a mp2 -b:a ${MP2QUALI} ${AC} ${2}_audiospur_${i}.mp2 && mv -vf ${2}_audiospur_${i}.mp2 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "mp3" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-8: TON_TRANS
 
                         ### Audiospur transcodieren
-                        lame --tt '${TITELNAME}' -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.wav ${2}_audiospur_${i}.mp3
+                        lame --tt '${TITELNAME}' -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} ${2}_audiospur_${i}.mp3
                         mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        lame --tt "${TITELNAME}" -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.wav ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        lame --tt "${TITELNAME}" -q 0 -V ${MP3QUALI} ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "libmp3lame" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-9: TON_TRANS
 
                         ### Audiospur transcodieren
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                         mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        ffmpeg -i ${2}_audiospur_${i}.wav -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
+                        ffmpeg -i ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} -c:a ${AUDIOCODEC} ${AUDIOOPTION} ${AC} -y ${2}_audiospur_${i}.mp3 && mv -vf ${2}_audiospur_${i}.mp3 ${2}_audiospur_${i}
                 elif [ "${AUDIOCODEC}" = "ogg" ] ; then
                         echo "#------------------------------------------------------------------------------#
                         # - 7-10: TON_TRANS
 
                         ### Audiospur transcodieren
-                        oggenc -t '${TITELNAME}' -q ${OGGQUALI} -o ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}.wav
+                        oggenc -t '${TITELNAME}' -q ${OGGQUALI} -o ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG}
                         mv -vf ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}
                         " | tee -a ${AUSGABEDATEI}.log
 
-                        oggenc -t "${TITELNAME}" -q ${OGGQUALI} -o ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}.wav && mv -vf ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}
+                        oggenc -t "${TITELNAME}" -q ${OGGQUALI} -o ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}.${ZWISCHENFORMAT_AUDIO_ENDUNG} && mv -vf ${2}_audiospur_${i}.ogg ${2}_audiospur_${i}
                 fi
 
                 if [ -s ${2}_audiospur_${i} ] ; then
@@ -477,15 +481,15 @@ FILM_TRANS_AVC()
 
         echo "# - 8-1: FILM_TRANS_AVC
         # VideoSpur extrahieren und transkodieren
-        ffmpeg -y -i ${1} -v 0 -s ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${CONTAINER} && mkvmerge -o ${2}_videospur.${CONTAINER} ${2}_videospur_.${CONTAINER} && rm -f ${2}_videospur_.${CONTAINER}
+        ffmpeg -y -i ${1} -v 0 -s ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${ZWISCHENFORMAT_ENDUNG} && mkvmerge -o ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${2}_videospur_.${ZWISCHENFORMAT_ENDUNG} && rm -f ${2}_videospur_.${ZWISCHENFORMAT_ENDUNG}
         " | tee -a ${AUSGABEDATEI}.log
 
-        ffmpeg -y -i ${1} -v 0 -s ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${CONTAINER} && mkvmerge -o ${2}_videospur.${CONTAINER} ${2}_videospur_.${CONTAINER} && rm -f ${2}_videospur_.${CONTAINER}
+        ffmpeg -y -i ${1} -v 0 -s ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} -c:v rawvideo -vsync 0 -an -pix_fmt yuv420p -f rawvideo - | x264 - --demuxer raw --input-res ${SOLLVIDEOBREIT}x${SOLLVIDEO_HOCH} --fps ${SOLLVIDEOBilPS} --crf ${CRF} ${X264OPTS} -o ${2}_videospur_.${ZWISCHENFORMAT_ENDUNG} && mkvmerge -o ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${2}_videospur_.${ZWISCHENFORMAT_ENDUNG} && rm -f ${2}_videospur_.${ZWISCHENFORMAT_ENDUNG}
 
-        if [ ! -r ${2}_videospur.${CONTAINER} ] ; then
+        if [ ! -r ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ] ; then
                 echo "# - 8-2: FILM_TRANS_AVC
                 # VideoSpur extrahieren und transkodieren
-                Die VideoSpur '${2}_videospur.${CONTAINER}' konnte nicht gefunden werden.
+                Die VideoSpur '${2}_videospur.${ZWISCHENFORMAT_ENDUNG}' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${AUSGABEDATEI}.log
 
@@ -502,9 +506,9 @@ FILM_LAUFZEIT()
         # eine Asynchronitaet wird ausgeglichen,
         # wenn die Audio- und Video-Spuren sich in der Laenge um mehr als ${LDIFF} unterscheiden
 
-        if [ ! -s ${2}_videospur.${CONTAINER} ] ; then
+        if [ ! -s ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ] ; then
                 echo "# - 9-1: FILM_LAUFZEIT
-                Die VideoSpur '${2}_videospur.${CONTAINER}' konnte nicht gefunden werden.
+                Die VideoSpur '${2}_videospur.${ZWISCHENFORMAT_ENDUNG}' konnte nicht gefunden werden.
                 Abbruch!
                 " | tee -a ${AUSGABEDATEI}.log
 
@@ -512,10 +516,10 @@ FILM_LAUFZEIT()
         fi
 
         VIDEOLAENGE=""
-        VIDEOLAENGE="$(mediainfo --BOM ${2}_videospur.${CONTAINER} | sed -ne '/^Video/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
+        VIDEOLAENGE="$(mediainfo --BOM ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} | sed -ne '/^Video/,/^$/p' | awk -F':' '/^Duration/{print $2}' | head -n1)"
         if [ -z "${VIDEOLAENGE}" ] ; then
                 echo "# - 9-2: FILM_LAUFZEIT
-                VIDEOLAENGE='${VIDEOLAENGE}' von '${2}_videospur.${CONTAINER}' konnte nicht emittelt werden
+                VIDEOLAENGE='${VIDEOLAENGE}' von '${2}_videospur.${ZWISCHENFORMAT_ENDUNG}' konnte nicht emittelt werden
                 " | tee -a ${AUSGABEDATEI}.log
                 exit 1
         fi
@@ -572,6 +576,8 @@ FILM_LAUFZEIT()
 
 
 #------------------------------------------------------------------------------#
+
+
 FILM_MKV()
 {
         #----------------------------------------------------------------------#
@@ -604,65 +610,41 @@ FILM_MKV()
         # wenn gewuenscht,
         # dann auch die Originaltonspur mit uebernehmen
 
-#        if [ "${OTON}" = "JA" ] ; then
-#                echo "# - 10-3: FILM_MKV
-#                ### Originaltonspur soll auch mit rein
-#                " | tee -a ${AUSGABEDATEI}.log
-#                TSID="mkvmerge -i ${ORIGINAL} | fgrep 'Track ID ' | fgrep ' audio ' | awk '{gsub(":","");print $3}' | head -n${TSN} | tail -n1"
-#                OTON="-D -y ${TSID}:${DELAYOTON} --compression ${TSID}:none ${ORIGINAL}"
-#        fi
+        ### hierfuer sind Erweiterungen beim mkvmerge-Kommando noetig
+        #if [ "${OTON}" = "JA" ] ; then
+        #        echo "# - 10-3: FILM_MKV
+        #        ### Originaltonspur soll auch mit rein
+        #        " | tee -a ${AUSGABEDATEI}.log
+        #        TSID="mkvmerge -i ${ORIGINAL} | fgrep 'Track ID ' | fgrep ' audio ' | awk '{gsub(":","");print $3}' | head -n${TSN} | tail -n1"
+        #        OTON="-D -y ${TSID}:${DELAYOTON} --compression ${TSID}:none ${ORIGINAL}"
+        #fi
 
         #----------------------------------------------------------------------#
         # Film zusammen bauen
 
-        if [ -n "${odar}" ] ; then
-                ASPECT="${odar}"
-        elif [ -n "${opar}" ] ; then
-                ASPECT="$(echo "${opar} ${SOLLVIDEOBREIT} ${SOLLVIDEO_HOCH}" | awk '{print $1*$2"/"$3}')"
-        else
-        	if [ -n "${SOLLVIDEODisBr}" ] ; then
-                	ASPECT="${SOLLVIDEODisBr}"
-        	elif [ -n "${SOLLVIDEODispl}" ] ; then
-                	ASPECT="${SOLLVIDEODispl}"
-        	else
-                	echo "# - 10-4: FILM_MKV
-                	film_trans_avc_funktionen: Der SOLL-ASPECT konnte nicht ermittelt werden.
-                	ABBRUCH!
-                	" | tee -a ${AUSGABEDATEI}.log
-                	exit 1
-        	fi
-        fi
-        sleep 1
-
-        MKVASPECT="--aspect-ratio 0:${ASPECT}"
-
         KLAR="NEIN"
-        echo "# - 10-5: FILM_MKV
-        odar='${odar}'
-        opar='${opar}'
-        MKVASPECT='--aspect-ratio 0:${ASPECT}'
+        MKVASPECT="--aspect-ratio 0:${SOLLVIDEODispl}"
+
+        echo "# - 10-4: FILM_MKV
+        MKVASPECT='${MKVASPECT}'
 
 	mkvmerge --list-languages
 	mkvmerge -l
-        mkvmerge --default-language ger --language ${VTRACKID}:ger --language ${ATRACKID}:ger ${MKVASPECT} -o ${2}_.${CONTAINER} -A ${YVS} --compression ${VTRACKID}:none ${2}_videospur.${CONTAINER} ${TTON} && KLAR=JA
+
+        mkvmerge --default-language ger --language ${VTRACKID}:ger --language ${ATRACKID}:ger ${MKVASPECT} -o ${2}_.${ZWISCHENFORMAT_ENDUNG} -A ${YVS} --compression ${VTRACKID}:none ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${TTON} && export KLAR=JA
         " | tee -a ${AUSGABEDATEI}.log
 
-        mkvmerge --default-language ger --language ${VTRACKID}:ger --language ${ATRACKID}:ger ${MKVASPECT} -o ${2}_.${CONTAINER} -A ${YVS} --compression ${VTRACKID}:none ${2}_videospur.${CONTAINER} ${TTON} && KLAR=JA
+        mkvmerge --default-language ger --language ${VTRACKID}:ger --language ${ATRACKID}:ger ${MKVASPECT} -o ${2}_.${ZWISCHENFORMAT_ENDUNG} -A ${YVS} --compression ${VTRACKID}:none ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${TTON} && export KLAR=JA
 
-        ls -l ${2}_.${CONTAINER}
+        ls -l ${2}_.${ZWISCHENFORMAT_ENDUNG}
 
         #----------------------------------------------------------------------#
         ### wenn kein Fehler aufgetreten ist, aufraeumen
 
         if [ "${KLAR}" = "JA" ] ; then
-            mv -v ${2}_.${CONTAINER} ${2}.${CONTAINER} | tee -a ${AUSGABEDATEI}.log
-
-            echo "# - 10-6: FILM_MKV
-            rm -fv ${2}_audiospur_original.wav ${2}_audiospur.wav ${2}_audiospur ${2}_videospur.${CONTAINER} ${2}_async.${CONTAINER}
-            " | tee -a ${AUSGABEDATEI}.log
-            rm -fv ${2}_audiospur_original.wav ${2}_audiospur.wav ${2}_audiospur ${2}_videospur.${CONTAINER} ${2}_async.${CONTAINER}
+            mv -v ${2}_.${ZWISCHENFORMAT_ENDUNG} ${2}.${ZWISCHENFORMAT_ENDUNG} | tee -a ${AUSGABEDATEI}.log
         else
-            echo "# - 10-7: FILM_MKV
+            echo "# - 10-6: FILM_MKV
             Leider ist beim zusammenfuehren von Audio- und Video-Spur ein Fehler aufgetreten...
             ABBRUCH!
             " | tee -a ${AUSGABEDATEI}.log
@@ -735,12 +717,12 @@ QUADRATPIXELBERECHNUNG()
         VERSION="v2016031200"
 
         if [ -z "${3}" ] ; then
-                echo "# - QUADRATPIXELBERECHNUNG - Abbruch"
+                echo "# - 12-1: QUADRATPIXELBERECHNUNG - Abbruch"
                 echo "${0} '${1}' '${2}' '${3}'"
                 exit 1
         fi
 
-        echo "# - 12-1: Beginn QUADRATPIXELBERECHNUNG" >> ${AUSGABEDATEI}.log
+        echo "# - 12-2: Beginn QUADRATPIXELBERECHNUNG" >> ${AUSGABEDATEI}.log
 	#======================================================================#
 	### Plan "A" - genaue Berechnung
         echo "# - 12-3: QUADRATPIXELBERECHNUNG - Plan "A" - genaue Berechnung" >> ${AUSGABEDATEI}.log
@@ -894,20 +876,94 @@ BLURAY_PARAMETER()
         CRF='${CRF}'
         MREFF='${MREFF}'
         " | tee -a ${AUSGABEDATEI}.log
-        echo "# - 12-4: Ende BLURAY_PARAMETER" >> ${AUSGABEDATEI}.log
+
+        echo "# - 13-4: Ende BLURAY_PARAMETER" >> ${AUSGABEDATEI}.log
 }
+
 
 #------------------------------------------------------------------------------#
 ### MKV auch als MP4-Kopie ablegen
+### allerdings wird nur die erste Tonspur in die MP4-Datei uebernommen
 
 MKVzuMP4()
 {
-echo "# - 871: MKV auch als MP4-Kopie ablegen
-ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4
-" | tee -a ${AUSGABEDATEI}.log
+	echo "# - 14-1: MKV auch als MP4-Kopie ablegen
+	ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4
+	" | tee -a ${AUSGABEDATEI}.log
 
-ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4 2>&1 | tee -a ${AUSGABEDATEI}.log
+	ffmpeg -i ${NEUERFILMNAME}.mkv -c:v copy -c:a copy ${NEUERFILMNAME}.mp4 2>&1 | tee -a ${AUSGABEDATEI}.log
 }
+
+
+#------------------------------------------------------------------------------#
+
+
+FILM_MUXEN()
+{
+        #----------------------------------------------------------------------#
+        # Muxen mit FFmpeg
+
+        VTRACKID=0
+        ATRACKID=0
+        TTON=""
+
+        for i in $(echo "${SOLLAUDIOSPURNR}" | sed 's/[,]/ /g')
+        do
+                echo "# - 10-1: FILM_MKV
+                ### keine automatische Laengenanpassung durch MKV
+                ### Audiostartzeitpunkt um ${DELAYTRANSTON}ms verschieben
+                " | tee -a ${AUSGABEDATEI}.log
+
+                TTON="${TTON} -i ${2}_audiospur_${i}"
+        done
+
+        #----------------------------------------------------------------------#
+        # Film zusammen bauen
+
+        KLAR="NEIN"
+
+        #----------------------------------------------------------------------#
+        #echo "# - 15-1: FILM_MUXEN
+        #SOLLVIDEODispl='${SOLLVIDEODispl}'
+        #SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+        #Format='${FFMPEG_F}'
+	#
+        #ffmpeg -i ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} -i ${TTON} -c:a copy -c:v copy ${FFMPEG_F} ${2}_.${CONTAINER} && KLAR=JA
+        #" | tee -a ${AUSGABEDATEI}.log
+	#
+        #ffmpeg -i ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} -i ${TTON} -c:a copy -c:v copy ${FFMPEG_F} ${2}_.${CONTAINER} && KLAR=JA
+
+        #----------------------------------------------------------------------#
+        echo "# - 15-2: FILM_MUXEN
+        SOLLVIDEODispl='${SOLLVIDEODispl}'
+        SOLLVIDEODisBr='${SOLLVIDEODisBr}'
+        Format='-f ${ZWISCHENFORMAT_FORMAT}'
+
+        #ffmpeg -i ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${TTON} -c:v copy -c:a copy -f ${ZWISCHENFORMAT_FORMAT} ${2}_.${ZWISCHENFORMAT_ENDUNG} && KLAR=JA
+        ffmpeg -i ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${TTON} -c:v copy -c:a copy -f ${ZWISCHENFORMAT_FORMAT} ${2}.${ZWISCHENFORMAT_ENDUNG}
+        " | tee -a ${AUSGABEDATEI}.log
+
+        #ffmpeg -i ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${TTON} -c:v copy -c:a copy -f ${ZWISCHENFORMAT_FORMAT} ${2}_.${ZWISCHENFORMAT_ENDUNG} && KLAR=JA
+        ffmpeg -i ${2}_videospur.${ZWISCHENFORMAT_ENDUNG} ${TTON} -c:v copy -c:a copy -f ${ZWISCHENFORMAT_FORMAT} ${2}.${ZWISCHENFORMAT_ENDUNG}
+
+        #----------------------------------------------------------------------#
+
+#        ls -l ${2}_.${CONTAINER}
+
+        #----------------------------------------------------------------------#
+#        if [ "${KLAR}" = "JA" ] ; then
+#            mv -v ${2}_.${CONTAINER} ${2}.${CONTAINER} | tee -a ${AUSGABEDATEI}.log
+#        else
+#            echo "# - 15-3: FILM_MUXEN
+#            Leider ist beim zusammenfuehren von Audio- und Video-Spur ein Fehler aufgetreten...
+#            ABBRUCH!
+#            " | tee -a ${AUSGABEDATEI}.log
+#
+#            exit 1
+#        fi
+        #----------------------------------------------------------------------#
+}
+
 
 #------------------------------------------------------------------------------#
 # Ende
