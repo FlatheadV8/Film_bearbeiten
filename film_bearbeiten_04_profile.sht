@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016031200"
+VERSION="v2016032900"
 
 
 echo "
@@ -72,7 +72,12 @@ fi
 echo "# - 72: Profil
 PPROFIL='${PPROFIL}'
 "
+
 ANPASSUNG=""
+
+### jedes neue Profil hier
+### muss auch in der Datei film_bearbeiten_10_direkt_transkodieren.sht
+### ergaenzt werden
 if [ -n "${PPROFIL}" ] ; then
     case "${PPROFIL}" in
         3gp)
@@ -198,11 +203,11 @@ if [ -n "${PPROFIL}" ] ; then
                 PTONQUALIT="5"
                 #DEINTERLACING="${VOLLBILDKONVERTIERER}"
                 ;;
-        avc|x264)
+        avc|x264|mkv)
                 VPROG="ffmpeg x264 mkvmerge"
                 VIDEOCODEC="libx264"    # AVC (MPEGp10)
                 VIDEOOPTION=""
-                #AUDIOCODEC="ac3"        # ac3 libfaac faac aac
+                #AUDIOCODEC="ac3"        # AVCHD kennt nur AC3 und LPCM
                 AUDIOCODEC="libfaac"    # ac3 libfaac faac aac
                 AUDIOOPTION=""
                 CONTAINER="mkv"         # Standard-Kontainer-Format für die Ausgabe
@@ -210,6 +215,16 @@ if [ -n "${PPROFIL}" ] ; then
                 PTONQUALIT="5"
                 #DEINTERLACING="${VOLLBILDKONVERTIERER}"
                 #SKIP_DUP="softskip harddup"
+                ;;
+        mp4)
+                VPROG="ffmpeg x264 mkvmerge"
+                VIDEOCODEC="libx264"    # AVC (MPEGp10)
+                VIDEOOPTION=""
+                AUDIOCODEC="libfaac"    # ac3 libfaac faac aac
+                AUDIOOPTION=""
+                CONTAINER="mp4"         # Standard-Kontainer-Format für die Ausgabe
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
                 ;;
         xmp3)
                 VPROG="ffmpeg x264 mkvmerge"
@@ -237,8 +252,19 @@ if [ -n "${PPROFIL}" ] ; then
                 #DEINTERLACING="${VOLLBILDKONVERTIERER}"
                 #SKIP_DUP="softskip harddup"
                 ;;
+        ogg)
+                DIREKT_TRANS="direkt"
+                VPROG="ffmpeg"
+                VIDEOCODEC="libtheora"  # OGG Theora
+                VIDEOOPTION=""
+                AUDIOCODEC="libvorbis"  # OGG Vorbis
+                AUDIOOPTION=""
+                CONTAINER="ogg"         # Standard-Kontainer-Format für die Ausgabe
+                PBILDQUALIT="5"
+                PTONQUALIT="5"
+                ;;
         *)
-                echo "# - 226: Profil
+                echo "# - 267: Profil
                 aus folgenden Profilen kann eines ausgewählt werden:
                 -profil avc          (synonym für x264; das ist der Standard, wenn kein Profil angegeben wird)
                 -profil x264         (Video-Codec: x264 / Audio-Codec: AAC)
@@ -265,7 +291,7 @@ fi
 #------------------------------------------------------------------------------#
 ### Bildformate festlegen
 
-echo "# - 253: Profil
+echo "# - 294: Profil
 BILDFORMAT='${BILDFORMAT}'
 "
 if [ -n "${BILDFORMAT}" ] ; then
@@ -297,7 +323,7 @@ if [ -n "${BILDFORMAT}" ] ; then
                 PBILDHOEHE="576"
                 ;;
         *)
-                echo "# - 285: Profil
+                echo "# - 326: Profil
                 aus folgenden Bildformaten kann eines ausgewählt werden:
                 -bildformat sqcif    entspricht    -skal 128x96
                 -bildformat qcif     entspricht    -skal 176x144
@@ -512,7 +538,8 @@ if [ -n "${AUDIOCODEC}" ] ; then
         case "${AUDIOCODEC}" in
                 wav)
                         APROG="ffmpeg"
-                        FFACODEC="pcm_s16le"
+                        #FFACODEC="pcm_s16le"	# CD-Qualitaet
+                        FFACODEC="pcm_f64le"	# beste Qualitaet
                         ;;
                 aac)
                         APROG="ffmpeg"
@@ -547,7 +574,7 @@ fi
 
 
 #------------------------------------------------------------------------------#
-### Tonkanäle pro Tonspur
+### Tonkanaele pro Tonspur
 
 if [ -n "${SOLLAUDIOKANAELE}" ] ; then
         AC="-ac ${SOLLAUDIOKANAELE}"
@@ -565,7 +592,25 @@ ASPTTAB="
 4 2.21:1
 "
 
-echo "# - 546: Ende - Profile
+#------------------------------------------------------------------------------#
+### FFMPEG_F setzen
+
+unset FFMPEG_F
+if [ "${CONTAINER}" = "mkv" ] ; then
+        FFMPEG_F="-f matroska"
+elif [ "${CONTAINER}" = "mp4" ] ; then
+        FFMPEG_F="-f mp4"
+elif [ "${CONTAINER}" = "ogg" ] ; then
+        FFMPEG_F="-f ogg"
+elif [ "${CONTAINER}" = "m2t" -o "${CONTAINER}" = "mpeg2ts" -o "${CONTAINER}" = "m2ts" -o "${CONTAINER}" = "mts" -o "${CONTAINER}" = "ts" ] ; then
+        FFMPEG_F="-f mpegts"
+fi
+
+#------------------------------------------------------------------------------#
+### Profil - Ende
+
+echo "# - 612: Ende - Profile
+DIREKT_TRANS='${DIREKT_TRANS}'
 PPROFIL='${PPROFIL}'
 BILDFORMAT='${BILDFORMAT}'
 
@@ -574,6 +619,7 @@ VPROG='${VPROG}'
 APROG='${APROG}'
 AUDIOCODEC='${AUDIOCODEC}'
 CONTAINER='${CONTAINER}'
+FFMPEG_F='${FFMPEG_F}'
 SOLLBILDQUALIT='${SOLLBILDQUALIT}'
 PBILDQUALIT='${PBILDQUALIT}'
 BILDQUALIT='${BILDQUALIT}'
