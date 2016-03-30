@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2016031500"
+VERSION="v2016032900"
 
 
 echo "
@@ -35,7 +35,7 @@ FILMINFOS="ffprobe"       # ffprobe / avprobe
 #------------------------------------------------------------------------------#
 
 CONTAINER="mkv"
-LANG=en                                 # damit AWK richtig rechnet, sonst passen die Dezimaltrennzeichen nicht
+LANG=en                         # damit AWK richtig rechnet, sonst passen die Dezimaltrennzeichen nicht
 
 #------------------------------------------------------------------------------#
 
@@ -97,11 +97,15 @@ while [ "${#}" -ne "0" ] ; do
                         ;;
                 -odar)
                         odar="${2}"
+                        opar=""
                         SOLLVIDEODispl="${2}"                   # Seitenverhaeltnis des gesamten Bildes: -odar 4/3 | -odar 16/9
+                        SOLLVIDEOPixel=""                       # Seitenverhaeltnis des einzelnen Bildpunktes wird ignoriert
                         shift
                         ;;
                 -opar)
                         opar="${2}"
+                        odar=""
+                        SOLLVIDEODispl=""                       # Seitenverhaeltnis des gesamten Bildes wird ignoriert
                         SOLLVIDEOPixel="${2}"                   # Seitenverhaeltnis des einzelnen Bildpunktes: NTSC, PAL oder DVB
                         shift
                         ;;
@@ -130,6 +134,7 @@ while [ "${#}" -ne "0" ] ; do
                         QUADRATISCHEPUNKTE="Ja"                 # die Ausgabe wird quadratische Bildpunkte haben
                         PROGRESSIV="Ja"                         # progressives Bild interpolieren, nur bei Zeilensprungverfahren benutzen!
                         INVIDEOPixel="pal"                      # Seitenverhaeltnis des einzelnen Bildpunktes des Quellvideos: PAL
+                        INVIDEODispl=""
                         shift
                         ;;
                 -anr)
@@ -154,10 +159,10 @@ while [ "${#}" -ne "0" ] ; do
                         ;;
                 -test)
                         echo "
-                        Der Parameter '-test' wird nicht unterstÃŒtzt,
+                        Der Parameter '-test' wird nicht unterstützt,
                         probieren Sie den Parameter '-testcrop' aus.
                         "
-                        ABBRUCH="Ja"
+                        exit 1
                         ;;
                 -crop)
                         ### MEncoder- und x264-Beispiel für das CROPen: 720x576 -> 704x428
@@ -254,6 +259,27 @@ while [ "${#}" -ne "0" ] ; do
                         SCHNEIDEN="Nein"
                         shift
                         ;;
+                -mkv)
+                        PPROFIL="mkv"                           # AVC + AAC + MKV
+                        STANDARDBILDFORMAT="Ja"                 # mit schwarzen Balken zu einem Standardformat von 4/3 oder 16/9 erweitern (nur fuer AVC/x264)
+                        QUADRATISCHEPUNKTE="Ja"                 # die Ausgabe wird quadratische Bildpunkte haben
+                        PROGRESSIV="Ja"                         # progressives Bild interpolieren, nur bei Zeilensprungverfahren benutzen!
+                        shift
+                        ;;
+                -mp4)
+                        PPROFIL="mp4"                           # AVC + AAC + MKV
+                        STANDARDBILDFORMAT="Ja"                 # mit schwarzen Balken zu einem Standardformat von 4/3 oder 16/9 erweitern (nur fuer AVC/x264)
+                        QUADRATISCHEPUNKTE="Ja"                 # die Ausgabe wird quadratische Bildpunkte haben
+                        PROGRESSIV="Ja"                         # progressives Bild interpolieren, nur bei Zeilensprungverfahren benutzen!
+                        shift
+                        ;;
+                -ogg)
+                        PPROFIL="ogg"                           # Theora + Vorbis + OGG
+                        STANDARDBILDFORMAT="Ja"                 # mit schwarzen Balken zu einem Standardformat von 4/3 oder 16/9 erweitern (nur fuer AVC/x264)
+                        QUADRATISCHEPUNKTE="Ja"                 # die Ausgabe wird quadratische Bildpunkte haben
+                        PROGRESSIV="Ja"                         # progressives Bild interpolieren, nur bei Zeilensprungverfahren benutzen!
+                        shift
+                        ;;
                 -kerne)
                         NUTZKERNE="${2}"                        # (mögliche Werte: 1-16) CPU-Kerne zum berechnen; mehr: schneller; weniger: bessere Qualität
                         shift
@@ -267,7 +293,7 @@ while [ "${#}" -ne "0" ] ; do
                         shift
                         ;;
                 -profil)
-                        PPROFIL="${2}"                          # 3gp sp3 sp3l3 em880 ipad aspl3 aspl4 aspl5 dx50 avc x264 xmp3 xogg
+                        PPROFIL="${2}"                          # 3gp sp3 sp3l3 em880 ipad aspl3 aspl4 aspl5 dx50 avc x264 xmp3 xogg ogg
                         shift
                         ;;
                 -bildformat)
@@ -296,11 +322,11 @@ while [ "${#}" -ne "0" ] ; do
                         ;;
                 -hilfe)
                         HILFE
-                        ABBRUCH="Ja"
+                        exit 0
                         ;;
                 -h)
                         HILFE
-                        ABBRUCH="Ja"
+                        exit 0
                         ;;
                 *)
                         if [ "$(echo "${1}"|egrep '^-')" ] ; then
@@ -315,62 +341,20 @@ while [ "${#}" -ne "0" ] ; do
 done
 
 #------------------------------------------------------------------------------#
-### wenn Fehler bei den Parametern gemacht wurden
+### es geht nicht weiter
 
-### -ipar, -idar, -stdtv
-if [ -n "${INVIDEOPixel}" ] ; then
-        if [ -n "${INVIDEODispl}" ] ; then
-                echo "Die beiden Parameter '-ipar' und '-idar' schlieÃen sich gegenseitig aus!"
-                echo "Die beiden Parameter '-stdtv' und '-idar' schlieÃen sich gegenseitig aus!"
+if [ "${CONTAINER}" != "mkv" ] ; then
+	if [ -n "${MKVSYNC}" ] ; then
+        	echo "# - 348: Parameter
+        	Das Eingabe-Bildformat skalieren.
+        	MKVSYNC='${MKVSYNC}'
+        	"
                 ABBRUCH="Ja"
-        fi
-fi
-
-### -odar, -opar
-if [ -n "${SOLLVIDEODispl}" ] ; then
-        if [ -n "${SOLLVIDEOPixel}" ] ; then
-                echo "Die beiden Parameter '-odar' und '-opar' schlieÃen sich gegenseitig aus!"
-                ABBRUCH="Ja"
-        fi
-fi
-
-### -iskal
-if [ -z "${ENTZERR_VIDEOBREIT}" ] ; then
-        if [ -n "${ENTZERR_VIDEO_HOCH}" ] ; then
-                echo "Der Wert fÃŒr den Parameter '-iskal' muss als Trennzeichen ein 'x' enthalten!"
-                ABBRUCH="Ja"
-        fi
-fi
-if [ -n "${ENTZERR_VIDEOBREIT}" ] ; then
-        if [ -z "${ENTZERR_VIDEO_HOCH}" ] ; then
-                echo "Der Wert fÃŒr den Parameter '-iskal' muss als Trennzeichen ein 'x' enthalten!"
-                ABBRUCH="Ja"
-        fi
-fi
-
-### -skal
-if [ -z "${SOLLVIDEOBREIT}" ] ; then
-        if [ -n "${SOLLVIDEO_HOCH}" ] ; then
-                echo "Der Wert fÃŒr den Parameter '-skal' muss als Trennzeichen ein 'x' enthalten!"
-                ABBRUCH="Ja"
-        fi
-fi
-if [ -n "${SOLLVIDEOBREIT}" ] ; then
-        if [ -z "${SOLLVIDEO_HOCH}" ] ; then
-                echo "Der Wert fÃŒr den Parameter '-skal' muss als Trennzeichen ein 'x' enthalten!"
-                ABBRUCH="Ja"
-        fi
+	fi
 fi
 
 #------------------------------------------------------------------------------#
 ### es geht nicht weiter
-
-if [ -n "${SOLLVIDEODispl}" ] ; then
-        if [ -n "${SOLLVIDEOPixel}" ] ; then
-                echo "Die beiden Parameter '-odar' und '-opar' schlieÃen sich gegenseitig aus!"
-                ABBRUCH="Ja"
-        fi
-fi
 
 if [ -n "${ABBRUCH}" ] ; then
         echo "ABBRUCH!"
@@ -380,8 +364,8 @@ fi
 #------------------------------------------------------------------------------#
 ### Bildformat vor der Verarbeitung skalieren bzw. entzerren
 
-if [ "${IN_SKALIEREN}" = "Ja" ] ; then
-        echo "# - 384: Breit und Hoch
+if [ "${IN_SKALIEREN}" == "Ja" ] ; then
+        echo "# - 367: Parameter
         Das Eingabe-Bildformat skalieren.
         "
 
@@ -391,7 +375,7 @@ fi
 
 #------------------------------------------------------------------------------#
 
-echo "# - 394: Parameter
+echo "# - 377: Parameter
 SOLLVIDEOBREIT='${SOLLVIDEOBREIT}'
 SOLLVIDEO_HOCH='${SOLLVIDEO_HOCH}'
 "
