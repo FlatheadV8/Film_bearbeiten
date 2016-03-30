@@ -1,7 +1,7 @@
 
 ABARBEITUNGSNUMMER="$(echo "${ABARBEITUNGSNUMMER}" | awk '{print $1+1}')"
 
-VERSION="v2015092600"
+VERSION="v2016032800"
 
 
 echo "
@@ -112,7 +112,7 @@ if [ "${VIDEOPROGR}" == "x264" ] ; then
 
         OPTIMIERUNGEN=" --profile ${PROFILE} --threads ${NUTZKERNE} --b-adapt 2 --direct auto --slow-firstpass --no-fast-pskip --me tesa --merange 24 --partitions all --rc-lookahead 60 ${MREFF} --subme 10 --trellis 2 "
 
-        BLURAY=" --weightp 0 --bframes 3 --nal-hrd vbr --vbv-maxrate ${MaxBR} --vbv-bufsize ${MaxCPB} --level ${LEVEL} --keyint 24 --min-keyint 2 --b-pyramid strict --slices ${SLICES} --aud --colorprim ${FARBCOD} --transfer ${FARBCOD} --colormatrix ${FARBCOD} "
+        BLURAY=" --bluray-compat --weightp 0 --bframes 3 --nal-hrd vbr --vbv-maxrate ${MaxBR} --vbv-bufsize ${MaxCPB} --level ${LEVEL} --keyint 24 --min-keyint 2 --b-pyramid strict --slices ${SLICES} --aud --colorprim ${FARBCOD} --transfer ${FARBCOD} --colormatrix ${FARBCOD} "
 
         #----------------------------------------------------------------------#
 
